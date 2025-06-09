@@ -20,6 +20,7 @@ export function main() {
             .list-section { background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
             ul { list-style: none; padding: 0; }
             li { padding: 0.5rem; margin: 0.3rem 0; background: #f8f9fa; border-radius: 6px; border-left: 4px solid #007bff; }
+            .calendar { background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); margin-bottom: 2rem; }
         </style>
         <header style="background: linear-gradient(135deg, #222, #444); color: white; padding: 1.5rem 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
             <h1 style="margin: 0; font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">⚔️ Map Game</h1>
@@ -29,6 +30,7 @@ export function main() {
             <a href="#simulator" id="sim-link" style="margin: 0 2rem; color: #007bff; text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: 20px; transition: all 0.2s;">⚔️ Simulator</a>
         </nav>
         <main id="view" style="max-width: 1000px; margin: 2rem auto; padding: 1rem;"></main>
+        <div id="calendar"></div>
     `;
 
     function render(route) {
@@ -1151,6 +1153,113 @@ export function main() {
         e.preventDefault();
         render('simulator');
     };
+
+    // Add a calendar display to show the current day and its phase
+function displayCalendar() {
+    const calendarContainer = document.getElementById('calendar');
+    if (!calendarContainer) return;
+
+    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const today = new Date();
+    const currentDay = daysOfWeek[today.getDay() - 1]; // Adjust for Sunday being 0
+
+    let phase;
+    if (currentDay === "Monday") {
+        phase = "Rest Day";
+    } else {
+        phase = "Organization, Movement, and Battle Phases";
+    }
+
+    calendarContainer.innerHTML = `
+        <div class="calendar">
+            <h2>Today is: ${currentDay}</h2>
+            <p>Phase: ${phase}</p>
+        </div>
+    `;
+}
+
+// Call displayCalendar on page load
+window.onload = function() {
+    displayCalendar();
+    renderTutorial();
+    // ...existing code...
+};
+
+    // Refactor the code to follow professional standards and improve readability
+function renderTutorial() {
+    const tutorialContainer = document.getElementById('tutorial');
+    if (!tutorialContainer) return;
+
+    tutorialContainer.innerHTML = `
+        <div class="tutorial">
+            <h2>📖 Warfare Tutorial</h2>
+            <section>
+                <h3>The Basics</h3>
+                <p>
+                    <img src="images/basics.png" alt="Basics" 
+                         style="width:100%;max-width:400px;display:block;margin:auto;">
+                    Learn the fundamental rules of warfare, including how to create brigades, generals, and armies.
+                </p>
+            </section>
+            <section>
+                <h3>Brigades</h3>
+                <p>
+                    <img src="images/brigades.png" alt="Brigades" 
+                         style="width:100%;max-width:400px;display:block;margin:auto;">
+                    Brigades are the backbone of your army. They come in different types with unique stats and enhancements.
+                </p>
+                <ul>
+                    <li><strong>Types:</strong> Cavalry, Heavy, Light, Ranged, Support</li>
+                    <li><strong>Stats:</strong> Skirmish, Defense, Pitch, Rally, Movement</li>
+                    <li><strong>Enhancements:</strong> Lancers, Sharpshooters, Field Hospital, etc.</li>
+                </ul>
+            </section>
+            <section>
+                <h3>Generals</h3>
+                <p>
+                    <img src="images/generals.png" alt="Generals" 
+                         style="width:100%;max-width:400px;display:block;margin:auto;">
+                    Generals lead your armies and provide unique bonuses based on their traits and levels.
+                </p>
+                <ul>
+                    <li><strong>Levels:</strong> Generals have levels that affect their bonuses.</li>
+                    <li><strong>Traits:</strong> Traits like Brilliant, Bold, and Heroic provide unique advantages.</li>
+                </ul>
+            </section>
+            <section>
+                <h3>Action Cycle</h3>
+                <p>
+                    <img src="images/action_cycle.png" alt="Action Cycle" 
+                         style="width:100%;max-width:400px;display:block;margin:auto;">
+                    The action cycle determines the phases of the week:
+                </p>
+                <ul>
+                    <li><strong>Monday:</strong> Rest Day</li>
+                    <li><strong>Tuesday/Wednesday/Thursday:</strong> Organization, Movement, and Battle Phases</li>
+                </ul>
+            </section>
+            <section>
+                <h3>Battle Mechanics</h3>
+                <p>
+                    <img src="images/battle_mechanics.png" alt="Battle Mechanics" 
+                         style="width:100%;max-width:400px;display:block;margin:auto;">
+                    Battles are divided into stages: Skirmish, Pitch, Rally, and Action Report.
+                </p>
+                <ul>
+                    <li><strong>Skirmish:</strong> Select the best skirmishers and engage in roll-offs.</li>
+                    <li><strong>Pitch:</strong> Three rounds of combat with a tally system.</li>
+                </ul>
+            </section>
+        </div>
+    `;
+}
+
+// Call renderTutorial on page load
+window.onload = function() {
+    displayCalendar();
+    renderTutorial();
+    // ...existing code...
+};
 
     // Default route
     render('info');
