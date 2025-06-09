@@ -1,6 +1,8 @@
 // main.js - Basic SPA logic
 
 export function main() {
+    console.log('Main function executed');
+    
     const app = document.getElementById('app');
     if (!app) return;    app.innerHTML = `
         <style>
@@ -37,8 +39,10 @@ export function main() {
         const view = document.getElementById('view');
         if (!view) return;
         if (route === 'simulator') {
-            view.innerHTML = `                <h2>🎲 Mock Battle Simulator</h2>
-                <form id="brigade-form" class="form-section brigade-form">                    <h3>🪖 Create Brigade</h3>
+            view.innerHTML = `
+                <h2>🎲 Mock Battle Simulator</h2>
+                <form id="brigade-form" class="form-section brigade-form">
+                    <h3>🪖 Create Brigade</h3>
                     <label>
                         Brigade Type:
                         <select id="brigade-type">
@@ -47,12 +51,16 @@ export function main() {
                             <option value="Light">🪓 Light</option>
                             <option value="Ranged">🏹 Ranged</option>
                             <option value="Support">🛡️ Support</option>
-                        </select>                    </label>
+                        </select>
+                    </label>
                     <label>
                         Enhancement:
-                        <input type="text" id="brigade-enhancement" placeholder="e.g. Lancers, Rangers, Marines..." />
+                        <select id="brigade-enhancement">
+                            <!-- Options will be populated dynamically -->
+                        </select>
                     </label>
-                    <button type="submit">Add Brigade</button>                </form>
+                    <button type="submit">Add Brigade</button>
+                </form>
                 <div id="brigade-list" class="list-section">
                     <h3>Created Brigades</h3>
                     <ul id="brigades-ul"></ul>
@@ -247,18 +255,77 @@ export function main() {
             const form = document.getElementById('brigade-form');
             const ul = document.getElementById('brigades-ul');
             const generalForm = document.getElementById('general-form');
-            const generalsUl = document.getElementById('generals-ul');            const armyForm = document.getElementById('army-form');
+            const generalsUl = document.getElementById('generals-ul');
+            const armyForm = document.getElementById('army-form');
             const armyGeneralSelect = document.getElementById('army-general');
             const armyBrigadesSelect = document.getElementById('army-brigades');
             const armiesUl = document.getElementById('armies-ul');
             const battleForm = document.getElementById('battle-form');
             const battleArmy1 = document.getElementById('battle-army1');
-            const battleArmy2 = document.getElementById('battle-army2');            const battleResult = document.getElementById('battle-result');
+            const battleArmy2 = document.getElementById('battle-army2');
+            const battleResult = document.getElementById('battle-result');
             const simulateBattleBtn = document.getElementById('simulate-battle-btn');
             const loadSamplesBtn = document.getElementById('load-samples-btn');
             const saveArmiesBtn = document.getElementById('save-armies-btn');
             const loadArmiesBtn = document.getElementById('load-armies-btn');
             const clearAllBtn = document.getElementById('clear-all-btn');
+
+            // Enhancement options by type
+            const enhancementOptions = {
+                Cavalry: [
+                    { value: 'Life Guard', label: 'Life Guard: +2 Rally. Allows General to reroll a 1 on promotion roll once per battle.' },
+                    { value: 'Lancers', label: 'Lancers: +2 Skirmish. Rout by 3+ in Skirmish forces destruction roll.' },
+                    { value: 'Dragoons', label: 'Dragoons: +2 Defense. +1 Pitch. +1 Rally.' }
+                ],
+                Heavy: [
+                    { value: 'Artillery Team', label: 'Artillery Team: +1 Defense. +1 Pitch. Garrisoned: +1 Pitch. Applies -1 defense to all enemy brigades.' },
+                    { value: 'Grenadiers', label: 'Grenadiers: +2 Skirmish. +2 Pitch.' },
+                    { value: 'Stormtroopers', label: 'Stormtroopers: +1 Pitch. +1 Rally. +1 Movement. Ignores trench movement penalties.' }
+                ],
+                Light: [
+                    { value: 'Rangers', label: 'Rangers: +2 Skirmish. +1 Pitch.' },
+                    { value: 'Assault Team', label: 'Assault Team: +1 Skirmish. Selects skirmish target, negates Garrison modifier.' },
+                    { value: 'Commando', label: 'Commando: +2 Defense. +1 Pitch. Cannot be seen by enemy Sentry Teams.' }
+                ],
+                Ranged: [
+                    { value: 'Sharpshooters', label: 'Sharpshooters: +2 Defense. Garrisoned: +1 Pitch. Rout failed skirmishers.' },
+                    { value: 'Mobile Platforms', label: 'Mobile Platforms: +1 Skirmish. +2 Defense. +1 Movement.' },
+                    { value: 'Mortar Team', label: 'Mortar Team: +1 Pitch. +1 Rally. Negates garrison bonus for a single brigade.' }
+                ],
+                Support: [
+                    { value: 'Field Hospital', label: 'Field Hospital: Reroll Action Report Destruction Die for all brigades in army.' },
+                    { value: 'Combat Engineers', label: 'Combat Engineers: Build temporary structure, negate trench penalty, decrease siege times by 1.' },
+                    { value: 'Officer Corps', label: 'Officer Corps: +2 Rally. General needs 4-6 to level up. May choose retreat.' }
+                ],
+                Universal: [
+                    { value: 'Sentry Team', label: 'Sentry Team: +3 Defense. +1 tile of sight.' },
+                    { value: 'Marines', label: 'Marines: May immediately siege when landing on enemy city. +1 sea tile movement for army.' }
+                ]
+            };
+
+            function updateEnhancementOptions() {
+                const type = document.getElementById('brigade-type').value;
+                const enhancementSelect = document.getElementById('brigade-enhancement');
+                enhancementSelect.innerHTML = '';
+                // Add type-specific enhancements
+                enhancementOptions[type].forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.label;
+                    enhancementSelect.appendChild(option);
+                });
+                // Add universal enhancements
+                enhancementOptions.Universal.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.label;
+                    enhancementSelect.appendChild(option);
+                });
+            }
+
+            // Initial population
+            updateEnhancementOptions();
+            document.getElementById('brigade-type').addEventListener('change', updateEnhancementOptions);
 
             // Brigade stats based on type
             const brigadeStats = {
@@ -1145,14 +1212,23 @@ export function main() {
         }
     }
 
+
     document.getElementById('info-link').onclick = (e) => {
         e.preventDefault();
-        render('info');
+        window.location.hash = 'info';
     };
     document.getElementById('sim-link').onclick = (e) => {
         e.preventDefault();
-        render('simulator');
+        window.location.hash = 'simulator';
     };
+
+    // Hash-based routing: render correct view on hash change or page load
+    function handleRoute() {
+        const hash = window.location.hash.replace('#', '');
+        render(hash || 'simulator');
+    }
+    window.addEventListener('hashchange', handleRoute);
+    handleRoute(); // Initial render
 
     // Add a calendar display to show the current day and its phase
 function displayCalendar() {
