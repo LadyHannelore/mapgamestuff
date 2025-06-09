@@ -1164,16 +1164,30 @@ function displayCalendar() {
     const currentDay = daysOfWeek[today.getDay() - 1]; // Adjust for Sunday being 0
 
     let phase;
-    if (currentDay === "Monday") {
-        phase = "Rest Day";
-    } else {
-        phase = "Organization, Movement, and Battle Phases";
+    switch (currentDay) {
+        case "Monday":
+            phase = "Rest Day";
+            break;
+        case "Tuesday":
+        case "Wednesday":
+            phase = "Organization Phase";
+            break;
+        case "Thursday":
+        case "Friday":
+            phase = "Movement Phase";
+            break;
+        case "Saturday":
+        case "Sunday":
+            phase = "Battle Phase";
+            break;
+        default:
+            phase = "Unknown Phase";
     }
 
     calendarContainer.innerHTML = `
-        <div class="calendar">
-            <h2>Today is: ${currentDay}</h2>
-            <p>Phase: ${phase}</p>
+        <div class="calendar text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <h2 class="text-xl font-bold">Today is: ${currentDay}</h2>
+            <p class="text-lg">Phase: ${phase}</p>
         </div>
     `;
 }
@@ -1182,85 +1196,58 @@ function displayCalendar() {
 window.onload = function() {
     displayCalendar();
     renderTutorial();
+    setupDarkModeToggle();
     // ...existing code...
 };
 
     // Refactor the code to follow professional standards and improve readability
-function renderTutorial() {
-    const tutorialContainer = document.getElementById('tutorial');
-    if (!tutorialContainer) return;
+    function renderTutorial() {
+        const tutorialContainer = document.getElementById('tutorial');
+        if (!tutorialContainer) return;
 
-    tutorialContainer.innerHTML = `
-        <div class="tutorial">
-            <h2>📖 Warfare Tutorial</h2>
-            <section>
-                <h3>The Basics</h3>
-                <p>
-                    <img src="images/basics.png" alt="Basics" 
-                         style="width:100%;max-width:400px;display:block;margin:auto;">
-                    Learn the fundamental rules of warfare, including how to create brigades, generals, and armies.
-                </p>
-            </section>
-            <section>
-                <h3>Brigades</h3>
-                <p>
-                    <img src="images/brigades.png" alt="Brigades" 
-                         style="width:100%;max-width:400px;display:block;margin:auto;">
-                    Brigades are the backbone of your army. They come in different types with unique stats and enhancements.
-                </p>
-                <ul>
-                    <li><strong>Types:</strong> Cavalry, Heavy, Light, Ranged, Support</li>
-                    <li><strong>Stats:</strong> Skirmish, Defense, Pitch, Rally, Movement</li>
-                    <li><strong>Enhancements:</strong> Lancers, Sharpshooters, Field Hospital, etc.</li>
-                </ul>
-            </section>
-            <section>
-                <h3>Generals</h3>
-                <p>
-                    <img src="images/generals.png" alt="Generals" 
-                         style="width:100%;max-width:400px;display:block;margin:auto;">
-                    Generals lead your armies and provide unique bonuses based on their traits and levels.
-                </p>
-                <ul>
-                    <li><strong>Levels:</strong> Generals have levels that affect their bonuses.</li>
-                    <li><strong>Traits:</strong> Traits like Brilliant, Bold, and Heroic provide unique advantages.</li>
-                </ul>
-            </section>
-            <section>
-                <h3>Action Cycle</h3>
-                <p>
-                    <img src="images/action_cycle.png" alt="Action Cycle" 
-                         style="width:100%;max-width:400px;display:block;margin:auto;">
-                    The action cycle determines the phases of the week:
-                </p>
-                <ul>
-                    <li><strong>Monday:</strong> Rest Day</li>
-                    <li><strong>Tuesday/Wednesday/Thursday:</strong> Organization, Movement, and Battle Phases</li>
-                </ul>
-            </section>
-            <section>
-                <h3>Battle Mechanics</h3>
-                <p>
-                    <img src="images/battle_mechanics.png" alt="Battle Mechanics" 
-                         style="width:100%;max-width:400px;display:block;margin:auto;">
-                    Battles are divided into stages: Skirmish, Pitch, Rally, and Action Report.
-                </p>
-                <ul>
-                    <li><strong>Skirmish:</strong> Select the best skirmishers and engage in roll-offs.</li>
-                    <li><strong>Pitch:</strong> Three rounds of combat with a tally system.</li>
-                </ul>
-            </section>
-        </div>
-    `;
-}
+        tutorialContainer.innerHTML = `
+            <div class="tutorial">
+                <h2>📖 Warfare Tutorial</h2>
+                <section>
+                    <h3>The Basics</h3>
+                    <p>
+                        <img src="images/basics.png" alt="Basics" 
+                             style="width:100%;max-width:400px;display:block;margin:auto;">
+                        Learn the fundamental rules of warfare, including how to create brigades, generals, and armies.
+                    </p>
+                </section>
+            </div>
+        `;
+    }
 
-// Call renderTutorial on page load
-window.onload = function() {
-    displayCalendar();
-    renderTutorial();
-    // ...existing code...
-};
+    // Call renderTutorial on page load
+    window.onload = function() {
+        displayCalendar();
+        renderTutorial();
+        setupDarkModeToggle();
+        // ...existing code...
+    };
 
-    // Default route
-    render('info');
+document.addEventListener('DOMContentLoaded', () => {
+    const loadSamplesBtn = document.getElementById('load-samples-btn');
+    const saveArmiesBtn = document.getElementById('save-armies-btn');
+    const loadArmiesBtn = document.getElementById('load-armies-btn');
+    const clearAllBtn = document.getElementById('clear-all-btn');
+
+    if (loadSamplesBtn) {
+        loadSamplesBtn.onclick = loadSampleArmies;
+    }
+
+    if (saveArmiesBtn) {
+        saveArmiesBtn.onclick = saveArmies;
+    }
+
+    if (loadArmiesBtn) {
+        loadArmiesBtn.onclick = loadArmies;
+    }
+
+    if (clearAllBtn) {
+        clearAllBtn.onclick = clearAll;
+    }
+});
 }
