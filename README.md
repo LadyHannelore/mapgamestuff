@@ -80,5 +80,5 @@ MIT
 
 ---
 
-This project is inspired by the custom warfare system designed by John, Princeps Corvinus {Lex}.
+This project is inspired by the custom warfare system designed by John, Princeps Corvinus {Lex} or gottfriedlex.
 
