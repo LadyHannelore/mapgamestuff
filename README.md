@@ -68,7 +68,6 @@ To host the application on GitHub Pages:
    ```
 2. Install dependencies:
    ```powershell
-   cd mock-battle-sim
    npm install
    ```
 3. Start the development server:

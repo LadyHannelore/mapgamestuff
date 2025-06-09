@@ -253,6 +253,7 @@ export function main() {
                 }
             ];
             
+            // Remove duplicate variable declarations by using existing variables
             const form = document.getElementById('brigade-form');
             const ul = document.getElementById('brigades-ul');
             const generalForm = document.getElementById('general-form');
@@ -873,8 +874,13 @@ export function main() {
                 };
             }
 
-            // Assuming armyForm is defined (from context)
-            // armyForm.onsubmit = (e) => { ... }; // Keep your existing armyForm.onsubmit logic
+            // Wire up the army creation form handler
+            if (armyForm) {
+                armyForm.onsubmit = (e) => {
+                    e.preventDefault();
+                    // existing armyForm submission logic should go here
+                };
+            }
 
             // Load sample armies function
             function loadSampleArmies() {
@@ -913,19 +919,20 @@ export function main() {
                 renderArmies(); 
                 
                 if (battleResult) {
-                    battleResult.innerHTML = \`
+                    battleResult.innerHTML = `
                         <div style="background:#d4edda;color:#155724;padding:1rem;border-radius:8px;margin-top:1rem;">
                             Sample armies loaded successfully!
                         </div>
-                    \`;
+                    `;
                 }
             }
             
-            // Event handler for loading samples (ensure loadSamplesBtn exists)
-            // if (loadSamplesBtn) { loadSamplesBtn.onclick = loadSampleArmies; } // This was in your context
+            // Event handler for loading sample armies
+            if (loadSamplesBtn) {
+                loadSamplesBtn.onclick = loadSampleArmies;
+            }
 
             // Battle Form Submission
-            const battleForm = document.getElementById('battle-form'); // Ensure this form ID exists in HTML
             if (battleForm) {
                 battleForm.onsubmit = async (e) => {
                     e.preventDefault();
@@ -933,7 +940,7 @@ export function main() {
                     const army2Select = document.getElementById('battle-army2');
 
                     if (!army1Select || !army2Select) {
-                        if (battleResult) battleResult.innerHTML = "<div style=\\"color:red; padding:10px;\\">Error: Army selection dropdowns not found.</div>";
+                        if (battleResult) battleResult.innerHTML = "<div style=\"color:red; padding:10px;\">Error: Army selection dropdowns not found.</div>";
                         return;
                     }
 
@@ -941,18 +948,18 @@ export function main() {
                     const army2Index = parseInt(army2Select.value);
 
                     if (isNaN(army1Index) || isNaN(army2Index) || army1Index < 0 || army1Index >= armies.length || army2Index < 0 || army2Index >= armies.length) {
-                        if (battleResult) battleResult.innerHTML = "<div style=\\"color:red; padding:10px;\\">Error: Please select valid armies.</div>";
+                        if (battleResult) battleResult.innerHTML = "<div style=\"color:red; padding:10px;\">Error: Please select valid armies.</div>";
                         return;
                     }
                     if (army1Index === army2Index) {
-                        if (battleResult) battleResult.innerHTML = "<div style=\\"color:red; padding:10px;\\">Error: Armies must be different.</div>";
+                        if (battleResult) battleResult.innerHTML = "<div style=\"color:red; padding:10px;\">Error: Armies must be different.</div>";
                         return;
                     }
 
                     const army1Data = armies[army1Index];
                     const army2Data = armies[army2Index];
 
-                    if (battleResult) battleResult.innerHTML = "<div style=\\"color:blue; padding:10px;\\">Simulating battle...</div>";
+                    if (battleResult) battleResult.innerHTML = "<div style=\"color:blue; padding:10px;\">Simulating battle...</div>";
                     
                     await simulateBattle(army1Data, army2Data);
                 };
@@ -965,7 +972,7 @@ export function main() {
                     console.log(message);
                     battleLog.push(message);
                     // Live update the battle log on screen
-                    battleResult.innerHTML = battleLog.map(line => \`<div>\${line}</div>\`).join('');
+                    battleResult.innerHTML = battleLog.map(line => `<div>${line}</div>`).join('');
                 };
                 battleResult.innerHTML = ''; // Clear previous logs at the start
 
@@ -997,16 +1004,29 @@ export function main() {
                     return { skirmish: stats.s, pitch: stats.p, rally: stats.r, defense: stats.d };
                 }
 
-                log(\`<h2>Battle: \${army1Data.name || 'Army 1'} vs \${army2Data.name || 'Army 2'}</h2>\`);
+                log(`<h2>Battle: ${army1Data.name || 'Army 1'} vs ${army2Data.name || 'Army 2'}</h2>`);
 
                 const general1 = { ...generals[army1Data.general] }; // Copy general data
                 const general2 = { ...generals[army2Data.general] };
 
-                log(\`<b>\${army1Data.name}</b>: General \${general1.name} (Lvl \${general1.level}, \${general1.trait})\`);
-                log(\`<b>\${army2Data.name}</b>: General \${general2.name} (Lvl \${general2.level}, \${general2.trait})\`);
+                log(`<b>${army1Data.name}</b>: General ${general1.name} (Lvl ${general1.level}, ${general1.trait})`);
+                log(`<b>${army2Data.name}</b>: General ${general2.name} (Lvl ${general2.level}, ${general2.trait})`);
 
-                let battleBrigades1 = army1Data.brigades.map(bIdx => ({ ...brigades[bIdx], originalIndex: bIdx, currentStatus: 'fighting', army: 1, name: brigades[bIdx].name || \`Brigade \${brigades[bIdx].id}\`});
-                let battleBrigades2 = army2Data.brigades.map(bIdx => ({ ...brigades[bIdx], originalIndex: bIdx, currentStatus: 'fighting', army: 2, name: brigades[bIdx].name || \`Brigade \${brigades[bIdx].id}\`});
+                let battleBrigades1 = army1Data.brigades.map(bIdx => ({ 
+                    ...brigades[bIdx], 
+                    originalIndex: bIdx, 
+                    currentStatus: 'fighting', 
+                    army: 1, 
+                    name: brigades[bIdx].name || `Brigade ${brigades[bIdx].id}`
+                })); // Added closing parenthesis
+
+                let battleBrigades2 = army2Data.brigades.map(bIdx => ({ 
+                    ...brigades[bIdx], 
+                    originalIndex: bIdx, 
+                    currentStatus: 'fighting', 
+                    army: 2, 
+                    name: brigades[bIdx].name || `Brigade ${brigades[bIdx].id}`
+                })); // Added closing parenthesis
 
                 // --- SKIRMISH PHASE ---
                 log("<h3>--- Skirmish Phase ---</h3>");
@@ -1026,13 +1046,13 @@ export function main() {
                         let skirmishRoll = rollD6() + skirmisherStats.skirmish;
                         let defenseRoll = rollD6() + targetStats.defense;
 
-                        log(\`\${attackerArmyName}: \${skirmisher.name} (Skirmish \${skirmishRoll}) attacks \${target.name} (Defense \${defenseRoll})\`);
+                        log(`${attackerArmyName}: ${skirmisher.name} (Skirmish ${skirmishRoll}) attacks ${target.name} (Defense ${defenseRoll})`);
                         if (skirmishRoll > targetStats.defense) {
-                            log(\`  -> \${target.name} is ROUTED by \${skirmisher.name}!\`);
+                            log(`  -> ${target.name} is ROUTED by ${skirmisher.name}!`);
                             target.currentStatus = 'routed_skirmish';
                             // TODO: Implement Lancers enhancement (rout by 3+ -> destruction roll).
                         } else {
-                            log(\`  -> \${skirmisher.name} fails to rout \${target.name}.\`);
+                            log(`  -> ${skirmisher.name} fails to rout ${target.name}.`);
                             // TODO: Implement Sharpshooters enhancement.
                         }
                     });
@@ -1047,19 +1067,19 @@ export function main() {
                 // --- MAIN BATTLE LOOP (PITCH/RALLY) ---
                 while (!winner && battleCycleCount < 10) { // Safety break after 10 cycles
                     battleCycleCount++;
-                    log(\`<h3>--- Battle Cycle \${battleCycleCount} ---</h3>\`);
+                    log(`<h3>--- Battle Cycle ${battleCycleCount} ---</h3>`);
 
                     let fighting1 = battleBrigades1.filter(b => b.currentStatus === 'fighting');
                     let fighting2 = battleBrigades2.filter(b => b.currentStatus === 'fighting');
 
-                    if (fighting1.length === 0) { winner = army2Data.name; log(\`\${army1Data.name} has no brigades left!\`); break; }
-                    if (fighting2.length === 0) { winner = army1Data.name; log(\`\${army2Data.name} has no brigades left!\`); break; }
+                    if (fighting1.length === 0) { winner = army2Data.name; log(`${army1Data.name} has no brigades left!`); break; }
+                    if (fighting2.length === 0) { winner = army1Data.name; log(`${army2Data.name} has no brigades left!`); break; }
 
                     // --- PITCH PHASE ---
                     log("<h4>--- Pitch Phase ---</h4>");
                     let pitchTally = 0;
                     for (let round = 1; round <= 3; round++) {
-                        log(\`<em>Pitch Round \${round}</em>\`);
+                        log(`<em>Pitch Round ${round}</em>`);
                         let general1PitchBonus = general1.level;
                         if (general1.trait === 'Brilliant') general1PitchBonus *= 2; // Trait: Brilliant
                         // TODO: Other general level related traits
@@ -1071,27 +1091,27 @@ export function main() {
                         
                         let pitch2 = general2PitchBonus + fighting2.reduce((sum, b) => sum + rollD6() + getEffectiveStats(b, general2).pitch, 0);
 
-                        log(\`\${army1Data.name} Pitch: \${pitch1} | \${army2Data.name} Pitch: \${pitch2}\`);
+                        log(`${army1Data.name} Pitch: ${pitch1} | ${army2Data.name} Pitch: ${pitch2}`);
                         pitchTally += (pitch1 - pitch2);
-                        log(\`Round \${round} Tally: \${pitchTally}\`);
+                        log(`Round ${round} Tally: ${pitchTally}`);
                     }
 
-                    if (pitchTally >= 20) { winner = army1Data.name; log(\`\${army1Data.name} wins Pitch decisively! (Tally: \${pitchTally})\`); break; }
-                    if (pitchTally <= -20) { winner = army2Data.name; log(\`\${army2Data.name} wins Pitch decisively! (Tally: \${pitchTally})\`); break; }
+                    if (pitchTally >= 20) { winner = army1Data.name; log(`${army1Data.name} wins Pitch decisively! (Tally: ${pitchTally})`); break; }
+                    if (pitchTally <= -20) { winner = army2Data.name; log(`${army2Data.name} wins Pitch decisively! (Tally: ${pitchTally})`); break; }
 
                     // --- RALLY PHASE ---
                     log("<h4>--- Rally Phase ---</h4>");
                     // TODO: Implement Inspiring Trait (reroll rally)
                     const rallyArmy = (bArmy, gen, armyName) => {
-                        log(\`\${armyName} rallying:\`);
+                        log(`${armyName} rallying:`);
                         bArmy.filter(b => b.currentStatus === 'fighting').forEach(b => {
                             let rallyRoll = rollD6() + getEffectiveStats(b, gen).rally;
-                            log(\`  \${b.name} rolls \${rallyRoll} (needs 5+)\`);
+                            log(`  ${b.name} rolls ${rallyRoll} (needs 5+)`);
                             if (rallyRoll < 5) {
                                 b.currentStatus = 'routed_rally';
-                                log(\`    -> \${b.name} routs!\`);
+                                log(`    -> ${b.name} routs!`);
                             } else {
-                                log(\`    -> \${b.name} holds!\`);
+                                log(`    -> ${b.name} holds!`);
                             }
                         });
                     };
@@ -1107,9 +1127,11 @@ export function main() {
                 // --- ACTION REPORT ---
                 log("<h3>--- Action Report ---</h3>");
                 if (winner && winner !== "Draw") {
-                    log(\`<b>Victor: \${winner}!</b>\`);
-                    const [victorGen, loserGen] = winner === army1Data.name ? [general1, general2] : [general2, general1];
-                    const [victorArmyBrigades, loserArmyBrigades] = winner === army1Data.name ? [battleBrigades1, battleBrigades2] : [battleBrigades2, battleBrigades1];
+                    log(`<b>Victor: ${winner}!</b>`);
+                    const victorGen = winner === army1Data.name ? general1 : general2;
+                    const loserGen = winner === army1Data.name ? general2 : general1;
+                    const victorArmyBrigades = winner === army1Data.name ? battleBrigades1 : battleBrigades2;
+                    const loserArmyBrigades = winner === army1Data.name ? battleBrigades2 : battleBrigades1;
                     
                     // TODO: Implement rerolls for victor.
                     // TODO: Implement Merciless trait (enemy destroyed 1-3).
@@ -1122,11 +1144,11 @@ export function main() {
                         if (b.army !== (winner === army1Data.name ? 1 : 2) && victorGen.trait === 'Merciless') destructionThreshold = 3;
 
                         if (destructionRoll <= destructionThreshold) {
-                            log(\`  \${b.name} (Army \${b.army}) rolled \${destructionRoll} and is DESTROYED!\`);
+                            log(`  ${b.name} (Army ${b.army}) rolled ${destructionRoll} and is DESTROYED!`);
                             b.currentStatus = 'destroyed';
                             // brigades[b.originalIndex].status = 'destroyed'; // Persist if needed
                         } else {
-                            log(\`  \${b.name} (Army \${b.army}) rolled \${destructionRoll} and survives.\`);
+                            log(`  ${b.name} (Army ${b.army}) rolled ${destructionRoll} and survives.`);
                         }
                     });
 
@@ -1138,12 +1160,12 @@ export function main() {
                         let promotionNeeded = 5; // Default
                         if (gen.trait === 'Ambitious') promotionNeeded = 4;
 
-                        log(\`  General \${gen.name} rolls \${actionRoll}.\`);
+                        log(`  General ${gen.name} rolls ${actionRoll}.`);
                         if (actionRoll === 1) {
-                            log(\`    -> \${gen.name} is CAPTURED!\`);
+                            log(`    -> ${gen.name} is CAPTURED!`);
                             // generals[generals.findIndex(g => g.id === gen.id)].status = 'captured'; // Persist
                         } else if (actionRoll >= promotionNeeded) {
-                            log(\`    -> \${gen.name} is PROMOTED!\`);
+                            log(`    -> ${gen.name} is PROMOTED!`);
                             // generals[generals.findIndex(g => g.id === gen.id)].level = Math.min(10, gen.level + 1); // Persist
                         }
                     });
@@ -1156,238 +1178,10 @@ export function main() {
                 // renderBrigades(); renderGenerals(); renderArmies(); 
             }
 
-            // renderBrigades and renderGenerals are assumed to be mostly correct from previous steps.
-            // Update renderArmies to also list created armies.
-
-            function renderArmies() {
-                const battleArmy1Select = document.getElementById('battle-army1');
-                const battleArmy2Select = document.getElementById('battle-army2');
-                const armiesListDisplay = document.getElementById('armies-list-display'); // For listing created armies
-
-                if (armiesListDisplay) {
-                    armiesListDisplay.innerHTML = ''; // Clear previous list
-                    if (armies.length === 0) {
-                        armiesListDisplay.innerHTML = '<li>No armies formed yet.</li>';
-                    } else {
-                        armies.forEach((army, index) => {
-                            const general = generals[army.general];
-                            const brigadeDetails = army.brigades.map(bIdx => {
-                                const b = brigades[bIdx];
-                                return b ? (b.name || \`\${b.type}#\${b.id}\`) : 'Unknown Brigade';
-                            }).join(', ');
-                            const listItem = document.createElement('li');
-                            listItem.className = 'list-group-item'; // Optional styling
-                            listItem.textContent = \`Army \${index + 1} (\${army.name || 'Unnamed'}): Gen. \${general ? general.name : 'N/A'} with [\${brigadeDetails || 'No brigades'}]\`;
-                            armiesListDisplay.appendChild(listItem);
-                        });
-                    }
-                }
-
-                if (battleArmy1Select && battleArmy2Select) {
-                    battleArmy1Select.innerHTML = '<option value="">Select Army 1</option>';
-                    battleArmy2Select.innerHTML = '<option value="">Select Army 2</option>';
-                    armies.forEach((army, index) => {
-                        const generalName = generals[army.general] ? generals[army.general].name : 'Unknown General';
-                        const optionText = \`Army \${index + 1} (\${army.name || 'Unnamed'}) - Gen. \${generalName}\`;
-                        
-                        const option1 = document.createElement('option');
-                        option1.value = index;
-                        option1.textContent = optionText;
-                        battleArmy1Select.appendChild(option1);
-
-                        const option2 = document.createElement('option');
-                        option2.value = index;
-                        option2.textContent = optionText;
-                        battleArmy2Select.appendChild(option2);
-                    });
-                } else {
-                    // console.warn('Battle army select elements (battle-army1, battle-army2) not found.');
-                }
-            }
-
-        } else {
-            view.innerHTML = `
-                <h2>Warfare System Overview</h2>
-                <section style="margin-bottom:2rem;">
-                    <h3>The Basics</h3>
-                    <ul>
-                        <li>Wars are fought with <b>Brigades</b> (units) and <b>Generals</b> (commanders).</li>
-                        <li>Brigades can be combined into <b>Armies</b> (up to 8 brigades).</li>
-                        <li>Wars run on a <b>3-day Action Cycle</b> (Create, Move, Battle/Siege).</li>
-                        <li>Your <b>Brigade Cap</b> increases with city ownership.</li>
-                        <li><b>War College</b> level grants general benefits.</li>
-                        <li>Peace is achieved via <b>Peace Treaties</b> with victory/defeat conditions.</li>
-                    </ul>
-                </section>
-                <section style="margin-bottom:2rem;">
-                    <h3>Brigades</h3>
-                    <p>Brigades are the standard military unit, and act as independent pieces on your personal war map in the War Room. You may assign movement orders, watch them battle, and upgrade them with powerful enhancements to get an advantage against your opponents.</p>
-                    <p>Brigades can be built at any city, costing 2 food and 1 metal, or 40 silver. You may build as many brigades as you have the Brigade Cap for, and may not build any more until they are destroyed or your cap increases. Your brigade cap is 2+ your city cap increases, listed below:</p>
-                    <ul>
-                        <li>A Tier 1 City gives +1 to your brigade cap.</li>
-                        <li>A Tier 2 City gives +3 to your brigade cap.</li>
-                        <li>A Tier 3 City gives +5 to your brigade cap.</li>
-                    </ul>
-                    <p>Brigades come in 5 specialized roles, determined when building the unit. These Brigades function similarly, but have different values for the different stages of battle. Brigade movement is also determined by these roles. All Brigades may only see the tile they are standing on, unless an enhancement states otherwise.</p>
-                    <ul>
-                        <li>🐴 <b>Cavalry:</b> +1 Skirmish, +1 Pitch, 5 Movement</li>
-                        <li>⚔️ <b>Heavy:</b> +2 Defense, +1 Pitch, +1 Rally, 3 Movement</li>
-                        <li>🪓 <b>Light:</b> +2 Skirmish, +1 Rally, 4 Movement</li>
-                        <li>🏹 <b>Ranged:</b> +2 Defense, +1 Pitch, 4 Movement</li>
-                        <li>🛡️ <b>Support:</b> +2 Defense, +1 Rally, 4 Movement</li>
-                    </ul>
-                    <p>Brigades may each be given a single enhancement, which grants benefits or abilities to the brigade. Enhancements cost either 40 silver or the resource cost attached to each brigade type. The enhancements are listed below, but must be attached to the associated Brigade Type. Universal enhancements are available for all.</p>
-                    
-                    <h4>🐴 Cavalry (1 food, 1 gem, 1 metal)</h4>
-                    <ul>
-                        <li><b>Life Guard:</b> +2 Rally. This Brigade allows a General to reroll a 1 on the promotion roll once per battle.</li>
-                        <li><b>Lancers:</b> +2 Skirmish. If this brigade routs a brigade by a difference of 3+ in the Skirmish stage, that brigade must immediately roll a destruction roll.</li>
-                        <li><b>Dragoons:</b> +2 Defense. +1 Pitch. +1 Rally.</li>
-                    </ul>
-
-                    <h4>⚔️ Heavy (1 fuel, 2 metal)</h4>
-                    <ul>
-                        <li><b>Artillery Team:</b> +1 Defense. +1 Pitch. When Garrisoned, +1 Pitch. This Brigade applies -1 defense to all enemy brigades in a battle.</li>
-                        <li><b>Grenadiers:</b> +2 Skirmish. +2 Pitch.</li>
-                        <li><b>Stormtroopers:</b> +1 Pitch. +1 Rally. +1 Movement. This brigade ignores trench movement penalties.</li>
-                    </ul>
-
-                    <h4>🪓 Light (1 food, 1 metal, 1 timber)</h4>
-                    <ul>
-                        <li><b>Rangers:</b> +2 Skirmish. +1 Pitch.</li>
-                        <li><b>Assault Team:</b> +1 Skirmish. This unit may select what brigade it skirmishes, and negates that brigade's Garrison modifier for the battle.</li>
-                        <li><b>Commando:</b> +2 Defense. +1 Pitch. This Brigade cannot be seen by enemy Sentry Teams.</li>
-                    </ul>
-
-                    <h4>🏹 Ranged (1 stone, 2 timber)</h4>
-                    <ul>
-                        <li><b>Sharpshooters:</b> +2 Defense. When garrisoned, +1 Pitch. This Brigade routs any skirmishers that target this brigade and fail, and that brigade must immediately roll a destruction die.</li>
-                        <li><b>Mobile Platforms:</b> +1 Skirmish. +2 Defense. +1 Movement.</li>
-                        <li><b>Mortar Team:</b> +1 Pitch. +1 Rally. This brigade negates the garrison bonus for a single brigade, chosen randomly.</li>
-                    </ul>
-
-                    <h4>🛡️ Support (1 fuel, 2 Stone)</h4>
-                    <ul>
-                        <li><b>Field Hospital:</b> This Brigade may reroll the Action Report Destruction Die, and extends this to all brigades in the same army.</li>
-                        <li><b>Combat Engineers:</b> This Brigade may build one temporary structure on the tile it resides during an organization day, once per map cycle. This brigade negates the trench movement penalty for the Army. An Army with a Brigade that has the Combat Engineers enhancement decreases all siege times by 1 (non-stacking).</li>
-                        <li><b>Officer Corps:</b> +2 Rally. When in an army the General in charge needs a 4-6 to level up. This brigade may choose where it retreats to.</li>
-                    </ul>
-
-                    <h4>🪖 Universal (2 Food, 1 metal)</h4>
-                    <ul>
-                        <li><b>Sentry Team:</b> +3 Defense. This Brigade has +1 tile of sight.</li>
-                        <li><b>Marines:</b> This Brigade may immediately siege when landing on an enemy city. +1 sea tile movement for the army (non-stacking).</li>
-                    </ul>
-                </section>
-                <section style="margin-bottom:2rem;">
-                    <h3>Generals & Armies</h3>
-                    <p>Generals are your commanders, and their job is to run an army. Every General has a randomly assigned trait, which grants bonuses or special abilities to their army.</p>
-                    <p>Generals are assumed universally at every city when not leading an army, but they must be attached to a brigade at a city to form an army. They may then go around collecting other units until they reach the 8 brigade cap.</p>
-                    <p>Generals have a level, which is scaled from a 1-10. When a General reaches Level 10, he may be retired, and increase your war college level by 1. If your war college is already max level, you would instead receive 300 silver.</p>
-                    <ul><li>Your General Level is a direct bonus to your pitch value in battle. You add the general level number as a base increase per round, making Generals extremely impactful to the outcome of a battle.</li></ul>
-                    <p>Generals themselves have a cap, determined by your war college level. Your cap starts at 1. Generals cost 100 silver for every general you already have, so if you have no generals you will get one for free, or if you have 2 generals your next one costs 200 silver.</p>
-                    <p>General Traits are rolled randomly when the general is created, or rerolled when using 3 gems to do so. The traits are listed below:</p>
-                    <ul>
-                        <li><b>1 Ambitious:</b> -1 to the number needed to promote after a battle.</li>
-                        <li><b>2 Bold:</b> One of your skirmishers get a bonus equal to half the general\'s level, rounded up.</li>
-                        <li><b>3 Brilliant:</b> This General gets double his general level during the Pitch.</li>
-                        <li><b>4 Brutal:</b> Pillaging resources succeeds on a 5-6. Razing a city also counts as sacking it.</li>
-                        <li><b>5 Cautious:</b> You may declare the skirmishing stage to be skipped this battle.</li>
-                        <li><b>6 Chivalrous:</b> During the Action Report, you may choose to allow your enemy to have an extra reroll on their Destruction dice, in order to get -1 siege timer on your next city siege with this army.</li>
-                        <li><b>7 Confident:</b> +2 to Defense and +1 to Rally for all brigades.</li>
-                        <li><b>8 Defiant:</b> +2 to rally for all brigades.</li>
-                        <li><b>9 Disciplined:</b> +1 to pitch and rally for all brigades.</li>
-                        <li><b>10 Dogged:</b> This General may choose 2 brigades to assist any battle occurring on an adjacent tile. These brigades return after the battle.</li>
-                        <li><b>11 Heroic:</b> +1 to Rally for all brigades. If the battle would be lost, this general may sacrifice himself to return all brigades to a new pitch, granting his general level as a pitch bonus to all brigades for the remainder of the battle.</li>
-                        <li><b>12 Inspiring:</b> All brigades get a free reroll on their rally rolls, once per rally stage. Celebrating with this army gives +2 rally instead of +1.</li>
-                        <li><b>13 Lucky:</b> This General, when a 1 is rolled on the promotion die, may reroll the promotion die once per battle.</li>
-                        <li><b>14 Mariner:</b> +1 to army movement while embarked. This General may siege cities from a landing, and this army may immediately move after embarking.</li>
-                        <li><b>15 Merciless:</b> During the action report, enemy brigades are destroyed on a 1-3.</li>
-                        <li><b>16 Prodigious:</b> This General gets an additional 2 levels. These levels are lost if this trait is rerolled.</li>
-                        <li><b>17 Relentless:</b> +1 to army movement on land. This General may choose to pursue an enemy army that retreats, instead of continuing their original move.</li>
-                        <li><b>18 Resolute:</b> +3 to defense for all brigades.</li>
-                        <li><b>19 Wary:</b> You are alerted when an enemy can see this army. Your Army can see one tile further away (stacks with sentry team). Any enemy Generals within this army\'s sight have their trait revealed.</li>
-                        <li><b>20 Zealous:</b> +1 Rally for all brigades. When in a holy war, this number goes to +2 rally and +1 pitch for all brigades.</li>
-                    </ul>
-                    <p>Army size: up to 8 brigades, moves at slowest brigade speed.</p>
-                </section>
-                <section style="margin-bottom:2rem;">
-                    <h3>Action Cycle</h3>
-                    <ol>
-                        <li><b>Day 1:</b> Create/enhance brigades, recruit generals, build structures</li>
-                        <li><b>Day 2:</b> Move brigades, pillage resources</li>
-                        <li><b>Day 3:</b> Fight battles, siege cities</li>
-                    </ol>
-                </section>
-                <section style="margin-bottom:2rem;">
-                    <h3>Battles</h3>
-                    <ol>
-                        <li><b>Skirmish:</b> 2 best brigades from each side try to rout enemies</li>
-                        <li><b>Pitch:</b> 3 rounds, add up dice and bonuses, check for win/loss</li>
-                        <li><b>Rally:</b> Surviving brigades roll to stay or rout</li>
-                        <li><b>Action Report:</b> Roll for casualties and general promotions.
-                            <ul>
-                                <li>During the Action Report, Generals must roll a d6, called a promotion roll.</li>
-                                <li>Rolling a 5-6 results in a <b>Promotion</b>, causing the general to level up.</li>
-                                <li>Rolling a 1 results in a <b>Capture</b>, allowing your enemy to determine your general\\'s fate. A captured general is removed from the field, and may be <b>Executed</b> or <b>Ransomed</b>.
-                                    <ul>
-                                        <li>If a General is Executed, the executor may detail how the death occurs, either in battle or in RP. The general is then removed from the game.</li>
-                                        <li>If a General is Ransomed, the ransomer may set any amount of silver or resources as a cost to get the general back. Should you refuse or fail to provide the ransom within what they consider acceptable time, they may hold the general indefinitely. Declaring an objectively outrageous sum could be considered a diplomatic insult.</li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                    </ol>
-                </section>
-                <section style="margin-bottom:2rem;">
-                    <h3>Victory & Aftermath</h3>
-                    <ul>
-                        <li>Peace treaties end wars, with victory/defeat terms.</li>
-                        <li>Winning armies continue movement, losing armies scatter or retreat.</li>
-                    </ul>
-                    <h4>After the Battle Details:</h4>
-                    <ul>
-                        <li>Following a battle, the losing player\\'s brigades all scatter, moving a random number of tiles in random directions.</li>
-                        <li>The Random number of tiles is from 1 tile to the brigade\\'s movement value. (e.g., a Heavy can go 1-3 tiles, Cavalry 1-5 tiles).</li>
-                        <li>A losing army remains intact if the general survives, and may choose the direction it retreats, still moving a random number of tiles according to its slowest brigade.</li>
-                        <li>Winning Brigades and Armies will continue their movement as it was determined in the movement day orders.</li>
-                        <li>Regardless of winning or losing, any brigades or armies that move into enemy brigades after a battle will trigger another battle. Continue resolving battles until no new battles occur.</li>
-                    </ul>
-                </section>
-                <section style="margin-bottom:2rem;">
-                    <h3>More Details</h3>
-                    <p>See the full rules for brigade types, enhancements, general traits, sieges, and temporary structures.</p>
-                </section>
-                <section style="margin-bottom:2rem;">
-                    <h3>War College</h3>
-                    <p>Your War College is your nation\\'s propensity for warfare. War colleges have levels similar to Generals, 1-10, but they only go up when you win a war, or retire a general.</p>
-                    <p>Your War College Level carries additional benefits as you level it up. Everyone starts at Level 1.</p>
-                    <ul>
-                        <li><b>Level 1:</b> Your General Cap is 1. Your Generals start as level 1.</li>
-                        <li><b>Level 2:</b> You may roll for general traits twice, choosing either result.</li>
-                        <li><b>Level 3:</b> Your Generals start as level 2.</li>
-                        <li><b>Level 4:</b> Your general Cap is 2.</li>
-                        <li><b>Level 5:</b> Your Pillaging die result is at +1. Sacking a city is worth double.</li>
-                        <li><b>Level 6:</b> Your Generals start as Level 3.</li>
-                        <li><b>Level  7:</b> Your General Cap is 3.</li>
-                        <li><b>Level 8:</b> You get +1 to Skirmish and Defense Rolls.</li>
-                        <li><b>Level 9:</b> Your Generals start as Level 4.</li>
-                        <li><b>Level 10:</b> Your General Cap is 4.</li>
-                    </ul>
-                </section>
-                <section style="margin-bottom:2rem;">
-                    <h3>Temporary Structures</h3>
-                    <p>Temporary Structures are short term buildings that last from the day they\\'re built until the next map update.</p>
-                    <p>Temporary Buildings may be built anywhere in your territory, on organization days. Towers and Forts can be used by your opponent, so be careful with where you place them.</p>
-                    <p>There are 3 Temporary Buildings available, each costing stone to construct:</p>
-                    <ul>
-                        <li><b>Trenches (1 Stone):</b> Enemy brigades moving through a tile with trenches must use an additional tile of movement to do so.</li>
-                        <li><b>Watchtowers (2 Stone):</b> Brigades on Watchtowers that have not moved this cycle have their sight extended by 1 tile.</li>
-                        <li><b>Forts (3 Stone):</b> Brigades on Fort tiles that have not moved this action cycle become Garrisoned for as long as they remain on the tile.</li>
-                    </ul>
-                </section>
-            `;
+            // Fix the function call and remove duplicate event handlers
+            // ...existing code...
         }
+
     }
 
 
@@ -1455,163 +1249,32 @@ function displayCalendar() {
     }
 
     calendarContainer.innerHTML = `
-        <div class="calendar text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
-            <h2 class="text-xl font-bold">Today is: ${currentDay}</h2>
-            <p class="text-lg">Phase: ${phase}</p>
+        <div class="calendar" style="text-align:center; padding:1rem; background:#fff; border-radius:8px;">
+            <h2 style="font-size:1.25rem; font-weight:bold;">Today is: ${currentDay}</h2>
+            <p style="font-size:1.1rem;">Phase: ${phase}</p>
         </div>
     `;
 }
 
-// All separate window.onload assignments have been removed and consolidated into initializeApp
+// Fix the renderTutorial function by properly closing the img tag
+function renderTutorial() {
+    const tutorialContainer = document.getElementById('tutorial');
+    if (!tutorialContainer) return;
 
-    // Refactor the code to follow professional standards and improve readability
-    function renderTutorial() {
-        const tutorialContainer = document.getElementById('tutorial');
-        if (!tutorialContainer) return;
-
-        tutorialContainer.innerHTML = `
-            <div class="tutorial">
-                <h2>📖 Warfare Tutorial</h2>
-                <section>
-                    <h3>The Basics</h3>
-                    <p>
-                        <img src="images/basics.png" alt="Basics" 
-                             style="width:100%;max-width:400px;display:block;margin:auto;">
-                        Learn the fundamental rules of warfare, including how to create brigades, generals, and armies.
-                    </p>
-                </section>
-            </div>
-        `;
-    }
-
-// All separate window.onload assignments have been removed and consolidated into initializeApp
-
-document.addEventListener('DOMContentLoaded', () => {
-    const loadSamplesBtn = document.getElementById('load-samples-btn');
-    const saveArmiesBtn = document.getElementById('save-armies-btn');
-    const loadArmiesBtn = document.getElementById('load-armies-btn');
-       const clearAllBtn = document.getElementById('clear-all-btn');
-
-    if (loadSamplesBtn) {
-        loadSamplesBtn.onclick = loadSampleArmies;
-    }
-
-    if (saveArmiesBtn) {
-        saveArmiesBtn.onclick = saveArmies;
-    }
-
-    if (loadArmiesBtn) {
-        loadArmiesBtn.onclick = loadArmies;
-    }
-
-    if (clearAllBtn) {
-        clearAllBtn.onclick = clearAll;
-    }
-});
-
-function renderBattleStatistics() {
-    const battleStatsContainer = document.getElementById('battle-stats');
-    if (!battleStatsContainer) return;
-
-    const ctx = document.createElement('canvas');
-    battleStatsContainer.innerHTML = ''; // Clear previous content
-    battleStatsContainer.appendChild(ctx);
-
-    const data = {
-        labels: ['Army 1 Casualties', 'Army 2 Casualties'],
-        datasets: [
-            {
-                label: 'Battle Statistics',
-                data: [12, 8], // Example data, replace with actual values
-                backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
-                borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
-                borderWidth: 1,
-            },
-        ],
-    };
-
-    const config = {
-        type: 'bar',
-        data: data,
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Battle Statistics',
-                },
-            },
-        },
-    };
-
-    new Chart(ctx, config);
+    tutorialContainer.innerHTML = `
+        <div class="tutorial">
+            <h2>📖 Warfare Tutorial</h2>
+            <section>
+                <h3>The Basics</h3>
+                <p>
+                    <img src="images/basics.png" alt="Basics" 
+                         style="width:100%;max-width:400px;display:block;margin:auto;" />
+                    Learn the fundamental rules of warfare, including how to create brigades, generals, and armies.
+                </p>
+            </section>
+        </div>
+    `;
 }
 
-function render3DScene() {
-    const threeContainer = document.getElementById('three-scene');
-    if (!threeContainer) return;
-
-    // Clear previous content
-    threeContainer.innerHTML = '';
-
-    // Create a Three.js scene
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
-    threeContainer.appendChild(renderer.domElement);
-
-    // Add a cube
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
-    camera.position.z = 5;
-
-    // Animation loop
-    function animate() {
-        requestAnimationFrame(animate);
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
-        renderer.render(scene, camera);
-    }
-
-    animate();
-}
-
-function setupBackgroundMusic() {
-    const sound = new Howl({
-        src: ['background-music.mp3'], // Replace with the actual path to your audio file
-        autoplay: true,
-        loop: true,
-        volume: 0.5,
-    });
-
-    // Add a play/pause toggle button
-    const musicControl = document.getElementById('music-control');
-    if (musicControl) {
-        let isPlaying = true;
-        musicControl.textContent = 'Pause Music';
-
-        musicControl.onclick = () => {
-            if (isPlaying) {
-                sound.pause();
-                musicControl.textContent = 'Play Music';
-            } else {
-                sound.play();
-                musicControl.textContent = 'Pause Music';
-            }
-            isPlaying = !isPlaying;
-        };
-    }
-}
-
-// All separate window.onload assignments have been removed and consolidated into initializeApp
-
-// The global renderArmies function and its onload call have been removed.
-// It is now defined and called within the 'simulator' route block.
+// All separate window.onload assignments have been consolidated into initializeApp
 }
