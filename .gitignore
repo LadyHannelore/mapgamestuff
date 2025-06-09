@@ -32,3 +32,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+
+.jpg.png# Coverage reports
+coverage/   

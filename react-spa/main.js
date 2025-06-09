@@ -1,5 +1,8 @@
 // main.js - Basic SPA logic
 
+// Persistent state arrays (module scope)
+            // State arrays are now persistent at module scope
+
 export function main() {
     console.log('Main function executed');
     
@@ -125,10 +128,8 @@ export function main() {
                     <button type="button" id="simulate-battle-btn" style="margin-left:1rem;background:#d44;color:white;">Simulate Full Battle</button>
                 </form>
                 <div id="battle-result"></div>
-            `;            // State
-            const brigades = [];
-            const generals = [];
-            const armies = [];
+            `;
+            // State arrays are now persistent at module scope
             
             // Sample armies for testing
             const sampleArmies = [
@@ -843,190 +844,367 @@ export function main() {
                 form.reset();
             };
 
-            generalForm.onsubmit = (e) => {
-                e.preventDefault();
-                const name = document.getElementById('general-name').value.trim();
-                const trait = document.getElementById('general-trait').value.trim();
-                generals.push({ name, trait });
-                renderGenerals();
-                renderArmies();
-                generalForm.reset();
-            };
+            // Assuming generalForm is already defined and refers to your general creation form
+            if (generalForm) {
+                generalForm.onsubmit = (e) => {
+                    e.preventDefault();
+                    const nameInput = document.getElementById('general-name'); // Ensure this input field exists in your HTML
+                    const traitInput = document.getElementById('general-trait'); // Ensure this input field exists
+                    
+                    const name = nameInput ? nameInput.value.trim() : `General ${generals.length + 1}`;
+                    const trait = traitInput ? traitInput.value.trim() : "Default Trait";
 
-            armyForm.onsubmit = (e) => {
-                e.preventDefault();
-                const generalIdx = parseInt(armyGeneralSelect.value);
-                const selectedBrigades = Array.from(armyBrigadesSelect.selectedOptions).map(opt => parseInt(opt.value));
-                if (selectedBrigades.length === 0 || selectedBrigades.length > 8) {
-                    alert('Select 1-8 brigades for the army.');
-                    return;
-                }
-                armies.push({ general: generalIdx, brigades: selectedBrigades });
-                renderArmies();
-                armyForm.reset();            };
+                    if (name && trait) {
+                        generals.push({ 
+                            id: `g${generals.length}`, 
+                            name, 
+                            trait, 
+                            level: 1, 
+                            experience: 0, // For tracking promotions
+                            status: 'active' 
+                        });
+                        renderGenerals(); // Update display of generals
+                        renderArmies();   // Update army selection dropdowns if generals are part of armies
+                        generalForm.reset();
+                        if (battleResult) battleResult.innerHTML = `<div style="color: green; padding: 10px;">General ${name} created!</div>`;
+                    } else {
+                        if (battleResult) battleResult.innerHTML = '<div style="color: red; padding: 10px;">General name and trait are required.</div>';
+                    }
+                };
+            }
+
+            // Assuming armyForm is defined (from context)
+            // armyForm.onsubmit = (e) => { ... }; // Keep your existing armyForm.onsubmit logic
 
             // Load sample armies function
             function loadSampleArmies() {
-                // Clear existing data
                 brigades.length = 0;
                 generals.length = 0;
                 armies.length = 0;
+
+                // Define brigade base stats (simplified, refer to rules for full details)
+                const brigadeBaseStats = {
+                    'Cavalry': { skirmish: 1, pitch: 1, rally: 0, defense: 0, movement: 5 },
+                    'Heavy':   { skirmish: 0, pitch: 1, rally: 1, defense: 2, movement: 3 },
+                    'Light':   { skirmish: 2, pitch: 0, rally: 1, defense: 0, movement: 4 },
+                    'Ranged':  { skirmish: 0, pitch: 1, rally: 0, defense: 2, movement: 4 },
+                    'Support': { skirmish: 0, pitch: 0, rally: 1, defense: 2, movement: 4 }
+                };
+                const getStats = (type) => JSON.parse(JSON.stringify(brigadeBaseStats[type] || { skirmish: 0, pitch: 0, rally: 0, defense: 0, movement: 3 }));
+
+                // Sample Brigades
+                brigades.push({ id: 'b0', name: 'Light Horse', type: 'Cavalry', enhancement: null, stats: getStats('Cavalry') });
+                brigades.push({ id: 'b1', name: 'Iron Wall', type: 'Heavy', enhancement: null, stats: getStats('Heavy') });
+                brigades.push({ id: 'b2', name: 'Scouts', type: 'Light', enhancement: 'Rangers', stats: getStats('Light') }); // Rangers: +2 Skirmish, +1 Pitch
+                brigades.push({ id: 'b3', name: 'Archers', type: 'Ranged', enhancement: null, stats: getStats('Ranged') });
+                brigades.push({ id: 'b4', name: 'Riders', type: 'Cavalry', enhancement: 'Lancers', stats: getStats('Cavalry') }); // Lancers: +2 Skirmish
+                brigades.push({ id: 'b5', name: 'Phalanx', type: 'Heavy', enhancement: 'Artillery Team', stats: getStats('Heavy') }); // Artillery: +1 Def, +1 Pitch
                 
-                sampleArmies.forEach((army, armyIndex) => {
-                    // Add general first
-                    generals.push(army.general);
-                    const generalIndex = generals.length - 1;
-                    
-                    // Add brigades for this army
-                    const armyBrigadeIndexes = [];
-                    army.brigades.forEach(brigade => {
-                        brigades.push(brigade);
-                        armyBrigadeIndexes.push(brigades.length - 1);
-                    });
-                    
-                    // Create the army
-                    armies.push({
-                        general: generalIndex,
-                        brigades: armyBrigadeIndexes,
-                        name: army.name
-                    });
-                });
+                // Sample Generals
+                generals.push({ id: 'g0', name: 'General Maximus', trait: 'Brilliant', level: 3, experience: 0, status: 'active' });
+                generals.push({ id: 'g1', name: 'Cmdr. Valerius', trait: 'Confident', level: 2, experience: 0, status: 'active' });
+
+                // Sample Armies (using indices)
+                armies.push({ name: 'Alpha Legion', general: 0, brigades: [0, 1, 2] }); // General Maximus with 3 brigades
+                armies.push({ name: 'Beta Cohort', general: 1, brigades: [3, 4, 5] });   // Cmdr. Valerius with 3 brigades
                 
-                // Re-render everything
                 renderBrigades();
                 renderGenerals();
-                renderArmies();
+                renderArmies(); 
                 
-                // Show success message
                 if (battleResult) {
-                    battleResult.innerHTML = `
+                    battleResult.innerHTML = \`
                         <div style="background:#d4edda;color:#155724;padding:1rem;border-radius:8px;margin-top:1rem;">
-                            ✅ Successfully loaded ${sampleArmies.length} sample armies! You can now battle them against each other.
+                            Sample armies loaded successfully!
                         </div>
-                    `;
-                }            }
-
-            // Save armies to localStorage
-            function saveArmies() {
-                const saveData = {
-                    brigades: [...brigades],
-                    generals: [...generals],
-                    armies: [...armies],
-                    timestamp: new Date().toISOString()
-                };
-                
-                try {
-                    localStorage.setItem('warfareSimulatorData', JSON.stringify(saveData));
-                    if (battleResult) {
-                        battleResult.innerHTML = `
-                            <div style="background:#d4edda;color:#155724;padding:1rem;border-radius:8px;margin-top:1rem;">
-                                💾 Successfully saved ${armies.length} armies, ${brigades.length} brigades, and ${generals.length} generals!
-                            </div>
-                        `;
-                    }
-                } catch (error) {
-                    if (battleResult) {
-                        battleResult.innerHTML = `
-                            <div style="background:#f8d7da;color:#721c24;padding:1rem;border-radius:8px;margin-top:1rem;">
-                                ❌ Failed to save armies: ${error.message}
-                            </div>
-                        `;
-                    }
+                    \`;
                 }
             }
+            
+            // Event handler for loading samples (ensure loadSamplesBtn exists)
+            // if (loadSamplesBtn) { loadSamplesBtn.onclick = loadSampleArmies; } // This was in your context
 
-            // Load armies from localStorage
-            function loadArmies() {
-                try {
-                    const saveData = localStorage.getItem('warfareSimulatorData');
-                    if (!saveData) {
-                        if (battleResult) {
-                            battleResult.innerHTML = `
-                                <div style="background:#fff3cd;color:#856404;padding:1rem;border-radius:8px;margin-top:1rem;">
-                                    ⚠️ No saved armies found. Create some armies and save them first!
-                                </div>
-                            `;
-                        }
+            // Battle Form Submission
+            const battleForm = document.getElementById('battle-form'); // Ensure this form ID exists in HTML
+            if (battleForm) {
+                battleForm.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const army1Select = document.getElementById('battle-army1');
+                    const army2Select = document.getElementById('battle-army2');
+
+                    if (!army1Select || !army2Select) {
+                        if (battleResult) battleResult.innerHTML = "<div style=\\"color:red; padding:10px;\\">Error: Army selection dropdowns not found.</div>";
                         return;
                     }
 
-                    const data = JSON.parse(saveData);
-                    
-                    // Clear existing data
-                    brigades.length = 0;
-                    generals.length = 0;
-                    armies.length = 0;
-                    
-                    // Load saved data
-                    brigades.push(...data.brigades);
-                    generals.push(...data.generals);
-                    armies.push(...data.armies);
-                    
-                    // Re-render everything
-                    renderBrigades();
-                    renderGenerals();
-                    renderArmies();
-                    
-                    if (battleResult) {
-                        const saveDate = new Date(data.timestamp).toLocaleString();
-                        battleResult.innerHTML = `
-                            <div style="background:#d4edda;color:#155724;padding:1rem;border-radius:8px;margin-top:1rem;">
-                                📁 Successfully loaded ${armies.length} armies, ${brigades.length} brigades, and ${generals.length} generals!<br>
-                                <small>Saved on: ${saveDate}</small>
-                            </div>
-                        `;
+                    const army1Index = parseInt(army1Select.value);
+                    const army2Index = parseInt(army2Select.value);
+
+                    if (isNaN(army1Index) || isNaN(army2Index) || army1Index < 0 || army1Index >= armies.length || army2Index < 0 || army2Index >= armies.length) {
+                        if (battleResult) battleResult.innerHTML = "<div style=\\"color:red; padding:10px;\\">Error: Please select valid armies.</div>";
+                        return;
                     }
-                } catch (error) {
-                    if (battleResult) {
-                        battleResult.innerHTML = `
-                            <div style="background:#f8d7da;color:#721c24;padding:1rem;border-radius:8px;margin-top:1rem;">
-                                ❌ Failed to load armies: ${error.message}
-                            </div>
-                        `;
+                    if (army1Index === army2Index) {
+                        if (battleResult) battleResult.innerHTML = "<div style=\\"color:red; padding:10px;\\">Error: Armies must be different.</div>";
+                        return;
                     }
+
+                    const army1Data = armies[army1Index];
+                    const army2Data = armies[army2Index];
+
+                    if (battleResult) battleResult.innerHTML = "<div style=\\"color:blue; padding:10px;\\">Simulating battle...</div>";
+                    
+                    await simulateBattle(army1Data, army2Data);
+                };
+            }
+
+            async function simulateBattle(army1Data, army2Data) {
+                if (!battleResult) { console.error("battleResult element not found for logging"); return; }
+                let battleLog = [];
+                const log = (message) => {
+                    console.log(message);
+                    battleLog.push(message);
+                    // Live update the battle log on screen
+                    battleResult.innerHTML = battleLog.map(line => \`<div>\${line}</div>\`).join('');
+                };
+                battleResult.innerHTML = ''; // Clear previous logs at the start
+
+                const rollD6 = () => Math.floor(Math.random() * 6) + 1;
+
+                // --- Helper: Get effective stats (NEEDS FULL IMPLEMENTATION based on rules) ---
+                function getEffectiveStats(brigadeObj, generalObj) {
+                    // Base stats from type (should be a comprehensive constant)
+                    const baseStatsData = {
+                        'Cavalry': { s: 1, p: 1, r: 0, d: 0 }, 'Heavy': { s: 0, p: 1, r: 1, d: 2 },
+                        'Light':   { s: 2, p: 0, r: 1, d: 0 }, 'Ranged':{ s: 0, p: 1, r: 0, d: 2 },
+                        'Support': { s: 0, p: 0, r: 1, d: 2 }
+                    };
+                    let stats = JSON.parse(JSON.stringify(baseStatsData[brigadeObj.type] || { s: 0, p: 0, r: 0, d: 0 }));
+
+                    // TODO: Apply ALL brigade enhancement effects from rules
+                    if (brigadeObj.enhancement === 'Lancers') stats.s += 2;
+                    if (brigadeObj.enhancement === 'Rangers') { stats.s += 2; stats.p += 1; }
+                    if (brigadeObj.enhancement === 'Artillery Team') { stats.d += 1; stats.p += 1; /* And -1 def to all enemy */ }
+                    // ... many more enhancements
+
+                    // TODO: Apply ALL general trait effects from rules to this brigade's stats
+                    if (generalObj) {
+                        if (generalObj.trait === 'Confident') { stats.d += 2; stats.r += 1; }
+                        if (generalObj.trait === 'Disciplined') { stats.p += 1; stats.r += 1; }
+                        if (generalObj.trait === 'Resolute') stats.d += 3;
+                        // ... many more traits
+                    }
+                    return { skirmish: stats.s, pitch: stats.p, rally: stats.r, defense: stats.d };
+                }
+
+                log(\`<h2>Battle: \${army1Data.name || 'Army 1'} vs \${army2Data.name || 'Army 2'}</h2>\`);
+
+                const general1 = { ...generals[army1Data.general] }; // Copy general data
+                const general2 = { ...generals[army2Data.general] };
+
+                log(\`<b>\${army1Data.name}</b>: General \${general1.name} (Lvl \${general1.level}, \${general1.trait})\`);
+                log(\`<b>\${army2Data.name}</b>: General \${general2.name} (Lvl \${general2.level}, \${general2.trait})\`);
+
+                let battleBrigades1 = army1Data.brigades.map(bIdx => ({ ...brigades[bIdx], originalIndex: bIdx, currentStatus: 'fighting', army: 1, name: brigades[bIdx].name || \`Brigade \${brigades[bIdx].id}\`});
+                let battleBrigades2 = army2Data.brigades.map(bIdx => ({ ...brigades[bIdx], originalIndex: bIdx, currentStatus: 'fighting', army: 2, name: brigades[bIdx].name || \`Brigade \${brigades[bIdx].id}\`});
+
+                // --- SKIRMISH PHASE ---
+                log("<h3>--- Skirmish Phase ---</h3>");
+                // TODO: Implement "best" skirmisher selection (e.g., highest skirmish stat, non-garrisoned).
+                // TODO: Implement General Trait "Cautious" (skip skirmish).
+                // TODO: Implement General Trait "Bold" (bonus to one skirmisher).
+                const getSkirmishers = (bArmy) => bArmy.filter(b => b.currentStatus === 'fighting' /* && !b.isGarrisoned */).slice(0, 2);
+                
+                const runSkirmishes = (attackingSkirmishers, defendingArmy, attackerGen, defenderGen, attackerArmyName) => {
+                    attackingSkirmishers.forEach(skirmisher => {
+                        const fightingDefenders = defendingArmy.filter(b => b.currentStatus === 'fighting');
+                        if (fightingDefenders.length === 0) return;
+                        const target = fightingDefenders[Math.floor(Math.random() * fightingDefenders.length)];
+                        
+                        const skirmisherStats = getEffectiveStats(skirmisher, attackerGen);
+                        const targetStats = getEffectiveStats(target, defenderGen);
+                        let skirmishRoll = rollD6() + skirmisherStats.skirmish;
+                        let defenseRoll = rollD6() + targetStats.defense;
+
+                        log(\`\${attackerArmyName}: \${skirmisher.name} (Skirmish \${skirmishRoll}) attacks \${target.name} (Defense \${defenseRoll})\`);
+                        if (skirmishRoll > targetStats.defense) {
+                            log(\`  -> \${target.name} is ROUTED by \${skirmisher.name}!\`);
+                            target.currentStatus = 'routed_skirmish';
+                            // TODO: Implement Lancers enhancement (rout by 3+ -> destruction roll).
+                        } else {
+                            log(\`  -> \${skirmisher.name} fails to rout \${target.name}.\`);
+                            // TODO: Implement Sharpshooters enhancement.
+                        }
+                    });
+                };
+
+                runSkirmishes(getSkirmishers(battleBrigades1), battleBrigades2, general1, general2, army1Data.name);
+                runSkirmishes(getSkirmishers(battleBrigades2), battleBrigades1, general2, general1, army2Data.name);
+
+                let winner = null;
+                let battleCycleCount = 0;
+
+                // --- MAIN BATTLE LOOP (PITCH/RALLY) ---
+                while (!winner && battleCycleCount < 10) { // Safety break after 10 cycles
+                    battleCycleCount++;
+                    log(\`<h3>--- Battle Cycle \${battleCycleCount} ---</h3>\`);
+
+                    let fighting1 = battleBrigades1.filter(b => b.currentStatus === 'fighting');
+                    let fighting2 = battleBrigades2.filter(b => b.currentStatus === 'fighting');
+
+                    if (fighting1.length === 0) { winner = army2Data.name; log(\`\${army1Data.name} has no brigades left!\`); break; }
+                    if (fighting2.length === 0) { winner = army1Data.name; log(\`\${army2Data.name} has no brigades left!\`); break; }
+
+                    // --- PITCH PHASE ---
+                    log("<h4>--- Pitch Phase ---</h4>");
+                    let pitchTally = 0;
+                    for (let round = 1; round <= 3; round++) {
+                        log(\`<em>Pitch Round \${round}</em>\`);
+                        let general1PitchBonus = general1.level;
+                        if (general1.trait === 'Brilliant') general1PitchBonus *= 2; // Trait: Brilliant
+                        // TODO: Other general level related traits
+
+                        let pitch1 = general1PitchBonus + fighting1.reduce((sum, b) => sum + rollD6() + getEffectiveStats(b, general1).pitch, 0);
+                        
+                        let general2PitchBonus = general2.level;
+                        if (general2.trait === 'Brilliant') general2PitchBonus *= 2;
+                        
+                        let pitch2 = general2PitchBonus + fighting2.reduce((sum, b) => sum + rollD6() + getEffectiveStats(b, general2).pitch, 0);
+
+                        log(\`\${army1Data.name} Pitch: \${pitch1} | \${army2Data.name} Pitch: \${pitch2}\`);
+                        pitchTally += (pitch1 - pitch2);
+                        log(\`Round \${round} Tally: \${pitchTally}\`);
+                    }
+
+                    if (pitchTally >= 20) { winner = army1Data.name; log(\`\${army1Data.name} wins Pitch decisively! (Tally: \${pitchTally})\`); break; }
+                    if (pitchTally <= -20) { winner = army2Data.name; log(\`\${army2Data.name} wins Pitch decisively! (Tally: \${pitchTally})\`); break; }
+
+                    // --- RALLY PHASE ---
+                    log("<h4>--- Rally Phase ---</h4>");
+                    // TODO: Implement Inspiring Trait (reroll rally)
+                    const rallyArmy = (bArmy, gen, armyName) => {
+                        log(\`\${armyName} rallying:\`);
+                        bArmy.filter(b => b.currentStatus === 'fighting').forEach(b => {
+                            let rallyRoll = rollD6() + getEffectiveStats(b, gen).rally;
+                            log(\`  \${b.name} rolls \${rallyRoll} (needs 5+)\`);
+                            if (rallyRoll < 5) {
+                                b.currentStatus = 'routed_rally';
+                                log(\`    -> \${b.name} routs!\`);
+                            } else {
+                                log(\`    -> \${b.name} holds!\`);
+                            }
+                        });
+                    };
+                    rallyArmy(battleBrigades1, general1, army1Data.name);
+                    rallyArmy(battleBrigades2, general2, army2Data.name);
+                }
+
+                if (!winner && battleCycleCount >= 10) {
+                    winner = "Draw";
+                    log("Battle inconclusive after 10 cycles. Declared a Draw.");
+                }
+                
+                // --- ACTION REPORT ---
+                log("<h3>--- Action Report ---</h3>");
+                if (winner && winner !== "Draw") {
+                    log(\`<b>Victor: \${winner}!</b>\`);
+                    const [victorGen, loserGen] = winner === army1Data.name ? [general1, general2] : [general2, general1];
+                    const [victorArmyBrigades, loserArmyBrigades] = winner === army1Data.name ? [battleBrigades1, battleBrigades2] : [battleBrigades2, battleBrigades1];
+                    
+                    // TODO: Implement rerolls for victor.
+                    // TODO: Implement Merciless trait (enemy destroyed 1-3).
+                    // TODO: Implement Field Hospital (reroll destruction).
+                    log("Casualty Rolls:");
+                    [...victorArmyBrigades, ...loserArmyBrigades].forEach(b => {
+                        let destructionRoll = rollD6();
+                        // Simplified: No victor reroll implemented here yet.
+                        let destructionThreshold = 2; 
+                        if (b.army !== (winner === army1Data.name ? 1 : 2) && victorGen.trait === 'Merciless') destructionThreshold = 3;
+
+                        if (destructionRoll <= destructionThreshold) {
+                            log(\`  \${b.name} (Army \${b.army}) rolled \${destructionRoll} and is DESTROYED!\`);
+                            b.currentStatus = 'destroyed';
+                            // brigades[b.originalIndex].status = 'destroyed'; // Persist if needed
+                        } else {
+                            log(\`  \${b.name} (Army \${b.army}) rolled \${destructionRoll} and survives.\`);
+                        }
+                    });
+
+                    log("General Promotion/Capture Rolls:");
+                    // TODO: Implement rerolls for victor.
+                    // TODO: Implement Ambitious, Lucky, Life Guard, Officer Corps effects.
+                    [victorGen, loserGen].forEach(gen => {
+                        let actionRoll = rollD6();
+                        let promotionNeeded = 5; // Default
+                        if (gen.trait === 'Ambitious') promotionNeeded = 4;
+
+                        log(\`  General \${gen.name} rolls \${actionRoll}.\`);
+                        if (actionRoll === 1) {
+                            log(\`    -> \${gen.name} is CAPTURED!\`);
+                            // generals[generals.findIndex(g => g.id === gen.id)].status = 'captured'; // Persist
+                        } else if (actionRoll >= promotionNeeded) {
+                            log(\`    -> \${gen.name} is PROMOTED!\`);
+                            // generals[generals.findIndex(g => g.id === gen.id)].level = Math.min(10, gen.level + 1); // Persist
+                        }
+                    });
+                     // TODO: Heroic trait logic.
+                } else {
+                    log("Battle ends in a Draw or was inconclusive. Standard Action Report may vary.");
+                }
+                log("<h3>--- Battle Simulation Ended ---</h3>");
+                // Optionally, re-render lists to reflect any persistent changes made to generals/brigades
+                // renderBrigades(); renderGenerals(); renderArmies(); 
+            }
+
+            // renderBrigades and renderGenerals are assumed to be mostly correct from previous steps.
+            // Update renderArmies to also list created armies.
+
+            function renderArmies() {
+                const battleArmy1Select = document.getElementById('battle-army1');
+                const battleArmy2Select = document.getElementById('battle-army2');
+                const armiesListDisplay = document.getElementById('armies-list-display'); // For listing created armies
+
+                if (armiesListDisplay) {
+                    armiesListDisplay.innerHTML = ''; // Clear previous list
+                    if (armies.length === 0) {
+                        armiesListDisplay.innerHTML = '<li>No armies formed yet.</li>';
+                    } else {
+                        armies.forEach((army, index) => {
+                            const general = generals[army.general];
+                            const brigadeDetails = army.brigades.map(bIdx => {
+                                const b = brigades[bIdx];
+                                return b ? (b.name || \`\${b.type}#\${b.id}\`) : 'Unknown Brigade';
+                            }).join(', ');
+                            const listItem = document.createElement('li');
+                            listItem.className = 'list-group-item'; // Optional styling
+                            listItem.textContent = \`Army \${index + 1} (\${army.name || 'Unnamed'}): Gen. \${general ? general.name : 'N/A'} with [\${brigadeDetails || 'No brigades'}]\`;
+                            armiesListDisplay.appendChild(listItem);
+                        });
+                    }
+                }
+
+                if (battleArmy1Select && battleArmy2Select) {
+                    battleArmy1Select.innerHTML = '<option value="">Select Army 1</option>';
+                    battleArmy2Select.innerHTML = '<option value="">Select Army 2</option>';
+                    armies.forEach((army, index) => {
+                        const generalName = generals[army.general] ? generals[army.general].name : 'Unknown General';
+                        const optionText = \`Army \${index + 1} (\${army.name || 'Unnamed'}) - Gen. \${generalName}\`;
+                        
+                        const option1 = document.createElement('option');
+                        option1.value = index;
+                        option1.textContent = optionText;
+                        battleArmy1Select.appendChild(option1);
+
+                        const option2 = document.createElement('option');
+                        option2.value = index;
+                        option2.textContent = optionText;
+                        battleArmy2Select.appendChild(option2);
+                    });
+                } else {
+                    // console.warn('Battle army select elements (battle-army1, battle-army2) not found.');
                 }
             }
 
-            // Clear all armies, brigades, and generals
-            function clearAll() {
-                if (confirm('Are you sure you want to clear all brigades, generals, and armies? This cannot be undone.')) {
-                    brigades.length = 0;
-                    generals.length = 0;
-                    armies.length = 0;
-                    
-                    renderBrigades();
-                    renderGenerals();
-                    renderArmies();
-                    
-                    if (battleResult) {
-                        battleResult.innerHTML = `
-                            <div style="background:#d4edda;color:#155724;padding:1rem;border-radius:8px;margin-top:1rem;">
-                                🗑️ All data cleared successfully!
-                            </div>
-                        `;
-                    }
-                }
-            }
-
-            // Event handler for loading samples
-            if (loadSamplesBtn) {
-                loadSamplesBtn.onclick = loadSampleArmies;
-            }
-
-            // Event handlers for save/load/clear
-            if (saveArmiesBtn) {
-                saveArmiesBtn.onclick = saveArmies;
-            }
-            if (loadArmiesBtn) {
-                loadArmiesBtn.onclick = loadArmies;
-            }
-            if (clearAllBtn) {
-                clearAllBtn.onclick = clearAll;
-            }
-
-            renderBrigades();
-            renderGenerals();
-            renderArmies();
         } else {
             view.innerHTML = `
                 <h2>Warfare System Overview</h2>
@@ -1191,7 +1369,7 @@ export function main() {
                         <li><b>Level 4:</b> Your general Cap is 2.</li>
                         <li><b>Level 5:</b> Your Pillaging die result is at +1. Sacking a city is worth double.</li>
                         <li><b>Level 6:</b> Your Generals start as Level 3.</li>
-                        <li><b>Level 7:</b> Your General Cap is 3.</li>
+                        <li><b>Level  7:</b> Your General Cap is 3.</li>
                         <li><b>Level 8:</b> You get +1 to Skirmish and Defense Rolls.</li>
                         <li><b>Level 9:</b> Your Generals start as Level 4.</li>
                         <li><b>Level 10:</b> Your General Cap is 4.</li>
@@ -1229,6 +1407,22 @@ export function main() {
     }
     window.addEventListener('hashchange', handleRoute);
     handleRoute(); // Initial render
+
+    // Consolidate all onload functionalities here
+    function initializeApp() {
+        displayCalendar();
+        renderTutorial();
+        if (typeof setupDarkModeToggle === 'function') setupDarkModeToggle();
+        if (typeof renderBattleStatistics === 'function') renderBattleStatistics();
+        if (typeof render3DScene === 'function') render3DScene();
+        setupBackgroundMusic();
+    }
+
+    if (document.readyState === 'complete' || (document.readyState !== 'loading' && !document.documentElement.doScroll)) {
+        initializeApp();
+    } else {
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    }
 
     // Add a calendar display to show the current day and its phase
 function displayCalendar() {
@@ -1268,16 +1462,7 @@ function displayCalendar() {
     `;
 }
 
-// Call displayCalendar on page load
-window.onload = function() {
-    displayCalendar();
-    renderTutorial();
-    setupDarkModeToggle();
-    renderBattleStatistics();
-    render3DScene();
-    setupBackgroundMusic();
-    // ...existing code...
-};
+// All separate window.onload assignments have been removed and consolidated into initializeApp
 
     // Refactor the code to follow professional standards and improve readability
     function renderTutorial() {
@@ -1299,16 +1484,7 @@ window.onload = function() {
         `;
     }
 
-    // Call renderTutorial on page load
-    window.onload = function() {
-        displayCalendar();
-        renderTutorial();
-        setupDarkModeToggle();
-        renderBattleStatistics();
-        render3DScene();
-        setupBackgroundMusic();
-        // ...existing code...
-    };
+// All separate window.onload assignments have been removed and consolidated into initializeApp
 
 document.addEventListener('DOMContentLoaded', () => {
     const loadSamplesBtn = document.getElementById('load-samples-btn');
@@ -1434,14 +1610,8 @@ function setupBackgroundMusic() {
     }
 }
 
-// Call setupBackgroundMusic on page load
-window.onload = function() {
-    displayCalendar();
-    renderTutorial();
-    setupDarkModeToggle();
-    renderBattleStatistics();
-    render3DScene();
-    setupBackgroundMusic();
-    // ...existing code...
-};
+// All separate window.onload assignments have been removed and consolidated into initializeApp
+
+// The global renderArmies function and its onload call have been removed.
+// It is now defined and called within the 'simulator' route block.
 }
