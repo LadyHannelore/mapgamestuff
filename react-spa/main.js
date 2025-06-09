@@ -1197,6 +1197,9 @@ window.onload = function() {
     displayCalendar();
     renderTutorial();
     setupDarkModeToggle();
+    renderBattleStatistics();
+    render3DScene();
+    setupBackgroundMusic();
     // ...existing code...
 };
 
@@ -1225,6 +1228,9 @@ window.onload = function() {
         displayCalendar();
         renderTutorial();
         setupDarkModeToggle();
+        renderBattleStatistics();
+        render3DScene();
+        setupBackgroundMusic();
         // ...existing code...
     };
 
@@ -1232,7 +1238,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadSamplesBtn = document.getElementById('load-samples-btn');
     const saveArmiesBtn = document.getElementById('save-armies-btn');
     const loadArmiesBtn = document.getElementById('load-armies-btn');
-    const clearAllBtn = document.getElementById('clear-all-btn');
+       const clearAllBtn = document.getElementById('clear-all-btn');
 
     if (loadSamplesBtn) {
         loadSamplesBtn.onclick = loadSampleArmies;
@@ -1250,4 +1256,116 @@ document.addEventListener('DOMContentLoaded', () => {
         clearAllBtn.onclick = clearAll;
     }
 });
+
+function renderBattleStatistics() {
+    const battleStatsContainer = document.getElementById('battle-stats');
+    if (!battleStatsContainer) return;
+
+    const ctx = document.createElement('canvas');
+    battleStatsContainer.innerHTML = ''; // Clear previous content
+    battleStatsContainer.appendChild(ctx);
+
+    const data = {
+        labels: ['Army 1 Casualties', 'Army 2 Casualties'],
+        datasets: [
+            {
+                label: 'Battle Statistics',
+                data: [12, 8], // Example data, replace with actual values
+                backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
+                borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Battle Statistics',
+                },
+            },
+        },
+    };
+
+    new Chart(ctx, config);
+}
+
+function render3DScene() {
+    const threeContainer = document.getElementById('three-scene');
+    if (!threeContainer) return;
+
+    // Clear previous content
+    threeContainer.innerHTML = '';
+
+    // Create a Three.js scene
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
+    threeContainer.appendChild(renderer.domElement);
+
+    // Add a cube
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    camera.position.z = 5;
+
+    // Animation loop
+    function animate() {
+        requestAnimationFrame(animate);
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        renderer.render(scene, camera);
+    }
+
+    animate();
+}
+
+function setupBackgroundMusic() {
+    const sound = new Howl({
+        src: ['background-music.mp3'], // Replace with the actual path to your audio file
+        autoplay: true,
+        loop: true,
+        volume: 0.5,
+    });
+
+    // Add a play/pause toggle button
+    const musicControl = document.getElementById('music-control');
+    if (musicControl) {
+        let isPlaying = true;
+        musicControl.textContent = 'Pause Music';
+
+        musicControl.onclick = () => {
+            if (isPlaying) {
+                sound.pause();
+                musicControl.textContent = 'Play Music';
+            } else {
+                sound.play();
+                musicControl.textContent = 'Pause Music';
+            }
+            isPlaying = !isPlaying;
+        };
+    }
+}
+
+// Call setupBackgroundMusic on page load
+window.onload = function() {
+    displayCalendar();
+    renderTutorial();
+    setupDarkModeToggle();
+    renderBattleStatistics();
+    render3DScene();
+    setupBackgroundMusic();
+    // ...existing code...
+};
 }
