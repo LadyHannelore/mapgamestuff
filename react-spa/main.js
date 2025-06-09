@@ -260,17 +260,17 @@ export function main() {
 
             // Brigade stats based on type
             const brigadeStats = {
-                'Cavalry': { skirmish: 1, defense: 0, pitch: 1, rally: 0 },
-                'Heavy': { skirmish: 0, defense: 2, pitch: 1, rally: 1 },
-                'Light': { skirmish: 2, defense: 0, pitch: 0, rally: 1 },
-                'Ranged': { skirmish: 0, defense: 2, pitch: 1, rally: 0 },
-                'Support': { skirmish: 0, defense: 2, pitch: 0, rally: 1 }
+                'Cavalry': { skirmish: 1, defense: 0, pitch: 1, rally: 0, move: 5 },
+                'Heavy': { skirmish: 0, defense: 2, pitch: 1, rally: 1, move: 3 },
+                'Light': { skirmish: 2, defense: 0, pitch: 0, rally: 1, move: 4 },
+                'Ranged': { skirmish: 0, defense: 2, pitch: 1, rally: 0, move: 4 },
+                'Support': { skirmish: 0, defense: 2, pitch: 0, rally: 1, move: 4 }
             };
 
             function rollDice() {
                 return Math.floor(Math.random() * 6) + 1;
             }            function getBrigadeStats(brigade) {
-                const baseStats = brigadeStats[brigade.type] || { skirmish: 0, defense: 0, pitch: 0, rally: 0 };
+                const baseStats = brigadeStats[brigade.type] || { skirmish: 0, defense: 0, pitch: 0, rally: 0, move: 0 };
                 let enhancedStats = { ...baseStats };
                 
                 // Apply enhancement bonuses
@@ -394,252 +394,309 @@ export function main() {
                 return bonus;
             }
 
-            function simulateBattle(army1, army2) {
+            async function simulateBattle(army1, army2) { // Make simulateBattle async
                 const g1 = generals[army1.general];
                 const g2 = generals[army2.general];
-                const brigades1 = army1.brigades.map(idx => brigades[idx]);
-                const brigades2 = army2.brigades.map(idx => brigades[idx]);                let log = [
-                    `<div style="text-align:center;background:linear-gradient(45deg,#ff6b6b,#4ecdc4);color:white;padding:1rem;border-radius:8px;margin-bottom:1rem;">`,
-                    `<h3 style="margin:0;">⚔️ BATTLE REPORT ⚔️</h3>`,
-                    `<h4 style="margin:0.5rem 0 0 0;">${g1.name} (${g1.trait}) vs ${g2.name} (${g2.trait})</h4>`,
-                    `</div>`
-                ];
-                let activeBrigades1 = [...brigades1];
-                let activeBrigades2 = [...brigades2];
-                let generalLevel1 = getGeneralBonus(g1);
+                const initialBrigades1 = army1.brigades.map(idx => ({ ...brigades[idx], id: idx, army: 1, status: 'active' }));
+                const initialBrigades2 = army2.brigades.map(idx => ({ ...brigades[idx], id: idx, army: 2, status: 'active' }));
+                
+                let log = [];
+
+                log.push(`<div style="text-align:center;background:linear-gradient(45deg,#1a237e,#42a5f5);color:white;padding:1rem;border-radius:8px;margin-bottom:1rem;">`);
+                log.push(`<h3 style="margin:0;">⚔️ BATTLE BEGINS ⚔️</h3>`);
+                log.push(`</div>`);
+
+                const formatBrigadeForLog = (b) => `${b.type}${b.enhancement ? ` (${b.enhancement})` : ''}`;
+
+                log.push(`<h4>Army 1: ${g1.name} (${g1.trait})</h4>`);
+                log.push(`<ul>`);
+                initialBrigades1.forEach(b => log.push(`<li>${formatBrigadeForLog(b)}</li>`));
+                log.push(`</ul>`);
+
+                log.push(`<h4>Army 2: ${g2.name} (${g2.trait})</h4>`);
+                log.push(`<ul>`);
+                initialBrigades2.forEach(b => log.push(`<li>${formatBrigadeForLog(b)}</li>`));
+                log.push(`</ul><hr>`);
+                
+                let activeBrigades1 = [...initialBrigades1];
+                let activeBrigades2 = [...initialBrigades2];
+                
+                let generalLevel1 = getGeneralBonus(g1); // Assuming general level is part of bonus
                 let generalLevel2 = getGeneralBonus(g2);
                 
-                // Skirmish Stage
-                log.push('<h5>Skirmish Stage</h5>');
+                let battleWinner = null; // 1 for army1, 2 for army2
+
+                // --- SKIRMISH STAGE ---
+                log.push('<h5 style="color:#007bff;">Skirmish Stage</h5>');
+                log.push('<p>Each side selects the 2 best brigades available as Skirmishers.</p>');
+
+                const getSkirmishers = (brigadeList) => {
+                    return brigadeList
+                        .filter(b => b.status === 'active')
+                        .map(b => ({ brigade: b, stats: getBrigadeStats(b) }))
+                        .sort((a, b) => b.stats.skirmish - a.stats.skirmish)
+                        .slice(0, 2);
+                };
+
+                let skirmishers1 = getSkirmishers(activeBrigades1);
+                let skirmishers2 = getSkirmishers(activeBrigades2);
                 
-                // Select 2 best skirmishers from each side
-                const skirmishers1 = activeBrigades1
-                    .map((b, i) => ({ brigade: b, stats: getBrigadeStats(b), index: i }))
-                    .sort((a, b) => b.stats.skirmish - a.stats.skirmish)
-                    .slice(0, Math.min(2, activeBrigades1.length));
-                
-                const skirmishers2 = activeBrigades2
-                    .map((b, i) => ({ brigade: b, stats: getBrigadeStats(b), index: i }))
-                    .sort((a, b) => b.stats.skirmish - a.stats.skirmish)
-                    .slice(0, Math.min(2, activeBrigades2.length));
-                
-                let routedBrigades1 = [];
-                let routedBrigades2 = [];
-                
-                // Army 1 skirmishers attack Army 2
-                skirmishers1.forEach((skirmisher, i) => {
-                    const targetIdx = Math.floor(Math.random() * activeBrigades2.length);
-                    const target = activeBrigades2[targetIdx];
-                    const targetStats = getBrigadeStats(target);
-                    
-                    const skirmishRoll = rollDice() + skirmisher.stats.skirmish;
-                    const defenseRoll = rollDice() + targetStats.defense;
-                    
-                    log.push(`${skirmisher.brigade.type} attacks ${target.type}: ${skirmishRoll} vs ${defenseRoll}`);
-                    
-                    if (skirmishRoll > defenseRoll) {
-                        log.push(`${target.type} is routed!`);
-                        routedBrigades2.push(targetIdx);
-                    }
-                });
-                
-                // Army 2 skirmishers attack Army 1
-                skirmishers2.forEach((skirmisher, i) => {
-                    const targetIdx = Math.floor(Math.random() * activeBrigades1.length);
-                    const target = activeBrigades1[targetIdx];
-                    const targetStats = getBrigadeStats(target);
-                    
-                    const skirmishRoll = rollDice() + skirmisher.stats.skirmish;
-                    const defenseRoll = rollDice() + targetStats.defense;
-                    
-                    log.push(`${skirmisher.brigade.type} attacks ${target.type}: ${skirmishRoll} vs ${defenseRoll}`);
-                    
-                    if (skirmishRoll > defenseRoll) {
-                        log.push(`${target.type} is routed!`);
-                        routedBrigades1.push(targetIdx);
-                    }
-                });
-                
-                // Pitch Stage
-                log.push('<h5>Pitch Stage</h5>');
-                let pitchTally = 0;
-                let round = 1;
-                
-                while (round <= 3 && Math.abs(pitchTally) < 20) {
-                    log.push(`<strong>Round ${round}</strong>`);
-                    
-                    // Army 1 pitch
-                    let pitch1 = 0;
-                    activeBrigades1.forEach((brigade, idx) => {
-                        if (!routedBrigades1.includes(idx)) {
-                            const roll = rollDice();
-                            const stats = getBrigadeStats(brigade);
-                            pitch1 += roll + stats.pitch;
-                        }
-                    });
-                    pitch1 += generalLevel1;
-                    
-                    // Army 2 pitch
-                    let pitch2 = 0;
-                    activeBrigades2.forEach((brigade, idx) => {
-                        if (!routedBrigades2.includes(idx)) {
-                            const roll = rollDice();
-                            const stats = getBrigadeStats(brigade);
-                            pitch2 += roll + stats.pitch;
-                        }
-                    });
-                    pitch2 += generalLevel2;
-                    
-                    const roundResult = pitch1 - pitch2;
-                    pitchTally += roundResult;
-                    
-                    log.push(`Army 1: ${pitch1}, Army 2: ${pitch2}, Round Result: ${roundResult}, Tally: ${pitchTally}`);
-                    round++;
-                }
-                
-                let winner = null;
-                if (pitchTally >= 20) {
-                    winner = 1;
-                    log.push(`<strong>${g1.name} wins the battle!</strong>`);
-                } else if (pitchTally <= -20) {
-                    winner = 2;
-                    log.push(`<strong>${g2.name} wins the battle!</strong>`);
+                log.push(`<h6>Army 1 Skirmishers:</h6>`);
+                if (skirmishers1.length > 0) {
+                    skirmishers1.forEach(s => log.push(`- ${formatBrigadeForLog(s.brigade)} (Skirmish: ${s.stats.skirmish})`));
                 } else {
-                    // Rally Stage
-                    log.push('<h5>Rally Stage</h5>');
+                    log.push('- None');
+                }
+                log.push(`<h6>Army 2 Skirmishers:</h6>`);
+                if (skirmishers2.length > 0) {
+                    skirmishers2.forEach(s => log.push(`- ${formatBrigadeForLog(s.brigade)} (Skirmish: ${s.stats.skirmish})`));
+                } else {
+                    log.push('- None');
+                }
+
+                const performSkirmishAttack = (attackerInfo, targetArmy, attackerArmyNum) => {
+                    if (targetArmy.filter(b => b.status === 'active').length === 0) {
+                        log.push(`- ${formatBrigadeForLog(attackerInfo.brigade)} has no targets left in Army ${attackerArmyNum === 1 ? 2 : 1}.`);
+                        return;
+                    }
+                    const availableTargets = targetArmy.filter(b => b.status === 'active');
+                    const targetBrigadeObj = availableTargets[Math.floor(Math.random() * availableTargets.length)];
+                    const targetStats = getBrigadeStats(targetBrigadeObj);
                     
-                    // Army 1 rally
-                    const failed1 = [];
-                    activeBrigades1.forEach((brigade, idx) => {
-                        if (!routedBrigades1.includes(idx)) {
-                            const roll = rollDice();
-                            const stats = getBrigadeStats(brigade);
-                            const rallyTotal = roll + stats.rally;
-                            if (rallyTotal < 5) {
-                                failed1.push(idx);
-                                log.push(`${brigade.type} (Army 1) fails rally: ${rallyTotal}`);
-                            }
-                        }
-                    });
+                    const skirmishRoll = rollDice() + attackerInfo.stats.skirmish;
+                    const defenseRoll = rollDice() + targetStats.defense;
                     
-                    // Army 2 rally
-                    const failed2 = [];
-                    activeBrigades2.forEach((brigade, idx) => {
-                        if (!routedBrigades2.includes(idx)) {
-                            const roll = rollDice();
-                            const stats = getBrigadeStats(brigade);
-                            const rallyTotal = roll + stats.rally;
-                            if (rallyTotal < 5) {
-                                failed2.push(idx);
-                                log.push(`${brigade.type} (Army 2) fails rally: ${rallyTotal}`);
-                            }
-                        }
-                    });
+                    log.push(`<p>${formatBrigadeForLog(attackerInfo.brigade)} (Army ${attackerArmyNum}) attacks ${formatBrigadeForLog(targetBrigadeObj)} (Army ${attackerArmyNum === 1 ? 2 : 1}).</p>`);
+                    log.push(`&nbsp;&nbsp;Rolls: Skirmish ${skirmishRoll} (d6 + ${attackerInfo.stats.skirmish}) vs Defense ${defenseRoll} (d6 + ${targetStats.defense})`);
                     
-                    routedBrigades1 = [...routedBrigades1, ...failed1];
-                    routedBrigades2 = [...routedBrigades2, ...failed2];
-                    
-                    // Check if all brigades routed
-                    if (routedBrigades1.length >= activeBrigades1.length) {
-                        winner = 2;
-                        log.push(`<strong>${g2.name} wins - all enemy brigades routed!</strong>`);
-                    } else if (routedBrigades2.length >= activeBrigades2.length) {
-                        winner = 1;
-                        log.push(`<strong>${g1.name} wins - all enemy brigades routed!</strong>`);
+                    if (skirmishRoll > defenseRoll) {
+                        log.push(`&nbsp;&nbsp;<strong style="color:red;">${formatBrigadeForLog(targetBrigadeObj)} is routed!</strong> (Skips initial pitch phase)`);
+                        targetBrigadeObj.status = 'routed_skirmish';
                     } else {
-                        log.push('Battle continues with remaining brigades...');
+                        log.push(`&nbsp;&nbsp;Attack has no effect.`);
                     }
-                }
-                
-                // Action Report
-                log.push('<h5>Action Report</h5>');
-                
-                // Brigade casualties
-                let destroyed1 = 0, destroyed2 = 0;
-                activeBrigades1.forEach((brigade, idx) => {
-                    const roll = rollDice();
-                    if (roll <= 2) {
-                        destroyed1++;
-                        log.push(`${brigade.type} (Army 1) destroyed`);
-                    }
-                });
-                
-                activeBrigades2.forEach((brigade, idx) => {
-                    const roll = rollDice();
-                    if (roll <= 2) {
-                        destroyed2++;
-                        log.push(`${brigade.type} (Army 2) destroyed`);
-                    }
-                });
-                
-                // General promotions/captures
-                const generalRoll1 = rollDice();
-                const generalRoll2 = rollDice();
-                
-                if (generalRoll1 === 1) {
-                    log.push(`<strong>${g1.name} captured!</strong>`);
-                } else if (generalRoll1 >= 5) {
-                    log.push(`${g1.name} promoted!`);
-                }
-                
-                if (generalRoll2 === 1) {
-                    log.push(`<strong>${g2.name} captured!</strong>`);
-                } else if (generalRoll2 >= 5) {
-                    log.push(`${g2.name} promoted!`);
-                }
-                
-                log.push(`<br><strong>Final Results:</strong>`);
-                log.push(`Army 1 casualties: ${destroyed1}/${activeBrigades1.length}`);
-                log.push(`Army 2 casualties: ${destroyed2}/${activeBrigades2.length}`);
-                
-                return log.join('<br>');
-            }
+                };
 
-            function renderBrigades() {
-                ul.innerHTML = '';
-                armyBrigadesSelect.innerHTML = '';
-                if (brigades.length === 0) {
-                    ul.innerHTML = '<li style="color:#888;">No brigades created yet.</li>';
+                log.push('<h6>Army 1 Skirmish Actions:</h6>');
+                skirmishers1.forEach(s => performSkirmishAttack(s, activeBrigades2, 1));
+                
+                log.push('<h6>Army 2 Skirmish Actions:</h6>');
+                skirmishers2.forEach(s => performSkirmishAttack(s, activeBrigades1, 2));
+                log.push('<hr>');
+
+                // Main Battle Loop (Pitch -> Rally)
+                let pitchTally = 0;
+                let battleRound = 0;
+
+                while (true) {
+                    battleRound++;
+                    log.push(`<h5 style="color:#dc3545;">Battle Cycle ${battleRound}</h5>`);
+                    
+                    // --- PITCH STAGE ---
+                    log.push('<h5 style="color:#28a745;">Pitch Stage</h5>');
+                    pitchTally = 0; // Reset for new Pitch cycle if coming from Rally
+
+                    for (let round = 1; round <= 3; round++) {
+                        log.push(`<h6>Pitch Round ${round} (of 3)</h6>`);
+                        log.push(`<p><em>Simulating round... (10s delay)</em></p>`);
+                        await new Promise(resolve => setTimeout(resolve, 10000)); // 10-second delay
+
+                        let pitch1 = 0;
+                        log.push('<div><strong>Army 1 Pitch:</strong></div>');
+                        log.push('<table><tr><th>Brigade</th><th>Roll (d6)</th><th>Pitch Bonus</th><th>Total</th></tr>');
+                        activeBrigades1.filter(b => b.status === 'active').forEach(brigade => {
+                            const roll = rollDice();
+                            const stats = getBrigadeStats(brigade);
+                            const brigadePitch = roll + stats.pitch;
+                            pitch1 += brigadePitch;
+                            log.push(`<tr><td>${formatBrigadeForLog(brigade)}</td><td>${roll}</td><td>${stats.pitch}</td><td>${brigadePitch}</td></tr>`);
+                        });
+                        log.push(`<tr><td colspan="3">General ${g1.name} Bonus</td><td>${generalLevel1}</td></tr>`);
+                        pitch1 += generalLevel1;
+                        log.push(`<tr><td colspan="3"><strong>Army 1 Total Pitch</strong></td><td><strong>${pitch1}</strong></td></tr></table>`);
+
+                        let pitch2 = 0;
+                        log.push('<div><strong>Army 2 Pitch:</strong></div>');
+                        log.push('<table><tr><th>Brigade</th><th>Roll (d6)</th><th>Pitch Bonus</th><th>Total</th></tr>');
+                        activeBrigades2.filter(b => b.status === 'active').forEach(brigade => {
+                            const roll = rollDice();
+                            const stats = getBrigadeStats(brigade);
+                            const brigadePitch = roll + stats.pitch;
+                            pitch2 += brigadePitch;
+                            log.push(`<tr><td>${formatBrigadeForLog(brigade)}</td><td>${roll}</td><td>${stats.pitch}</td><td>${brigadePitch}</td></tr>`);
+                        });
+                        log.push(`<tr><td colspan="3">General ${g2.name} Bonus</td><td>${generalLevel2}</td></tr>`);
+                        pitch2 += generalLevel2;
+                        log.push(`<tr><td colspan="3"><strong>Army 2 Total Pitch</strong></td><td><strong>${pitch2}</strong></td></tr></table>`);
+                        
+                        const roundResult = pitch1 - pitch2; // Army 1 is "Positive", Army 2 is "Negative"
+                        pitchTally += roundResult;
+                        log.push(`<p>Pitch Round ${round} Result: ${pitch1} (Army 1) - ${pitch2} (Army 2) = ${roundResult}</p>`);
+                        log.push(`<p><strong>Current Pitch Tally: ${pitchTally}</strong></p><hr class="dotted">`);
+
+                        if (round < 3 && (pitchTally >= 20 || pitchTally <= -20)) {
+                            log.push(`<p>Pitch Tally reached decisive threshold early.</p>`);
+                            break; // End pitch rounds early if threshold met
+                        }
+                    }
+                    log.push('<hr>');
+
+                    if (pitchTally >= 20) {
+                        log.push(`<h5 style="color:green;">${g1.name} (Army 1) wins the Pitch! (Tally: ${pitchTally})</h5>`);
+                        battleWinner = 1;
+                        break; // Skips Rally, go to Action Report
+                    } else if (pitchTally <= -20) {
+                        log.push(`<h5 style="color:green;">${g2.name} (Army 2) wins the Pitch! (Tally: ${pitchTally})</h5>`);
+                        battleWinner = 2;
+                        break; // Skips Rally, go to Action Report
+                    } else {
+                        log.push(`<p>Pitch Tally (${pitchTally}) is between -19 and 19. Proceeding to Rally Stage.</p>`);
+                        // --- RALLY STAGE ---
+                        log.push('<h5 style="color:#ffc107;">Rally Stage</h5>');
+                        
+                        const performRally = (armyBrigades, armyNum) => {
+                            log.push(`<h6>Army ${armyNum} Rally:</h6>`);
+                            log.push('<table><tr><th>Brigade</th><th>Roll (d6)</th><th>Rally Bonus</th><th>Total</th><th>Outcome</th></tr>');
+                            let remainingBrigades = 0;
+                            armyBrigades.forEach(brigade => {
+                                if (brigade.status === 'active' || brigade.status === 'routed_skirmish') { // Routed in skirmish also try to rally
+                                    const roll = rollDice();
+                                    const stats = getBrigadeStats(brigade);
+                                    const rallyTotal = roll + stats.rally;
+                                    let outcome;
+                                    if (rallyTotal >= 5) {
+                                        outcome = '<span style="color:green;">Stays</span>';
+                                        brigade.status = 'active'; // Rallied or stayed active
+                                        remainingBrigades++;
+                                    } else {
+                                        outcome = '<span style="color:red;">Routs</span>';
+                                        brigade.status = 'routed_rally';
+                                    }
+                                    log.push(`<tr><td>${formatBrigadeForLog(brigade)}</td><td>${roll}</td><td>${stats.rally}</td><td>${rallyTotal}</td><td>${outcome}</td></tr>`);
+                                } else if (brigade.status === 'routed_rally') { // Already routed in a previous rally this battle cycle
+                                     log.push(`<tr><td>${formatBrigadeForLog(brigade)}</td><td colspan="3">Previously Routed</td><td><span style="color:red;">Routed</span></td></tr>`);
+                                }
+                            });
+                            log.push('</table>');
+                            return remainingBrigades;
+                        };
+
+                        const remaining1 = performRally(activeBrigades1, 1);
+                        const remaining2 = performRally(activeBrigades2, 2);
+
+                        activeBrigades1 = activeBrigades1.filter(b => b.status === 'active');
+                        activeBrigades2 = activeBrigades2.filter(b => b.status === 'active');
+
+                        log.push(`<p>Army 1 has ${remaining1} brigades remaining. Army 2 has ${remaining2} brigades remaining.</p>`);
+
+                        if (remaining1 === 0 && remaining2 > 0) {
+                            log.push(`<h5 style="color:green;">All Army 1 brigades routed! ${g2.name} (Army 2) wins!</h5>`);
+                            battleWinner = 2;
+                            break; 
+                        } else if (remaining2 === 0 && remaining1 > 0) {
+                            log.push(`<h5 style="color:green;">All Army 2 brigades routed! ${g1.name} (Army 1) wins!</h5>`);
+                            battleWinner = 1;
+                            break;
+                        } else if (remaining1 === 0 && remaining2 === 0) {
+                            log.push(`<h5 style="color:orange;">Mutual destruction! Both armies routed! It's a draw!</h5>`);
+                            battleWinner = 0; // Draw
+                            break;
+                        } else {
+                            log.push(`<p>Both sides have brigades remaining. Starting a new Pitch Stage (Pitch Tally resets to 0).</p><hr>`);
+                            // Loop continues to a new Pitch Stage
+                        }
+                    }
+                } // End of main battle while(true) loop
+                
+                // --- ACTION REPORT ---
+                log.push('<hr><h5 style="color:#6f42c1;">Action Report</h5>');
+                if (battleWinner === null || battleWinner === 0) { // Draw or no winner from pitch/rally somehow
+                    log.push("<p>The battle ended inconclusively or as a draw. No victor for rerolls.</p>");
                 } else {
-                    brigades.forEach((b, i) => {
-                        ul.innerHTML += `<li><b>${b.type}</b>${b.enhancement ? ` — <i>${b.enhancement}</i>` : ''}</li>`;
-                        armyBrigadesSelect.innerHTML += `<option value="${i}">${b.type}${b.enhancement ? ` — ${b.enhancement}` : ''}</option>`;
+                    log.push(`<p><strong>Victor: Army ${battleWinner} (${battleWinner === 1 ? g1.name : g2.name})</strong>. Victorious player may reroll once for each brigade and general casualty/promotion roll.</p>`);
+                }
+
+
+                const performCasualtyRolls = (armyBrigades, armyNum, isVictor) => {
+                    log.push(`<h6>Army ${armyNum} Casualties:</h6>`);
+                    log.push('<table><tr><th>Brigade</th><th>Initial Roll (d6)</th><th>Outcome</th><th>Reroll (d6)</th><th>Final Outcome</th></tr>');
+                    let destroyedCount = 0;
+                    armyBrigades.forEach(brigade => {
+                        if (brigade.status === 'destroyed') { // Already marked destroyed (e.g. Lancers enhancement)
+                             log.push(`<tr><td>${formatBrigadeForLog(brigade)}</td><td colspan="2">Previously Destroyed</td><td>-</td><td><strong style="color:darkred;">Destroyed</strong></td></tr>`);
+                             destroyedCount++;
+                             return;
+                        }
+                        let initialRoll = rollDice();
+                        let initialOutcome = (initialRoll <= 2) ? '<strong style="color:darkred;">Destroyed</strong>' : '<span style="color:green;">Survived</span>';
+                        let finalOutcome = initialOutcome;
+                        let rerollInfo = '-';
+
+                        if (initialRoll <= 2 && isVictor) { // Brigade destroyed AND is victor
+                            log.push(`<tr><td>${formatBrigadeForLog(brigade)}</td><td>${initialRoll}</td><td>${initialOutcome}</td><td><em>Victor Reroll...</em></td><td></td></tr>`);
+                            let reroll = rollDice();
+                            finalOutcome = (reroll <= 2) ? '<strong style="color:darkred;">Destroyed (after reroll)</strong>' : '<span style="color:green;">Survived (after reroll)</span>';
+                            rerollInfo = `${reroll}`;
+                        }
+                        
+                        if (finalOutcome.includes("Destroyed")) {
+                            brigade.status = 'destroyed';
+                            destroyedCount++;
+                        }
+                        log.push(`<tr><td>${formatBrigadeForLog(brigade)}</td><td>${initialRoll}</td><td>${initialOutcome}</td><td>${rerollInfo}</td><td>${finalOutcome}</td></tr>`);
                     });
-                }
-            }
+                    log.push('</table>');
+                    return destroyedCount;
+                };
 
-            function renderGenerals() {
-                generalsUl.innerHTML = '';
-                armyGeneralSelect.innerHTML = '';
-                if (generals.length === 0) {
-                    generalsUl.innerHTML = '<li style="color:#888;">No generals created yet.</li>';
-                } else {
-                    generals.forEach((g, i) => {
-                        generalsUl.innerHTML += `<li><b>${g.name}</b> — <i>${g.trait}</i></li>`;
-                        armyGeneralSelect.innerHTML += `<option value="${i}">${g.name} (${g.trait})</option>`;
-                    });
-                }
-            }
+                const destroyed1 = performCasualtyRolls(initialBrigades1, 1, battleWinner === 1);
+                const destroyed2 = performCasualtyRolls(initialBrigades2, 2, battleWinner === 2);
 
-            function renderArmies() {
-                armiesUl.innerHTML = '';
-                if (battleArmy1) battleArmy1.innerHTML = '';
-                if (battleArmy2) battleArmy2.innerHTML = '<option>No armies</option>';
-                if (armies.length === 0) {
-                    armiesUl.innerHTML = '<li style="color:#888;">No armies created yet.</li>';
-                    if (battleArmy1) battleArmy1.innerHTML = '<option>No armies</option>';
-                    if (battleArmy2) battleArmy2.innerHTML = '<option>No armies</option>';
+                // General Promotions/Captures
+                log.push('<h6>General Outcomes:</h6>');
+                log.push('<table><tr><th>General</th><th>Initial Roll (d6)</th><th>Outcome</th><th>Reroll (d6)</th><th>Final Outcome</th></tr>');
+
+                const performGeneralRoll = (general, armyNum, isVictor) => {
+                    let initialRoll = rollDice();
+                    let initialOutcomeText = "";
+                    if (initialRoll === 1) initialOutcomeText = '<strong style="color:darkred;">Captured!</strong>';
+                    else if (initialRoll >= 5) initialOutcomeText = '<strong style="color:blue;">Promoted!</strong>';
+                    else initialOutcomeText = 'Nothing';
+
+                    let finalOutcomeText = initialOutcomeText;
+                    let rerollInfo = '-';
+
+                    if (isVictor && (initialRoll === 1 || initialRoll < 5 && initialRoll > 1) ) { // Reroll if captured, or if not promoted (and not a 1 already if that matters)
+                        // Victor can reroll any non-promotion, or a capture
+                        log.push(`<tr><td>${general.name} (Army ${armyNum})</td><td>${initialRoll}</td><td>${initialOutcomeText}</td><td><em>Victor Reroll...</em></td><td></td></tr>`);
+                        let reroll = rollDice();
+                        if (reroll === 1) finalOutcomeText = '<strong style="color:darkred;">Captured! (after reroll)</strong>';
+                        else if (reroll >= 5) finalOutcomeText = '<strong style="color:blue;">Promoted! (after reroll)</strong>';
+                        else finalOutcomeText = 'Nothing (after reroll)';
+                        rerollInfo = `${reroll}`;
+                    }
+                     log.push(`<tr><td>${general.name} (Army ${armyNum})</td><td>${initialRoll}</td><td>${initialOutcomeText}</td><td>${rerollInfo}</td><td>${finalOutcomeText}</td></tr>`);
+                };
+
+                performGeneralRoll(g1, 1, battleWinner === 1);
+                performGeneralRoll(g2, 2, battleWinner === 2);
+                log.push('</table>');
+                
+                log.push(`<br><div style="background:#e9ecef;padding:0.5rem;border-radius:4px;"><strong>Final Results:</strong></div>`);
+                log.push(`Army 1 (${g1.name}) casualties: ${destroyed1}/${initialBrigades1.length}`);
+                log.push(`Army 2 (${g2.name}) casualties: ${destroyed2}/${initialBrigades2.length}`);
+                
+                if (battleWinner === 1) {
+                    log.push(`<strong style="color:green;">Army 1 (${g1.name}) is Victorious!</strong>`);
+                } else if (battleWinner === 2) {
+                    log.push(`<strong style="color:green;">Army 2 (${g2.name}) is Victorious!</strong>`);
+                } else if (battleWinner === 0) {
+                     log.push(`<strong style="color:orange;">The battle is a Draw!</strong>`);
                 } else {
-                    armies.forEach((a, i) => {
-                        const general = generals[a.general];
-                        const brigadeList = a.brigades.map(idx => {
-                            const b = brigades[idx];
-                            return `<span>${b.type}${b.enhancement ? ` — <i>${b.enhancement}</i>` : ''}</span>`;
-                        }).join(', ');
-                        armiesUl.innerHTML += `<li><b>${general.name}</b> (${general.trait})<br>Brigades: ${brigadeList}</li>`;
-                        if (battleArmy1) battleArmy1.innerHTML += `<option value="${i}">${general.name} (${general.trait})</option>`;
-                        if (battleArmy2) battleArmy2.innerHTML += `<option value="${i}">${general.name} (${general.trait})</option>`;
-                    });                }
+                    log.push(`<strong style="color:gray;">Battle ended without a clear victor.</strong>`);
+                }
+                
+                return log.join(''); // Return as a single HTML string
             }
 
             if (battleForm) {
@@ -676,7 +733,7 @@ export function main() {
                 };
 
                 if (simulateBattleBtn) {
-                    simulateBattleBtn.onclick = () => {
+                    simulateBattleBtn.onclick = async () => { // Make onclick async
                         if (!battleArmy1 || !battleArmy2) return;
                         const idx1 = parseInt(battleArmy1.value);
                         const idx2 = parseInt(battleArmy2.value);
@@ -687,12 +744,22 @@ export function main() {
                         const a1 = armies[idx1];
                         const a2 = armies[idx2];
                         
-                        const battleLog = simulateBattle(a1, a2);                        battleResult.innerHTML = `
-                            <div style="background:#f9f9f9;padding:1rem;border-radius:8px;max-height:400px;overflow-y:auto;">
+                        // Disable button during simulation
+                        simulateBattleBtn.disabled = true;
+                        simulateBattleBtn.textContent = 'Simulating...';
+
+                        const battleLog = await simulateBattle(a1, a2); // await the simulation
+                        
+                        battleResult.innerHTML = `
+                            <div style="background:#f9f9f9;padding:1rem;border-radius:8px;max-height:600px;overflow-y:auto;">
                                 ${battleLog}
                             </div>
                         `;
                         battleResult.style.display = 'block';
+
+                        // Re-enable button
+                        simulateBattleBtn.disabled = false;
+                        simulateBattleBtn.textContent = 'Simulate Full Battle';
                     };
                 }
             }
@@ -967,18 +1034,35 @@ export function main() {
                 </section>
                 <section style="margin-bottom:2rem;">
                     <h3>Generals & Armies</h3>
+                    <p>Generals are your commanders, and their job is to run an army. Every General has a randomly assigned trait, which grants bonuses or special abilities to their army.</p>
+                    <p>Generals are assumed universally at every city when not leading an army, but they must be attached to a brigade at a city to form an army. They may then go around collecting other units until they reach the 8 brigade cap.</p>
+                    <p>Generals have a level, which is scaled from a 1-10. When a General reaches Level 10, he may be retired, and increase your war college level by 1. If your war college is already max level, you would instead receive 300 silver.</p>
+                    <ul><li>Your General Level is a direct bonus to your pitch value in battle. You add the general level number as a base increase per round, making Generals extremely impactful to the outcome of a battle.</li></ul>
+                    <p>Generals themselves have a cap, determined by your war college level. Your cap starts at 1. Generals cost 100 silver for every general you already have, so if you have no generals you will get one for free, or if you have 2 generals your next one costs 200 silver.</p>
+                    <p>General Traits are rolled randomly when the general is created, or rerolled when using 3 gems to do so. The traits are listed below:</p>
                     <ul>
-                        <li>Generals lead armies, grant bonuses, and have unique traits.</li>
-                        <li>Generals level up and can retire to improve your War College.</li>
-                        <li>Army size: up to 8 brigades, moves at slowest brigade speed.</li>
-                        <li><b>General Trait Examples:</b>
-                            <ul>
-                                <li><b>Brilliant/Genius:</b> +2 to all army actions</li>
-                                <li><b>Bold/Aggressive:</b> +1 to all army actions</li>
-                                <li><b>Defensive/Cautious:</b> +1 to army rally attempts</li>
-                            </ul>
-                        </li>
+                        <li><b>1 Ambitious:</b> -1 to the number needed to promote after a battle.</li>
+                        <li><b>2 Bold:</b> One of your skirmishers get a bonus equal to half the general\'s level, rounded up.</li>
+                        <li><b>3 Brilliant:</b> This General gets double his general level during the Pitch.</li>
+                        <li><b>4 Brutal:</b> Pillaging resources succeeds on a 5-6. Razing a city also counts as sacking it.</li>
+                        <li><b>5 Cautious:</b> You may declare the skirmishing stage to be skipped this battle.</li>
+                        <li><b>6 Chivalrous:</b> During the Action Report, you may choose to allow your enemy to have an extra reroll on their Destruction dice, in order to get -1 siege timer on your next city siege with this army.</li>
+                        <li><b>7 Confident:</b> +2 to Defense and +1 to Rally for all brigades.</li>
+                        <li><b>8 Defiant:</b> +2 to rally for all brigades.</li>
+                        <li><b>9 Disciplined:</b> +1 to pitch and rally for all brigades.</li>
+                        <li><b>10 Dogged:</b> This General may choose 2 brigades to assist any battle occurring on an adjacent tile. These brigades return after the battle.</li>
+                        <li><b>11 Heroic:</b> +1 to Rally for all brigades. If the battle would be lost, this general may sacrifice himself to return all brigades to a new pitch, granting his general level as a pitch bonus to all brigades for the remainder of the battle.</li>
+                        <li><b>12 Inspiring:</b> All brigades get a free reroll on their rally rolls, once per rally stage. Celebrating with this army gives +2 rally instead of +1.</li>
+                        <li><b>13 Lucky:</b> This General, when a 1 is rolled on the promotion die, may reroll the promotion die once per battle.</li>
+                        <li><b>14 Mariner:</b> +1 to army movement while embarked. This General may siege cities from a landing, and this army may immediately move after embarking.</li>
+                        <li><b>15 Merciless:</b> During the action report, enemy brigades are destroyed on a 1-3.</li>
+                        <li><b>16 Prodigious:</b> This General gets an additional 2 levels. These levels are lost if this trait is rerolled.</li>
+                        <li><b>17 Relentless:</b> +1 to army movement on land. This General may choose to pursue an enemy army that retreats, instead of continuing their original move.</li>
+                        <li><b>18 Resolute:</b> +3 to defense for all brigades.</li>
+                        <li><b>19 Wary:</b> You are alerted when an enemy can see this army. Your Army can see one tile further away (stacks with sentry team). Any enemy Generals within this army\'s sight have their trait revealed.</li>
+                        <li><b>20 Zealous:</b> +1 Rally for all brigades. When in a holy war, this number goes to +2 rally and +1 pitch for all brigades.</li>
                     </ul>
+                    <p>Army size: up to 8 brigades, moves at slowest brigade speed.</p>
                 </section>
                 <section style="margin-bottom:2rem;">
                     <h3>Action Cycle</h3>
@@ -994,7 +1078,18 @@ export function main() {
                         <li><b>Skirmish:</b> 2 best brigades from each side try to rout enemies</li>
                         <li><b>Pitch:</b> 3 rounds, add up dice and bonuses, check for win/loss</li>
                         <li><b>Rally:</b> Surviving brigades roll to stay or rout</li>
-                        <li><b>Action Report:</b> Roll for casualties and general promotions</li>
+                        <li><b>Action Report:</b> Roll for casualties and general promotions.
+                            <ul>
+                                <li>During the Action Report, Generals must roll a d6, called a promotion roll.</li>
+                                <li>Rolling a 5-6 results in a <b>Promotion</b>, causing the general to level up.</li>
+                                <li>Rolling a 1 results in a <b>Capture</b>, allowing your enemy to determine your general\\'s fate. A captured general is removed from the field, and may be <b>Executed</b> or <b>Ransomed</b>.
+                                    <ul>
+                                        <li>If a General is Executed, the executor may detail how the death occurs, either in battle or in RP. The general is then removed from the game.</li>
+                                        <li>If a General is Ransomed, the ransomer may set any amount of silver or resources as a cost to get the general back. Should you refuse or fail to provide the ransom within what they consider acceptable time, they may hold the general indefinitely. Declaring an objectively outrageous sum could be considered a diplomatic insult.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
                     </ol>
                 </section>
                 <section style="margin-bottom:2rem;">
@@ -1003,10 +1098,46 @@ export function main() {
                         <li>Peace treaties end wars, with victory/defeat terms.</li>
                         <li>Winning armies continue movement, losing armies scatter or retreat.</li>
                     </ul>
+                    <h4>After the Battle Details:</h4>
+                    <ul>
+                        <li>Following a battle, the losing player\\'s brigades all scatter, moving a random number of tiles in random directions.</li>
+                        <li>The Random number of tiles is from 1 tile to the brigade\\'s movement value. (e.g., a Heavy can go 1-3 tiles, Cavalry 1-5 tiles).</li>
+                        <li>A losing army remains intact if the general survives, and may choose the direction it retreats, still moving a random number of tiles according to its slowest brigade.</li>
+                        <li>Winning Brigades and Armies will continue their movement as it was determined in the movement day orders.</li>
+                        <li>Regardless of winning or losing, any brigades or armies that move into enemy brigades after a battle will trigger another battle. Continue resolving battles until no new battles occur.</li>
+                    </ul>
                 </section>
                 <section style="margin-bottom:2rem;">
                     <h3>More Details</h3>
                     <p>See the full rules for brigade types, enhancements, general traits, sieges, and temporary structures.</p>
+                </section>
+                <section style="margin-bottom:2rem;">
+                    <h3>War College</h3>
+                    <p>Your War College is your nation\\'s propensity for warfare. War colleges have levels similar to Generals, 1-10, but they only go up when you win a war, or retire a general.</p>
+                    <p>Your War College Level carries additional benefits as you level it up. Everyone starts at Level 1.</p>
+                    <ul>
+                        <li><b>Level 1:</b> Your General Cap is 1. Your Generals start as level 1.</li>
+                        <li><b>Level 2:</b> You may roll for general traits twice, choosing either result.</li>
+                        <li><b>Level 3:</b> Your Generals start as level 2.</li>
+                        <li><b>Level 4:</b> Your general Cap is 2.</li>
+                        <li><b>Level 5:</b> Your Pillaging die result is at +1. Sacking a city is worth double.</li>
+                        <li><b>Level 6:</b> Your Generals start as Level 3.</li>
+                        <li><b>Level 7:</b> Your General Cap is 3.</li>
+                        <li><b>Level 8:</b> You get +1 to Skirmish and Defense Rolls.</li>
+                        <li><b>Level 9:</b> Your Generals start as Level 4.</li>
+                        <li><b>Level 10:</b> Your General Cap is 4.</li>
+                    </ul>
+                </section>
+                <section style="margin-bottom:2rem;">
+                    <h3>Temporary Structures</h3>
+                    <p>Temporary Structures are short term buildings that last from the day they\\'re built until the next map update.</p>
+                    <p>Temporary Buildings may be built anywhere in your territory, on organization days. Towers and Forts can be used by your opponent, so be careful with where you place them.</p>
+                    <p>There are 3 Temporary Buildings available, each costing stone to construct:</p>
+                    <ul>
+                        <li><b>Trenches (1 Stone):</b> Enemy brigades moving through a tile with trenches must use an additional tile of movement to do so.</li>
+                        <li><b>Watchtowers (2 Stone):</b> Brigades on Watchtowers that have not moved this cycle have their sight extended by 1 tile.</li>
+                        <li><b>Forts (3 Stone):</b> Brigades on Fort tiles that have not moved this action cycle become Garrisoned for as long as they remain on the tile.</li>
+                    </ul>
                 </section>
             `;
         }
