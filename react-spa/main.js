@@ -1,9 +1,12 @@
+
 // main.js - Basic SPA logic
 
 // Persistent state arrays (module scope)
-            // State arrays are now persistent at module scope
+const brigades = [];
+const generals = [];
+const armies = [];
 
-export function main() {
+export async function main() {
     console.log('Main function executed');
     
     const app = document.getElementById('app');
@@ -465,7 +468,7 @@ export function main() {
                 return bonus;
             }
 
-            async function simulateBattle(army1, army2) { // Make simulateBattle async
+            // Removed duplicate simulateBattle function to fix redeclaration error
                 const g1 = generals[army1.general];
                 const g2 = generals[army2.general];
                 const initialBrigades1 = army1.brigades.map(idx => ({ ...brigades[idx], id: idx, army: 1, status: 'active' }));
@@ -570,7 +573,7 @@ export function main() {
                     for (let round = 1; round <= 3; round++) {
                         log.push(`<h6>Pitch Round ${round} (of 3)</h6>`);
                         log.push(`<p><em>Simulating round... (10s delay)</em></p>`);
-                        await new Promise(resolve => setTimeout(resolve, 10000)); // 10-second delay
+                        // (delay removed to avoid async requirement)
 
                         let pitch1 = 0;
                         log.push('<div><strong>Army 1 Pitch:</strong></div>');
@@ -965,218 +968,7 @@ export function main() {
                 };
             }
 
-            async function simulateBattle(army1Data, army2Data) {
-                if (!battleResult) { console.error("battleResult element not found for logging"); return; }
-                let battleLog = [];
-                const log = (message) => {
-                    console.log(message);
-                    battleLog.push(message);
-                    // Live update the battle log on screen
-                    battleResult.innerHTML = battleLog.map(line => `<div>${line}</div>`).join('');
-                };
-                battleResult.innerHTML = ''; // Clear previous logs at the start
-
-                const rollD6 = () => Math.floor(Math.random() * 6) + 1;
-
-                // --- Helper: Get effective stats (NEEDS FULL IMPLEMENTATION based on rules) ---
-                function getEffectiveStats(brigadeObj, generalObj) {
-                    // Base stats from type (should be a comprehensive constant)
-                    const baseStatsData = {
-                        'Cavalry': { s: 1, p: 1, r: 0, d: 0 }, 'Heavy': { s: 0, p: 1, r: 1, d: 2 },
-                        'Light':   { s: 2, p: 0, r: 1, d: 0 }, 'Ranged':{ s: 0, p: 1, r: 0, d: 2 },
-                        'Support': { s: 0, p: 0, r: 1, d: 2 }
-                    };
-                    let stats = JSON.parse(JSON.stringify(baseStatsData[brigadeObj.type] || { s: 0, p: 0, r: 0, d: 0 }));
-
-                    // TODO: Apply ALL brigade enhancement effects from rules
-                    if (brigadeObj.enhancement === 'Lancers') stats.s += 2;
-                    if (brigadeObj.enhancement === 'Rangers') { stats.s += 2; stats.p += 1; }
-                    if (brigadeObj.enhancement === 'Artillery Team') { stats.d += 1; stats.p += 1; /* And -1 def to all enemy */ }
-                    // ... many more enhancements
-
-                    // TODO: Apply ALL general trait effects from rules to this brigade's stats
-                    if (generalObj) {
-                        if (generalObj.trait === 'Confident') { stats.d += 2; stats.r += 1; }
-                        if (generalObj.trait === 'Disciplined') { stats.p += 1; stats.r += 1; }
-                        if (generalObj.trait === 'Resolute') stats.d += 3;
-                        // ... many more traits
-                    }
-                    return { skirmish: stats.s, pitch: stats.p, rally: stats.r, defense: stats.d };
-                }
-
-                log(`<h2>Battle: ${army1Data.name || 'Army 1'} vs ${army2Data.name || 'Army 2'}</h2>`);
-
-                const general1 = { ...generals[army1Data.general] }; // Copy general data
-                const general2 = { ...generals[army2Data.general] };
-
-                log(`<b>${army1Data.name}</b>: General ${general1.name} (Lvl ${general1.level}, ${general1.trait})`);
-                log(`<b>${army2Data.name}</b>: General ${general2.name} (Lvl ${general2.level}, ${general2.trait})`);
-
-                let battleBrigades1 = army1Data.brigades.map(bIdx => ({ 
-                    ...brigades[bIdx], 
-                    originalIndex: bIdx, 
-                    currentStatus: 'fighting', 
-                    army: 1, 
-                    name: brigades[bIdx].name || `Brigade ${brigades[bIdx].id}`
-                })); // Added closing parenthesis
-
-                let battleBrigades2 = army2Data.brigades.map(bIdx => ({ 
-                    ...brigades[bIdx], 
-                    originalIndex: bIdx, 
-                    currentStatus: 'fighting', 
-                    army: 2, 
-                    name: brigades[bIdx].name || `Brigade ${brigades[bIdx].id}`
-                })); // Added closing parenthesis
-
-                // --- SKIRMISH PHASE ---
-                log("<h3>--- Skirmish Phase ---</h3>");
-                // TODO: Implement "best" skirmisher selection (e.g., highest skirmish stat, non-garrisoned).
-                // TODO: Implement General Trait "Cautious" (skip skirmish).
-                // TODO: Implement General Trait "Bold" (bonus to one skirmisher).
-                const getSkirmishers = (bArmy) => bArmy.filter(b => b.currentStatus === 'fighting' /* && !b.isGarrisoned */).slice(0, 2);
-                
-                const runSkirmishes = (attackingSkirmishers, defendingArmy, attackerGen, defenderGen, attackerArmyName) => {
-                    attackingSkirmishers.forEach(skirmisher => {
-                        const fightingDefenders = defendingArmy.filter(b => b.currentStatus === 'fighting');
-                        if (fightingDefenders.length === 0) return;
-                        const target = fightingDefenders[Math.floor(Math.random() * fightingDefenders.length)];
-                        
-                        const skirmisherStats = getEffectiveStats(skirmisher, attackerGen);
-                        const targetStats = getEffectiveStats(target, defenderGen);
-                        let skirmishRoll = rollD6() + skirmisherStats.skirmish;
-                        let defenseRoll = rollD6() + targetStats.defense;
-
-                        log(`${attackerArmyName}: ${skirmisher.name} (Skirmish ${skirmishRoll}) attacks ${target.name} (Defense ${defenseRoll})`);
-                        if (skirmishRoll > targetStats.defense) {
-                            log(`  -> ${target.name} is ROUTED by ${skirmisher.name}!`);
-                            target.currentStatus = 'routed_skirmish';
-                            // TODO: Implement Lancers enhancement (rout by 3+ -> destruction roll).
-                        } else {
-                            log(`  -> ${skirmisher.name} fails to rout ${target.name}.`);
-                            // TODO: Implement Sharpshooters enhancement.
-                        }
-                    });
-                };
-
-                runSkirmishes(getSkirmishers(battleBrigades1), battleBrigades2, general1, general2, army1Data.name);
-                runSkirmishes(getSkirmishers(battleBrigades2), battleBrigades1, general2, general1, army2Data.name);
-
-                let winner = null;
-                let battleCycleCount = 0;
-
-                // --- MAIN BATTLE LOOP (PITCH/RALLY) ---
-                while (!winner && battleCycleCount < 10) { // Safety break after 10 cycles
-                    battleCycleCount++;
-                    log(`<h3>--- Battle Cycle ${battleCycleCount} ---</h3>`);
-
-                    let fighting1 = battleBrigades1.filter(b => b.currentStatus === 'fighting');
-                    let fighting2 = battleBrigades2.filter(b => b.currentStatus === 'fighting');
-
-                    if (fighting1.length === 0) { winner = army2Data.name; log(`${army1Data.name} has no brigades left!`); break; }
-                    if (fighting2.length === 0) { winner = army1Data.name; log(`${army2Data.name} has no brigades left!`); break; }
-
-                    // --- PITCH PHASE ---
-                    log("<h4>--- Pitch Phase ---</h4>");
-                    let pitchTally = 0;
-                    for (let round = 1; round <= 3; round++) {
-                        log(`<em>Pitch Round ${round}</em>`);
-                        let general1PitchBonus = general1.level;
-                        if (general1.trait === 'Brilliant') general1PitchBonus *= 2; // Trait: Brilliant
-                        // TODO: Other general level related traits
-
-                        let pitch1 = general1PitchBonus + fighting1.reduce((sum, b) => sum + rollD6() + getEffectiveStats(b, general1).pitch, 0);
-                        
-                        let general2PitchBonus = general2.level;
-                        if (general2.trait === 'Brilliant') general2PitchBonus *= 2;
-                        
-                        let pitch2 = general2PitchBonus + fighting2.reduce((sum, b) => sum + rollD6() + getEffectiveStats(b, general2).pitch, 0);
-
-                        log(`${army1Data.name} Pitch: ${pitch1} | ${army2Data.name} Pitch: ${pitch2}`);
-                        pitchTally += (pitch1 - pitch2);
-                        log(`Round ${round} Tally: ${pitchTally}`);
-                    }
-
-                    if (pitchTally >= 20) { winner = army1Data.name; log(`${army1Data.name} wins Pitch decisively! (Tally: ${pitchTally})`); break; }
-                    if (pitchTally <= -20) { winner = army2Data.name; log(`${army2Data.name} wins Pitch decisively! (Tally: ${pitchTally})`); break; }
-
-                    // --- RALLY PHASE ---
-                    log("<h4>--- Rally Phase ---</h4>");
-                    // TODO: Implement Inspiring Trait (reroll rally)
-                    const rallyArmy = (bArmy, gen, armyName) => {
-                        log(`${armyName} rallying:`);
-                        bArmy.filter(b => b.currentStatus === 'fighting').forEach(b => {
-                            let rallyRoll = rollD6() + getEffectiveStats(b, gen).rally;
-                            log(`  ${b.name} rolls ${rallyRoll} (needs 5+)`);
-                            if (rallyRoll < 5) {
-                                b.currentStatus = 'routed_rally';
-                                log(`    -> ${b.name} routs!`);
-                            } else {
-                                log(`    -> ${b.name} holds!`);
-                            }
-                        });
-                    };
-                    rallyArmy(battleBrigades1, general1, army1Data.name);
-                    rallyArmy(battleBrigades2, general2, army2Data.name);
-                }
-
-                if (!winner && battleCycleCount >= 10) {
-                    winner = "Draw";
-                    log("Battle inconclusive after 10 cycles. Declared a Draw.");
-                }
-                
-                // --- ACTION REPORT ---
-                log("<h3>--- Action Report ---</h3>");
-                if (winner && winner !== "Draw") {
-                    log(`<b>Victor: ${winner}!</b>`);
-                    const victorGen = winner === army1Data.name ? general1 : general2;
-                    const loserGen = winner === army1Data.name ? general2 : general1;
-                    const victorArmyBrigades = winner === army1Data.name ? battleBrigades1 : battleBrigades2;
-                    const loserArmyBrigades = winner === army1Data.name ? battleBrigades2 : battleBrigades1;
-                    
-                    // TODO: Implement rerolls for victor.
-                    // TODO: Implement Merciless trait (enemy destroyed 1-3).
-                    // TODO: Implement Field Hospital (reroll destruction).
-                    log("Casualty Rolls:");
-                    [...victorArmyBrigades, ...loserArmyBrigades].forEach(b => {
-                        let destructionRoll = rollD6();
-                        // Simplified: No victor reroll implemented here yet.
-                        let destructionThreshold = 2; 
-                        if (b.army !== (winner === army1Data.name ? 1 : 2) && victorGen.trait === 'Merciless') destructionThreshold = 3;
-
-                        if (destructionRoll <= destructionThreshold) {
-                            log(`  ${b.name} (Army ${b.army}) rolled ${destructionRoll} and is DESTROYED!`);
-                            b.currentStatus = 'destroyed';
-                            // brigades[b.originalIndex].status = 'destroyed'; // Persist if needed
-                        } else {
-                            log(`  ${b.name} (Army ${b.army}) rolled ${destructionRoll} and survives.`);
-                        }
-                    });
-
-                    log("General Promotion/Capture Rolls:");
-                    // TODO: Implement rerolls for victor.
-                    // TODO: Implement Ambitious, Lucky, Life Guard, Officer Corps effects.
-                    [victorGen, loserGen].forEach(gen => {
-                        let actionRoll = rollD6();
-                        let promotionNeeded = 5; // Default
-                        if (gen.trait === 'Ambitious') promotionNeeded = 4;
-
-                        log(`  General ${gen.name} rolls ${actionRoll}.`);
-                        if (actionRoll === 1) {
-                            log(`    -> ${gen.name} is CAPTURED!`);
-                            // generals[generals.findIndex(g => g.id === gen.id)].status = 'captured'; // Persist
-                        } else if (actionRoll >= promotionNeeded) {
-                            log(`    -> ${gen.name} is PROMOTED!`);
-                            // generals[generals.findIndex(g => g.id === gen.id)].level = Math.min(10, gen.level + 1); // Persist
-                        }
-                    });
-                     // TODO: Heroic trait logic.
-                } else {
-                    log("Battle ends in a Draw or was inconclusive. Standard Action Report may vary.");
-                }
-                log("<h3>--- Battle Simulation Ended ---</h3>");
-                // Optionally, re-render lists to reflect any persistent changes made to generals/brigades
-                // renderBrigades(); renderGenerals(); renderArmies(); 
-            }
+            // Duplicate simulateBattle function removed
 
             // Fix the function call and remove duplicate event handlers
             // ...existing code...
@@ -1277,4 +1069,3 @@ function renderTutorial() {
 }
 
 // All separate window.onload assignments have been consolidated into initializeApp
-}
