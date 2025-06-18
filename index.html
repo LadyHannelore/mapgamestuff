@@ -15,10 +15,27 @@
             background-color: #f0f0f0;
             font-family: sans-serif;
         }
+        /* Button hover scale effect */
+        button {
+            transition: transform .2s ease;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        /* Zebra striping for tables */
+        table tbody tr:nth-child(even) {
+            background-color: #f3f4f6;
+        }
+        /* Force all table images to 100x100px */
+        table img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+        }
     </style>
 </head>
-<body>
-    <div id="app">
+<body class="bg-gray-50 text-gray-900">
+    <div id="app" class="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-8">
         <h1 class="text-4xl font-bold mb-4">
             Mock Battle Simulator
         </h1>
@@ -39,7 +56,15 @@
                     <input id="unitCountA" type="number" min="1" value="1" class="border p-1 rounded w-16" />
                     <button id="addUnitA" class="bg-blue-500 text-white px-2 py-1 rounded">Add</button>
                 </div>
-                <ul id="armyAList" class="list-disc pl-5"></ul>
+                <table class="table-auto w-full border-collapse bg-white">
+                    <thead>
+                        <tr>
+                            <th class="border px-2 py-1">Unit</th>
+                            <th class="border px-2 py-1">Count</th>
+                        </tr>
+                    </thead>
+                    <tbody id="armyAList"></tbody>
+                </table>
             </div>
             <!-- Army B -->
             <div id="armyB" class="bg-white p-4 rounded shadow">
@@ -57,7 +82,15 @@
                     <input id="unitCountB" type="number" min="1" value="1" class="border p-1 rounded w-16" />
                     <button id="addUnitB" class="bg-green-500 text-white px-2 py-1 rounded">Add</button>
                 </div>
-                <ul id="armyBList" class="list-disc pl-5"></ul>
+                <table class="table-auto w-full border-collapse bg-white">
+                    <thead>
+                        <tr>
+                            <th class="border px-2 py-1">Unit</th>
+                            <th class="border px-2 py-1">Count</th>
+                        </tr>
+                    </thead>
+                    <tbody id="armyBList"></tbody>
+                </table>
             </div>
         </div>
         <div class="text-center mb-4">
@@ -69,6 +102,9 @@
         </div>
         <div class="text-center mb-4">
             <button id="simulateBattle" class="bg-red-500 text-white px-4 py-2 rounded">Simulate Battle</button>
+        </div>
+        <div class="text-center mb-4">
+            <button id="runGMBattle" class="bg-blue-500 text-white px-4 py-2 rounded">Run GM Battle</button>
         </div>
         <div id="battleResult" class="text-center text-xl font-medium"></div>
         <!-- Voting System Section -->

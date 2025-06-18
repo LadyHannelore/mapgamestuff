@@ -41,24 +41,36 @@ function addUnits(army, listEl, type, count) {
 }
 
 function renderArmy(listEl, army) {
+    // Clear existing table rows
     listEl.innerHTML = '';
+    // Count units
     const counts = army.reduce((acc, unit) => {
         acc[unit] = (acc[unit] || 0) + 1;
         return acc;
     }, {});
+    // Populate table rows
     for (const unit in counts) {
-        const li = document.createElement('li');
-        // Determine image extension and path
+        const tr = document.createElement('tr');
+        // Unit cell with image and name
+        const tdUnit = document.createElement('td');
+        tdUnit.className = 'border px-2 py-1 flex items-center gap-2';
         const ext = unitImageExt[unit] || 'jpg';
         const img = document.createElement('img');
         img.src = `images/${unit}.${ext}`;
         img.alt = unit;
-        img.className = 'inline-block w-6 h-6 mr-2 align-middle';
-        // Label with count
-        const label = document.createTextNode(`${unit}: ${counts[unit]}`);
-        li.appendChild(img);
-        li.appendChild(label);
-        listEl.appendChild(li);
+        img.className = 'w-8 h-8 object-cover';
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = unit;
+        tdUnit.appendChild(img);
+        tdUnit.appendChild(nameSpan);
+        // Count cell
+        const tdCount = document.createElement('td');
+        tdCount.className = 'border px-2 py-1 text-center';
+        tdCount.textContent = counts[unit];
+        // Append to row
+        tr.appendChild(tdUnit);
+        tr.appendChild(tdCount);
+        listEl.appendChild(tr);
     }
 }
 
@@ -166,4 +178,28 @@ simulateBattleBtn.addEventListener('click', () => {
         log = `--- Open Battle ---\n${log}`;
     }
     battleResultDiv.innerHTML = `<pre class="text-left whitespace-pre-wrap">${log}</pre>`;
+});
+
+// Listener for running predefined GM battle
+const runGMBattleBtn = document.getElementById('runGMBattle');
+runGMBattleBtn.addEventListener('click', () => {
+    // Clear existing armies
+    armyA.length = 0;
+    armyB.length = 0;
+    // Bohemian Army (Army A)
+    armyA.push('light'); // Light - Assault Squad
+    armyA.push('heavy'); // Heavy - Artillery Detachment
+    armyA.push('support'); // Support - Field Hospital
+    armyA.push('support'); // Support - Combat Engineers
+    armyA.push('ranged'); // Ranged - Sharpshooters
+    // Austrian Garrison (Army B)
+    armyB.push('heavy');
+    armyB.push('ranged');
+    armyB.push('ranged');
+    // Update UI
+    renderArmy(armyAList, armyA);
+    renderArmy(armyBList, armyB);
+    // Simulate as open battle
+    const log = simulateBattle(armyA, armyB);
+    battleResultDiv.innerHTML = `<pre class="text-left whitespace-pre-wrap">--- GM Battle ---\n${log}</pre>`;
 });
