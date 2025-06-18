@@ -392,8 +392,6 @@
                         <option value="1">Tier 1</option>
                         <option value="2">Tier 2</option>
                         <option value="3">Tier 3</option>
-                        <option value="4">Tier 4</option>
-                        <option value="5">Tier 5</option>
                     </select>
                 </div>
             </div>
@@ -671,11 +669,9 @@
         <div id="siegeOptions" class="text-center mb-6 p-4 bg-gradient-to-r from-orange-400 to-red-400 rounded-lg text-white hidden">
             <label for="cityTierDisplay" class="mr-3 font-semibold">🏰 City Tier:</label>
             <select id="cityTierDisplay" class="border-2 border-white p-2 rounded-lg text-gray-800 font-medium">
-                <option value="1">�️ Tier 1</option>
-                <option value="2">�️ Tier 2</option>
-                <option value="3">�️ Tier 3</option>
-                <option value="4">�️ Tier 4</option>
-                <option value="5">🏛️ Tier 5</option>
+                <option value="1">🏘️ Tier 1</option>
+                <option value="2">🏙️ Tier 2</option>
+                <option value="3">🏛️ Tier 3</option>
             </select>
         </div>
 
@@ -695,7 +691,8 @@
         <button id="toggleMusic" class="fixed bottom-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg w-14 h-14 flex items-center justify-center">
             <i class="fas fa-play"></i>
         </button>
-    </div>    <script>
+    </div>    <script src="battle.js"></script>
+    <script>
     'use strict';
     
     // =============================================================================
@@ -806,7 +803,8 @@
                     music.pause();
                     icon.className = 'fas fa-play';
                 }
-            });        }
+            });
+        }
 
         // Get battle result div for both buttons
         const battleResultDiv = document.getElementById('battleResult');
@@ -918,7 +916,7 @@
                 cityTierMain.value = this.value;
             });
         }
-    });
+    }
     
     // Debug: Check if battle.js functions are loaded
     window.addEventListener('load', function() {
@@ -928,21 +926,5 @@
             console.error('Battle.js not loaded properly');
         }
     });    </script>
-    <script src="battle.js"></script>
-    <script>
-        // Additional failsafe to ensure battle.js functions are available
-        document.addEventListener('DOMContentLoaded', function() {
-            // Wait a bit for external scripts to fully load
-            setTimeout(() => {
-                if (typeof window.simulateBattle !== 'function') {
-                    console.error('simulateBattle still not available after page load');
-                    const battleDiv = document.getElementById('battleResults');
-                    if (battleDiv) {
-                        battleDiv.innerHTML = '<p class="text-red-500">⚠️ Battle simulation is not available. This may be due to script loading issues. Please refresh the page.</p>';
-                    }
-                }
-            }, 100);
-        });
-    </script>
 </body>
 </html>
