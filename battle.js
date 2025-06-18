@@ -1,9 +1,19 @@
-// battle.js
+/**
+ * Battle Simulator - Professional Edition
+ * Implements a comprehensive warfare simulation system based on tutorial mechanics
+ * @author Mock Battle Simulator
+ * @version 2.0
+ */
+
+'use strict';
 
 console.log('Battle.js loading...');
 
-// Unit stats definitions (matches tutorial exactly)
-const unitStats = {
+/**
+ * Unit statistics configuration matching tutorial specifications
+ * @type {Object.<string, {skirmish: number, pitch: number, defense: number, rally: number, move: number}>}
+ */
+const UNIT_STATS = {
     cav: { skirmish: 1, pitch: 1, defense: 0, rally: 0, move: 5 },
     heavy: { skirmish: 0, pitch: 1, defense: 2, rally: 1, move: 3 },
     light: { skirmish: 2, pitch: 0, defense: 0, rally: 1, move: 4 },
@@ -11,7 +21,11 @@ const unitStats = {
     support: { skirmish: 0, pitch: 0, defense: 2, rally: 1, move: 4 }
 };
 
-const enhancements = {
+/**
+ * Enhancement effects configuration
+ * @type {Object.<string, {skirmish?: number, pitch?: number, defense?: number, rally?: number, move?: number, special?: string}>}
+ */
+const ENHANCEMENTS = {
     // Cavalry enhancements
     'Life Guard': { rally: 2, special: 'general_reroll' },
     'Lancers': { skirmish: 2, special: 'rout_destruction' },
@@ -42,8 +56,11 @@ const enhancements = {
     'Marines': { special: 'immediate_siege_sea_movement' }
 };
 
-// General trait effects (matches tutorial)
-const generalTraits = {
+/**
+ * General trait effects configuration
+ * @type {Object.<string, Object>}
+ */
+const GENERAL_TRAITS = {
     'Ambitious': { promotionBonus: -1 },
     'Bold': { skirmishBonus: 'half_level' },
     'Brilliant': { pitchMultiplier: 2 },
@@ -184,7 +201,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Helpers
+// =============================================================================
+// UTILITY FUNCTIONS
+// =============================================================================
+
+/**
+ * Unit type to image mapping
+ * @type {Object.<string, string>}
+ */
+const UNIT_IMAGE_MAP = {
+    light: 'images/light.jpg',
+    heavy: 'images/heavy.jpg',
+    ranged: 'images/ranged.jpg',
+    cav: 'images/cav.jpg',
+    support: 'images/support.png'
+};
+
+/**
+ * Add units to an army and update the display
+ * @param {Array} army - Army array to add units to
+ * @param {HTMLElement} listEl - DOM element to render the army list
+ * @param {string} type - Unit type
+ * @param {number} count - Number of units to add
+ * @param {string} enhancement - Enhancement name
+ */
 function addUnits(army, listEl, type, count, enhancement) {
     for (let i = 0; i < count; i++) {
         army.push({ type, enhancement });
@@ -192,15 +232,14 @@ function addUnits(army, listEl, type, count, enhancement) {
     renderArmy(listEl, army);
 }
 
+/**
+ * Render army units in the specified list element
+ * @param {HTMLElement} listEl - DOM element to render the army list
+ * @param {Array} army - Army array to render
+ */
 function renderArmy(listEl, army) {
     listEl.innerHTML = '';
-    const imageMap = {
-        light: 'images/light.jpg',
-        heavy: 'images/heavy.jpg',
-        ranged: 'images/ranged.jpg',
-        cav: 'images/cav.jpg',
-        support: 'images/support.png'
-    };
+    const imageMap = UNIT_IMAGE_MAP;
     const counts = army.reduce((acc, unit) => {
         let key = unit.type;
         if (unit.enhancement && unit.enhancement !== 'None' && unit.enhancement.trim() !== '') {
@@ -300,9 +339,15 @@ function generateDefenders(tier) {
 }
 
 // Calculate unit stats including enhancements and garrison bonuses
+/**
+ * Calculate unit statistics including base stats and enhancements
+ * @param {Object} unit - Unit object with type and enhancement
+ * @param {boolean} isGarrison - Whether unit is in garrison (affects bonuses)
+ * @returns {Object} Complete unit statistics
+ */
 function getUnitStats(unit, isGarrison = false) {
-    const baseStats = unitStats[unit.type];
-    const enhancement = enhancements[unit.enhancement] || {};
+    const baseStats = UNIT_STATS[unit.type];
+    const enhancement = ENHANCEMENTS[unit.enhancement] || {};
     
     let stats = {
         skirmish: (baseStats.skirmish || 0) + (enhancement.skirmish || 0),
@@ -321,12 +366,21 @@ function getUnitStats(unit, isGarrison = false) {
     return stats;
 }
 
-// Apply general trait bonuses to army
+/**
+ * Apply general trait bonuses to army units
+ * @param {Array} units - Array of unit objects
+ * @param {Object} general - General object with trait and level
+ * @returns {Array} Modified units with trait bonuses applied
+ */
 function applyGeneralTraits(units, general) {
-    if (!general || !general.trait || general.trait === 'None') return units;
+    if (!general || !general.trait || general.trait === 'None') {
+        return units;
+    }
     
-    const trait = generalTraits[general.trait];
-    if (!trait) return units;
+    const trait = GENERAL_TRAITS[general.trait];
+    if (!trait) {
+        return units;
+    }
     
     return units.map(unit => {
         const modifiedUnit = { ...unit };
@@ -420,8 +474,22 @@ function generateUnitNickname(unitType) {
 }
 
 // Make simulateBattle function global so it can be called from HTML
+/**
+ * Main battle simulation function
+ * @param {Array} army1 - Army A units array
+ * @param {Array} army2 - Army B units array
+ * @param {Object} genA - General A configuration
+ * @param {Object} genB - General B configuration
+ * @param {string} battleType - Type of battle ('open' or 'siege')
+ * @param {number} cityTier - City tier for siege battles
+ * @param {Object} customNames - Custom names for armies, generals, and location
+ * @returns {Promise<string>} Battle result summary
+ */
 window.simulateBattle = async function(army1, army2, genA, genB, battleType, cityTier, customNames = {}) {
-    console.log('simulateBattle function called with:', { army1, army2, genA, genB, battleType, cityTier, customNames });
+    console.log('simulateBattle function called with:', { 
+        army1, army2, genA, genB, battleType, cityTier, customNames 
+    });
+    
     try {
         let aUnits = [...army1];
         let bUnits = battleType === 'siege' ? generateDefenders(cityTier) : [...army2];
@@ -726,15 +794,16 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
             finalLog.push(`🏆 ${armyAName.toUpperCase()} WINS! (more survivors)`);
         } else {
             finalLog.push(`🏆 ${(battleType === 'siege' ? 'GARRISON' : armyBName.toUpperCase())} WINS! (more survivors)`);
-        }
-
-        updateBattleDisplay('\n' + finalLog.join('\n'), true);
-        
-        return "Battle simulation complete! Check the display above for full results.";
+        }        updateBattleDisplay('\n' + finalLog.join('\n'), true);
+          return "Battle simulation complete! Check the display above for full results.";
         
     } catch (e) {
         return 'Error during battle simulation: ' + e.message;
     }
-}
+};
+
+// =============================================================================
+// MODULE INITIALIZATION
+// =============================================================================
 
 console.log('Battle.js loaded successfully. simulateBattle function defined.');

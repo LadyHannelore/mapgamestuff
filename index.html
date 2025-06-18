@@ -3,20 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic HTML/CSS App</title>
+    <meta name="description" content="Professional battle simulator for strategic warfare gaming">
+    <meta name="keywords" content="battle simulator, warfare, strategy, gaming">
+    <meta name="author" content="Mock Battle Simulator Team">
+    <title>Mock Battle Simulator - Professional Edition</title>
 
-    <!-- Add Tailwind CSS -->
+    <!-- External CSS Dependencies -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.0/dist/tailwind.min.css" rel="stylesheet">
-
-    <!-- Add Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">    <style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* Professional CSS following BEM methodology */
+        
+        /* Base styles */
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
         }
         
-        /* Main container styling */
+        /* Component: Main container */
         #app {
             backdrop-filter: blur(10px);
             background: rgba(255, 255, 255, 0.95);
@@ -363,53 +369,269 @@
 </head>
 <body class="bg-gray-50 text-gray-900">    <div id="app" class="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-8">        <h1 class="text-4xl font-bold mb-6 text-center">
             🏰 Mock Battle Simulator 🏰
-        </h1>
-          <!-- Battle Setup Section -->
+        </h1>        <!-- Battle Setup Section -->
         <div class="battle-setup p-6 rounded-lg mb-6 relative z-10">
-            <h2 class="text-2xl font-semibold mb-4">⚔️ Battle Setup ⚔️</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <h2 class="text-2xl font-semibold mb-4 text-center">⚔️ Battle Setup ⚔️</h2>
+            
+            <!-- Battle Configuration -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div>
                     <label for="battleLocation" class="block text-sm font-medium mb-1">Battle Location:</label>
                     <input id="battleLocation" type="text" placeholder="Enter battle location" class="w-full border p-2 rounded" />
                 </div>
                 <div>
-                    <label for="armyAName" class="block text-sm font-medium mb-1">Army A Name:</label>
-                    <input id="armyAName" type="text" placeholder="Enter army name" class="w-full border p-2 rounded" />
-                </div>
-                <div>
-                    <label for="armyBName" class="block text-sm font-medium mb-1">Army B Name:</label>
-                    <input id="armyBName" type="text" placeholder="Enter army name" class="w-full border p-2 rounded" />
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="generalAName" class="block text-sm font-medium mb-1">General A Name:</label>
-                    <input id="generalAName" type="text" placeholder="Enter general name" class="w-full border p-2 rounded" />
-                </div>
-                <div>
-                    <label for="generalBName" class="block text-sm font-medium mb-1">General B Name:</label>
-                    <input id="generalBName" type="text" placeholder="Enter general name" class="w-full border p-2 rounded" />
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">            <!-- Army A -->
-            <div id="armyA" class="army-section p-6 rounded shadow-lg">
-                <h2 class="text-2xl font-semibold mb-4">🛡️ Army A 🛡️</h2>
-                <div class="flex items-center gap-2 mb-2">
-                    <select id="unitTypeA" class="border p-1 rounded">
-                        <option value="light">Light Infantry</option>
-                        <option value="heavy">Heavy Infantry</option>
-                        <option value="ranged">Ranged</option>
-                        <option value="cav">Cavalry</option>
-                        <option value="support">Support</option>
+                    <label for="battleType" class="block text-sm font-medium mb-1">Battle Type:</label>
+                    <select id="battleType" class="w-full border p-2 rounded">
+                        <option value="open">Open Field Battle</option>
+                        <option value="siege">Siege Battle</option>
                     </select>
-                    <select id="enhancementA" class="border p-1 rounded"></select>
-                     <input id="unitCountA" type="number" min="1" value="1" class="border p-1 rounded w-16" />
-                     <button id="addUnitA" class="bg-blue-500 text-white px-2 py-1 rounded">Add</button>
-                 </div>                <table class="table-auto w-full border-collapse bg-white">
+                </div>
+                <div id="cityTierDiv" class="hidden">
+                    <label for="cityTier" class="block text-sm font-medium mb-1">City Tier:</label>
+                    <select id="cityTier" class="w-full border p-2 rounded">
+                        <option value="1">Tier 1</option>
+                        <option value="2">Tier 2</option>
+                        <option value="3">Tier 3</option>
+                        <option value="4">Tier 4</option>
+                        <option value="5">Tier 5</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Armies Setup Side by Side -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Army A Setup -->
+                <div class="army-setup-section border-2 border-purple-300 rounded-lg p-4">
+                    <h3 class="text-xl font-semibold mb-3 text-purple-700">🛡️ Army A Setup 🛡️</h3>
+                    
+                    <!-- Army A Name -->
+                    <div class="mb-4">
+                        <label for="armyAName" class="block text-sm font-medium mb-1">Army A Name:</label>
+                        <input id="armyAName" type="text" placeholder="Enter army name" class="w-full border p-2 rounded" />
+                    </div>
+                    
+                    <!-- General A Setup -->
+                    <div class="mb-4">
+                        <label for="generalAName" class="block text-sm font-medium mb-1">General A Name:</label>
+                        <input id="generalAName" type="text" placeholder="Enter general name" class="w-full border p-2 rounded mb-2" />
+                        
+                        <div class="flex items-start gap-3">
+                            <img id="generalImageA" src="images/general1.png" alt="General A" class="w-16 h-16 max-w-[300px] max-h-[300px] rounded-full border-3 border-purple-500 object-cover shadow-lg flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <label for="generalImageSelectA" class="block text-xs font-medium mb-1">General A Image:</label>
+                                <select id="generalImageSelectA" class="border p-1 rounded w-full text-xs mb-1">
+                                    <option value="images/general1.png">General A (Default)</option>
+                                    <option value="images/general2.png">General B</option>
+                                    <option value="custom">Custom Image...</option>
+                                </select>
+                                <input type="file" id="customImageA" accept="image/*" class="hidden">
+                                <input type="url" id="customUrlA" placeholder="Or enter image URL..." class="border p-1 rounded w-full text-xs mb-1 hidden">
+                                
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label for="generalLevelA" class="block text-xs font-medium">Level:</label>
+                                        <input id="generalLevelA" type="number" min="1" max="10" value="1" class="border p-1 rounded w-full text-xs" />
+                                    </div>
+                                    <div>
+                                        <label for="generalTraitA" class="block text-xs font-medium">Trait:</label>
+                                        <select id="generalTraitA" class="border p-1 rounded w-full text-xs">
+                                            <option value="None">None</option>
+                                            <option value="Ambitious">Ambitious</option>
+                                            <option value="Bold">Bold</option>
+                                            <option value="Brilliant">Brilliant</option>
+                                            <option value="Brutal">Brutal</option>
+                                            <option value="Cautious">Cautious</option>
+                                            <option value="Chivalrous">Chivalrous</option>
+                                            <option value="Coward">Coward</option>
+                                            <option value="Cruel">Cruel</option>
+                                            <option value="Decisive">Decisive</option>
+                                            <option value="Diligent">Diligent</option>
+                                            <option value="Faint-hearted">Faint-hearted</option>
+                                            <option value="Gregarious">Gregarious</option>
+                                            <option value="Honest">Honest</option>
+                                            <option value="Just">Just</option>
+                                            <option value="Paranoid">Paranoid</option>
+                                            <option value="Patient">Patient</option>
+                                            <option value="Shy">Shy</option>
+                                            <option value="Temperate">Temperate</option>
+                                            <option value="Trusting">Trusting</option>
+                                            <option value="Wrathful">Wrathful</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Army A Unit Controls -->
+                    <div class="border-t pt-3">
+                        <h4 class="font-medium mb-2">Add Units:</h4>
+                        <div class="flex items-center gap-2 mb-2 flex-wrap">
+                            <select id="unitTypeA" class="border p-1 rounded text-sm">
+                                <option value="cav">Cavalry</option>
+                                <option value="heavy">Heavy Infantry</option>
+                                <option value="light">Light Infantry</option>
+                                <option value="ranged">Ranged</option>
+                                <option value="support">Support</option>
+                            </select>
+                            <select id="enhancementA" class="border p-1 rounded text-sm">
+                                <option value="">No Enhancement</option>
+                                <optgroup label="Cavalry">
+                                    <option value="Life Guard">Life Guard</option>
+                                    <option value="Lancers">Lancers</option>
+                                    <option value="Dragoons">Dragoons</option>
+                                </optgroup>
+                                <optgroup label="Heavy Infantry">
+                                    <option value="Artillery Team">Artillery Team</option>
+                                    <option value="Grenadiers">Grenadiers</option>
+                                    <option value="Stormtroopers">Stormtroopers</option>
+                                </optgroup>
+                                <optgroup label="Light Infantry">
+                                    <option value="Rangers">Rangers</option>
+                                    <option value="Assault Team">Assault Team</option>
+                                    <option value="Commando">Commando</option>
+                                </optgroup>
+                                <optgroup label="Ranged">
+                                    <option value="Sharpshooters">Sharpshooters</option>
+                                    <option value="Mobile Platforms">Mobile Platforms</option>
+                                    <option value="Mortar Team">Mortar Team</option>
+                                </optgroup>
+                                <optgroup label="Support">
+                                    <option value="Field Hospital">Field Hospital</option>
+                                    <option value="Combat Engineers">Combat Engineers</option>
+                                    <option value="Officer Corps">Officer Corps</option>
+                                </optgroup>
+                                <optgroup label="Universal">
+                                    <option value="Sentry Team">Sentry Team</option>
+                                    <option value="Marines">Marines</option>
+                                </optgroup>
+                            </select>
+                            <input id="unitCountA" type="number" min="1" max="50" value="1" class="border p-1 rounded w-16 text-sm" />
+                            <button id="addUnitA" class="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm">Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Army B Setup -->
+                <div class="army-setup-section border-2 border-red-300 rounded-lg p-4">
+                    <h3 class="text-xl font-semibold mb-3 text-red-700">⚔️ Army B Setup ⚔️</h3>
+                    
+                    <!-- Army B Name -->
+                    <div class="mb-4">
+                        <label for="armyBName" class="block text-sm font-medium mb-1">Army B Name:</label>
+                        <input id="armyBName" type="text" placeholder="Enter army name" class="w-full border p-2 rounded" />
+                    </div>
+                    
+                    <!-- General B Setup -->
+                    <div class="mb-4">
+                        <label for="generalBName" class="block text-sm font-medium mb-1">General B Name:</label>
+                        <input id="generalBName" type="text" placeholder="Enter general name" class="w-full border p-2 rounded mb-2" />
+                        
+                        <div class="flex items-start gap-3">
+                            <img id="generalImageB" src="images/general2.png" alt="General B" class="w-16 h-16 max-w-[300px] max-h-[300px] rounded-full border-3 border-red-500 object-cover shadow-lg flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <label for="generalImageSelectB" class="block text-xs font-medium mb-1">General B Image:</label>
+                                <select id="generalImageSelectB" class="border p-1 rounded w-full text-xs mb-1">
+                                    <option value="images/general1.png">General A</option>
+                                    <option value="images/general2.png" selected>General B (Default)</option>
+                                    <option value="custom">Custom Image...</option>
+                                </select>
+                                <input type="file" id="customImageB" accept="image/*" class="hidden">
+                                <input type="url" id="customUrlB" placeholder="Or enter image URL..." class="border p-1 rounded w-full text-xs mb-1 hidden">
+                                
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label for="generalLevelB" class="block text-xs font-medium">Level:</label>
+                                        <input id="generalLevelB" type="number" min="1" max="10" value="1" class="border p-1 rounded w-full text-xs" />
+                                    </div>
+                                    <div>
+                                        <label for="generalTraitB" class="block text-xs font-medium">Trait:</label>
+                                        <select id="generalTraitB" class="border p-1 rounded w-full text-xs">
+                                            <option value="None">None</option>
+                                            <option value="Ambitious">Ambitious</option>
+                                            <option value="Bold">Bold</option>
+                                            <option value="Brilliant">Brilliant</option>
+                                            <option value="Brutal">Brutal</option>
+                                            <option value="Cautious">Cautious</option>
+                                            <option value="Chivalrous">Chivalrous</option>
+                                            <option value="Coward">Coward</option>
+                                            <option value="Cruel">Cruel</option>
+                                            <option value="Decisive">Decisive</option>
+                                            <option value="Diligent">Diligent</option>
+                                            <option value="Faint-hearted">Faint-hearted</option>
+                                            <option value="Gregarious">Gregarious</option>
+                                            <option value="Honest">Honest</option>
+                                            <option value="Just">Just</option>
+                                            <option value="Paranoid">Paranoid</option>
+                                            <option value="Patient">Patient</option>
+                                            <option value="Shy">Shy</option>
+                                            <option value="Temperate">Temperate</option>
+                                            <option value="Trusting">Trusting</option>
+                                            <option value="Wrathful">Wrathful</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Army B Unit Controls -->
+                    <div class="border-t pt-3">
+                        <h4 class="font-medium mb-2">Add Units:</h4>
+                        <div class="flex items-center gap-2 mb-2 flex-wrap">
+                            <select id="unitTypeB" class="border p-1 rounded text-sm">
+                                <option value="cav">Cavalry</option>
+                                <option value="heavy">Heavy Infantry</option>
+                                <option value="light">Light Infantry</option>
+                                <option value="ranged">Ranged</option>
+                                <option value="support">Support</option>
+                            </select>
+                            <select id="enhancementB" class="border p-1 rounded text-sm">
+                                <option value="">No Enhancement</option>
+                                <optgroup label="Cavalry">
+                                    <option value="Life Guard">Life Guard</option>
+                                    <option value="Lancers">Lancers</option>
+                                    <option value="Dragoons">Dragoons</option>
+                                </optgroup>
+                                <optgroup label="Heavy Infantry">
+                                    <option value="Artillery Team">Artillery Team</option>
+                                    <option value="Grenadiers">Grenadiers</option>
+                                    <option value="Stormtroopers">Stormtroopers</option>
+                                </optgroup>
+                                <optgroup label="Light Infantry">
+                                    <option value="Rangers">Rangers</option>
+                                    <option value="Assault Team">Assault Team</option>
+                                    <option value="Commando">Commando</option>
+                                </optgroup>
+                                <optgroup label="Ranged">
+                                    <option value="Sharpshooters">Sharpshooters</option>
+                                    <option value="Mobile Platforms">Mobile Platforms</option>
+                                    <option value="Mortar Team">Mortar Team</option>
+                                </optgroup>
+                                <optgroup label="Support">
+                                    <option value="Field Hospital">Field Hospital</option>
+                                    <option value="Combat Engineers">Combat Engineers</option>
+                                    <option value="Officer Corps">Officer Corps</option>
+                                </optgroup>
+                                <optgroup label="Universal">
+                                    <option value="Sentry Team">Sentry Team</option>
+                                    <option value="Marines">Marines</option>
+                                </optgroup>
+                            </select>
+                            <input id="unitCountB" type="number" min="1" max="50" value="1" class="border p-1 rounded w-16 text-sm" />
+                            <button id="addUnitB" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        <!-- Army Display Tables -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <!-- Army A Display -->
+            <div id="armyA" class="army-section p-6 rounded shadow-lg border-2 border-purple-300">
+                <h2 class="text-2xl font-semibold mb-4 text-purple-700">🛡️ Army A Units 🛡️</h2>
+                <table class="table-auto w-full border-collapse bg-white">
                     <thead>
-                        <tr>
+                        <tr class="bg-purple-100">
                             <th class="border px-2 py-1">Image</th>
                             <th class="border px-2 py-1">Unit</th>
                             <th class="border px-2 py-1">Count</th>
@@ -417,61 +639,15 @@
                         </tr>
                     </thead>
                     <tbody id="armyAList"></tbody>
-                </table>                <!-- General inputs for Army A -->
-                <div class="mt-4">                    <div class="flex items-center mb-4">                        <img id="generalImageA" src="images/general1.png" alt="General A" class="w-24 h-24 max-w-[300px] max-h-[300px] rounded-full border-4 border-purple-500 mr-4 object-cover shadow-lg">
-                        <div class="flex-1">
-                            <label for="generalImageSelectA" class="block">General A Image:</label>
-                            <select id="generalImageSelectA" class="border p-1 rounded w-full mb-2">
-                                <option value="images/general1.png">General A (Default)</option>
-                                <option value="images/general2.png">General B</option>
-                                <option value="custom">Custom Image...</option>
-                            </select>
-                            <input type="file" id="customImageA" accept="image/*" class="hidden">
-                            <input type="url" id="customUrlA" placeholder="Or enter image URL..." class="border p-1 rounded w-full mb-2 hidden">
-                            <label for="generalLevelA" class="block">General Level:</label>
-                            <input id="generalLevelA" type="number" min="1" max="10" value="1" class="border p-1 rounded w-20 mb-2" />
-                            <label for="generalTraitA" class="block">General Trait:</label>
-                            <select id="generalTraitA" class="border p-1 rounded w-full">
-                        <option value="None">None</option>
-                        <option value="Ambitious">Ambitious</option>
-                        <option value="Bold">Bold</option>
-                        <option value="Brilliant">Brilliant</option>
-                        <option value="Brutal">Brutal</option>
-                        <option value="Cautious">Cautious</option>
-                        <option value="Chivalrous">Chivalrous</option>
-                        <option value="Confident">Confident</option>
-                        <option value="Defiant">Defiant</option>
-                        <option value="Disciplined">Disciplined</option>
-                        <option value="Dogged">Dogged</option>
-                        <option value="Heroic">Heroic</option>
-                        <option value="Inspiring">Inspiring</option>
-                        <option value="Lucky">Lucky</option>
-                        <option value="Mariner">Mariner</option>
-                        <option value="Merciless">Merciless</option>
-                        <option value="Prodigious">Prodigious</option>
-                        <option value="Relentless">Relentless</option>
-                        <option value="Resolute">Resolute</option>
-                        <option value="Wary">Wary</option>
-                        <option value="Zealous">Zealous</option>
-                     </select>
-                 </div>
-             </div>            <!-- Army B -->
-            <div id="armyB" class="army-section p-6 rounded shadow-lg">
-                <h2 class="text-2xl font-semibold mb-4">⚔️ Army B ⚔️</h2>
-                <div class="flex items-center gap-2 mb-2">
-                    <select id="unitTypeB" class="border p-1 rounded">
-                        <option value="light">Light Infantry</option>
-                        <option value="heavy">Heavy Infantry</option>
-                        <option value="ranged">Ranged</option>
-                        <option value="cav">Cavalry</option>
-                        <option value="support">Support</option>
-                    </select>
-                    <select id="enhancementB" class="border p-1 rounded"></select>
-                     <input id="unitCountB" type="number" min="1" value="1" class="border p-1 rounded w-16" />
-                     <button id="addUnitB" class="bg-green-500 text-white px-2 py-1 rounded">Add</button>
-                 </div>                <table class="table-auto w-full border-collapse bg-white">
+                </table>
+            </div>
+
+            <!-- Army B Display -->
+            <div id="armyB" class="army-section p-6 rounded shadow-lg border-2 border-red-300">
+                <h2 class="text-2xl font-semibold mb-4 text-red-700">⚔️ Army B Units ⚔️</h2>
+                <table class="table-auto w-full border-collapse bg-white">
                     <thead>
-                        <tr>
+                        <tr class="bg-red-100">
                             <th class="border px-2 py-1">Image</th>
                             <th class="border px-2 py-1">Unit</th>
                             <th class="border px-2 py-1">Count</th>
@@ -479,61 +655,31 @@
                         </tr>
                     </thead>
                     <tbody id="armyBList"></tbody>
-                </table>                <!-- General inputs for Army B -->
-                <div class="mt-4">                    <div class="flex items-center mb-4">                        <img id="generalImageB" src="images/general2.png" alt="General B" class="w-24 h-24 max-w-[300px] max-h-[300px] rounded-full border-4 border-red-500 mr-4 object-cover shadow-lg">
-                        <div class="flex-1">
-                            <label for="generalImageSelectB" class="block">General B Image:</label>
-                            <select id="generalImageSelectB" class="border p-1 rounded w-full mb-2">
-                                <option value="images/general1.png">General A</option>
-                                <option value="images/general2.png" selected>General B (Default)</option>
-                                <option value="custom">Custom Image...</option>
-                            </select>
-                            <input type="file" id="customImageB" accept="image/*" class="hidden">
-                            <input type="url" id="customUrlB" placeholder="Or enter image URL..." class="border p-1 rounded w-full mb-2 hidden">
-                            <label for="generalLevelB" class="block">General Level:</label>
-                            <input id="generalLevelB" type="number" min="1" max="10" value="1" class="border p-1 rounded w-20 mb-2" />
-                            <label for="generalTraitB" class="block">General Trait:</label>
-                            <select id="generalTraitB" class="border p-1 rounded w-full">
-                        <option value="None">None</option>
-                        <option value="Ambitious">Ambitious</option>
-                        <option value="Bold">Bold</option>
-                        <option value="Brilliant">Brilliant</option>
-                        <option value="Brutal">Brutal</option>
-                        <option value="Cautious">Cautious</option>
-                        <option value="Chivalrous">Chivalrous</option>
-                        <option value="Confident">Confident</option>
-                        <option value="Defiant">Defiant</option>
-                        <option value="Disciplined">Disciplined</option>
-                        <option value="Dogged">Dogged</option>
-                        <option value="Heroic">Heroic</option>
-                        <option value="Inspiring">Inspiring</option>
-                        <option value="Lucky">Lucky</option>
-                        <option value="Mariner">Mariner</option>
-                        <option value="Merciless">Merciless</option>
-                        <option value="Prodigious">Prodigious</option>
-                        <option value="Relentless">Relentless</option>
-                        <option value="Resolute">Resolute</option>
-                        <option value="Wary">Wary</option>
-                        <option value="Zealous">Zealous</option>
-                     </select>
-                 </div>
-             </div>
-        </div>        <div class="text-center mb-6 p-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg text-white">
-            <label for="battleType" class="mr-3 font-semibold">⚔️ Battle Type:</label>
-            <select id="battleType" class="border-2 border-white p-2 rounded-lg text-gray-800 font-medium">
+                </table>
+            </div>        </div>
+
+        <!-- Battle Controls Section -->
+        <div class="text-center mb-6 p-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg text-white">
+            <label for="battleTypeDisplay" class="mr-3 font-semibold">⚔️ Battle Type:</label>
+            <select id="battleTypeDisplay" class="border-2 border-white p-2 rounded-lg text-gray-800 font-medium">
                 <option value="open">🌄 Open Battle</option>
                 <option value="siege">🏰 Siege</option>
             </select>
         </div>
+        
         <!-- Siege options: city tier selection -->
         <div id="siegeOptions" class="text-center mb-6 p-4 bg-gradient-to-r from-orange-400 to-red-400 rounded-lg text-white hidden">
-            <label for="cityTier" class="mr-3 font-semibold">🏰 City Tier:</label>
-            <select id="cityTier" class="border-2 border-white p-2 rounded-lg text-gray-800 font-medium">
-                <option value="1">🏘️ Tier 1</option>
-                <option value="2">🏙️ Tier 2</option>
-                <option value="3">🏛️ Tier 3</option>
+            <label for="cityTierDisplay" class="mr-3 font-semibold">🏰 City Tier:</label>
+            <select id="cityTierDisplay" class="border-2 border-white p-2 rounded-lg text-gray-800 font-medium">
+                <option value="1">�️ Tier 1</option>
+                <option value="2">�️ Tier 2</option>
+                <option value="3">�️ Tier 3</option>
+                <option value="4">�️ Tier 4</option>
+                <option value="5">🏛️ Tier 5</option>
             </select>
-        </div>        <div class="text-center mb-6">
+        </div>
+
+        <div class="text-center mb-6">
             <button id="simulateBattle" class="px-8 py-4 rounded-lg mr-4 text-lg font-bold shadow-lg">
                 ⚔️ Simulate Battle ⚔️
             </button>
@@ -549,32 +695,57 @@
         <button id="toggleMusic" class="fixed bottom-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg w-14 h-14 flex items-center justify-center">
             <i class="fas fa-play"></i>
         </button>
-    </div>
-    <script>
-    // Wait for DOM to be fully loaded before running scripts
-    document.addEventListener('DOMContentLoaded', function() {
-        // Enhancement options based on unit type
-        const enhancementOptions = {
+    </div>    <script>
+    'use strict';
+    
+    // =============================================================================
+    // BATTLE SIMULATOR FRONTEND - PROFESSIONAL EDITION
+    // =============================================================================
+    
+    /**
+     * Application configuration and constants
+     */
+    const APP_CONFIG = {
+        armies: {
+            A: [],
+            B: []
+        },
+        enhancementOptions: {
             cav: ['None', 'Life Guard', 'Lancers', 'Dragoons'],
             heavy: ['None', 'Artillery Team', 'Grenadiers', 'Stormtroopers'],
             light: ['None', 'Rangers', 'Assault Team', 'Commando'],
             ranged: ['None', 'Sharpshooters', 'Mobile Platforms', 'Mortar Team'],
             support: ['None', 'Field Hospital', 'Combat Engineers', 'Officer Corps'],
             universal: ['Sentry Team', 'Marines']
-        };
-
-        function populateEnhancements(unitTypeEl, enhancementEl) {
-            const selectedType = unitTypeEl.value;
-            if (!enhancementOptions[selectedType]) {
-                enhancementEl.style.display = 'none';
-                enhancementEl.innerHTML = '';
-                return;
-            }
-            const options = [...enhancementOptions[selectedType], ...enhancementOptions.universal];
-            enhancementEl.innerHTML = options.map(e => `<option value="${e}">${e}</option>`).join('');
-            enhancementEl.style.display = '';
         }
-
+    };
+    
+    // Legacy global variables for backward compatibility
+    window.armyA = APP_CONFIG.armies.A;
+    window.armyB = APP_CONFIG.armies.B;
+    
+    /**
+     * Wait for DOM to be fully loaded before initializing application
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeApplication();
+    });
+    
+    /**
+     * Main application initialization function
+     */
+    function initializeApplication() {
+        setupEnhancementOptions();
+        setupArmyControllers();
+        setupBattleTypeHandlers();
+        setupGeneralImageHandlers();
+        setupBattleSimulation();
+        setupMusicControls();
+    }
+      /**
+     * Setup enhancement dropdown options based on unit type
+     */
+    function setupEnhancementOptions() {
         const unitTypeA = document.getElementById('unitTypeA');
         const enhancementA = document.getElementById('enhancementA');
         const unitTypeB = document.getElementById('unitTypeB');
@@ -583,6 +754,35 @@
         // Initial population and event listeners
         populateEnhancements(unitTypeA, enhancementA);
         populateEnhancements(unitTypeB, enhancementB);
+        
+        unitTypeA.addEventListener('change', () => populateEnhancements(unitTypeA, enhancementA));
+        unitTypeB.addEventListener('change', () => populateEnhancements(unitTypeB, enhancementB));
+    }
+
+    /**
+     * Populate enhancement options based on selected unit type
+     * @param {HTMLElement} unitTypeEl - Unit type select element
+     * @param {HTMLElement} enhancementEl - Enhancement select element
+     */
+    function populateEnhancements(unitTypeEl, enhancementEl) {
+        const selectedType = unitTypeEl.value;
+        const enhancementOptions = APP_CONFIG.enhancementOptions;
+        
+        if (!enhancementOptions[selectedType]) {
+            enhancementEl.style.display = 'none';
+            enhancementEl.innerHTML = '';
+            return;
+        }
+        
+        const options = [...enhancementOptions[selectedType], ...enhancementOptions.universal];
+        enhancementEl.innerHTML = options.map(e => `<option value="${e}">${e}</option>`).join('');
+        enhancementEl.style.display = '';
+    }
+
+    /**
+     * Setup army controllers for adding/removing units
+     */
+    function setupArmyControllers() {
         unitTypeA.addEventListener('change', () => populateEnhancements(unitTypeA, enhancementA));
         unitTypeB.addEventListener('change', () => populateEnhancements(unitTypeB, enhancementB));
 
@@ -674,6 +874,50 @@
                     simulateBattleBtn.disabled = false;
                     simulateBattleBtn.textContent = 'Simulate Battle';                }
             });        }
+        
+        // Synchronize battle type selectors
+        const battleTypeMain = document.getElementById('battleType');
+        const battleTypeDisplay = document.getElementById('battleTypeDisplay');
+        const cityTierMain = document.getElementById('cityTier');
+        const cityTierDisplay = document.getElementById('cityTierDisplay');
+        const siegeOptions = document.getElementById('siegeOptions');
+        const cityTierDiv = document.getElementById('cityTierDiv');
+        
+        // Sync main battle type to display battle type
+        if (battleTypeMain && battleTypeDisplay) {
+            battleTypeMain.addEventListener('change', function() {
+                battleTypeDisplay.value = this.value;
+                if (this.value === 'siege') {
+                    if (siegeOptions) siegeOptions.classList.remove('hidden');
+                    if (cityTierDiv) cityTierDiv.classList.remove('hidden');
+                } else {
+                    if (siegeOptions) siegeOptions.classList.add('hidden');
+                    if (cityTierDiv) cityTierDiv.classList.add('hidden');
+                }
+            });
+            
+            battleTypeDisplay.addEventListener('change', function() {
+                battleTypeMain.value = this.value;
+                if (this.value === 'siege') {
+                    if (siegeOptions) siegeOptions.classList.remove('hidden');
+                    if (cityTierDiv) cityTierDiv.classList.remove('hidden');
+                } else {
+                    if (siegeOptions) siegeOptions.classList.add('hidden');
+                    if (cityTierDiv) cityTierDiv.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Sync city tier selectors
+        if (cityTierMain && cityTierDisplay) {
+            cityTierMain.addEventListener('change', function() {
+                cityTierDisplay.value = this.value;
+            });
+            
+            cityTierDisplay.addEventListener('change', function() {
+                cityTierMain.value = this.value;
+            });
+        }
     });
     
     // Debug: Check if battle.js functions are loaded
