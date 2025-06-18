@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic HTML/CSS App</title>
+
+    <!-- Add Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.0/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- Add Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1 class="text-4xl font-bold mb-4">
+            Mock Battle Simulator
+        </h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <!-- Army A -->
+            <div id="armyA" class="bg-white p-4 rounded shadow">
+                <h2 class="text-2xl font-semibold mb-2">Army A</h2>
+                <div class="flex items-center gap-2 mb-2">
+                    <select id="unitTypeA" class="border p-1 rounded">
+                        <option value="light">Light Infantry</option>
+                        <option value="heavy">Heavy Infantry</option>
+                        <option value="ranged">Ranged</option>
+                        <option value="cav">Cavalry</option>
+                        <option value="support">Support</option>
+                        <option value="general1">General 1</option>
+                        <option value="general2">General 2</option>
+                    </select>
+                    <input id="unitCountA" type="number" min="1" value="1" class="border p-1 rounded w-16" />
+                    <button id="addUnitA" class="bg-blue-500 text-white px-2 py-1 rounded">Add</button>
+                </div>
+                <ul id="armyAList" class="list-disc pl-5"></ul>
+            </div>
+            <!-- Army B -->
+            <div id="armyB" class="bg-white p-4 rounded shadow">
+                <h2 class="text-2xl font-semibold mb-2">Army B</h2>
+                <div class="flex items-center gap-2 mb-2">
+                    <select id="unitTypeB" class="border p-1 rounded">
+                        <option value="light">Light Infantry</option>
+                        <option value="heavy">Heavy Infantry</option>
+                        <option value="ranged">Ranged</option>
+                        <option value="cav">Cavalry</option>
+                        <option value="support">Support</option>
+                        <option value="general1">General 1</option>
+                        <option value="general2">General 2</option>
+                    </select>
+                    <input id="unitCountB" type="number" min="1" value="1" class="border p-1 rounded w-16" />
+                    <button id="addUnitB" class="bg-green-500 text-white px-2 py-1 rounded">Add</button>
+                </div>
+                <ul id="armyBList" class="list-disc pl-5"></ul>
+            </div>
+        </div>
+        <div class="text-center mb-4">
+            <label for="battleType" class="mr-2">Battle Type:</label>
+            <select id="battleType" class="border p-1 rounded">
+                <option value="open">Open Battle</option>
+                <option value="siege">Siege</option>
+            </select>
+        </div>
+        <div class="text-center mb-4">
+            <button id="simulateBattle" class="bg-red-500 text-white px-4 py-2 rounded">Simulate Battle</button>
+        </div>
+        <div id="battleResult" class="text-center text-xl font-medium"></div>
+        <!-- Voting System Section -->
+        <hr class="my-6" />
+        <h2 class="text-2xl font-semibold mb-2">Weighted Voting System</h2>
+        <div id="votingSystem" class="bg-white p-4 rounded shadow mb-4">
+            <!-- Voting UI will be rendered here by weightedVoting.js -->
+        </div>
+        <!-- Optional: Background music with controls -->
+        <audio id="bgMusic" src="background-music.mp3" autoplay loop controls class="fixed bottom-4 right-4 w-24"></audio>
+    </div>
+    <script src="battle.js"></script>
+    <script src="weightedVoting.js"></script>
+</body>
+</html>
