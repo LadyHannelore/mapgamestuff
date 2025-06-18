@@ -2,13 +2,37 @@
 
 // Unit stats definitions
 const unitStats = {
-    light: { attack: 5, defense: 3 },
-    heavy: { attack: 8, defense: 6 },
-    ranged: { attack: 6, defense: 2 },
-    cav: { attack: 7, defense: 4 },
-    support: { attack: 2, defense: 8 },
-    general1: { attack: 10, defense: 10 },
-    general2: { attack: 9, defense: 12 }
+    cav: { skirmish: 1, pitch: 1, defense: 0, rally: 0, move: 5 },
+    heavy: { skirmish: 0, pitch: 1, defense: 2, rally: 1, move: 3 },
+    light: { skirmish: 2, pitch: 0, defense: 0, rally: 1, move: 4 },
+    ranged: { skirmish: 0, pitch: 1, defense: 2, rally: 0, move: 4 },
+    support: { skirmish: 0, pitch: 0, defense: 2, rally: 1, move: 4 }
+};
+
+const enhancements = {
+    // Cavalry
+    'Life Guard': { rally: 2 },
+    Lancers: { skirmish: 2 },
+    Dragoons: { defense: 2, pitch: 1, rally: 1 },
+    // Heavy
+    'Artillery Team': { defense: 1, pitch: 1 },
+    Grenadiers: { skirmish: 2, pitch: 2 },
+    Stormtroopers: { pitch: 1, rally: 1, move: 1 },
+    // Light
+    Rangers: { skirmish: 2, pitch: 1 },
+    'Assault Team': { skirmish: 1 },
+    Commando: { defense: 2, pitch: 1 },
+    // Ranged
+    Sharpshooters: { defense: 2 },
+    'Mobile Platforms': { skirmish: 1, defense: 2, move: 1 },
+    'Mortar Team': { pitch: 1, rally: 1 },
+    // Support
+    'Field Hospital': {},
+    'Combat Engineers': {},
+    'Officer Corps': { rally: 2 },
+    // Universal
+    'Sentry Team': { defense: 3 },
+    Marines: {}
 };
 
 // Armies
@@ -20,54 +44,40 @@ const unitTypeA = document.getElementById('unitTypeA');
 const unitCountA = document.getElementById('unitCountA');
 const addUnitA = document.getElementById('addUnitA');
 const armyAList = document.getElementById('armyAList');
+const enhancementA = document.getElementById('enhancementA');
 
 const unitTypeB = document.getElementById('unitTypeB');
 const unitCountB = document.getElementById('unitCountB');
 const addUnitB = document.getElementById('addUnitB');
 const armyBList = document.getElementById('armyBList');
+const enhancementB = document.getElementById('enhancementB');
 
 const simulateBattleBtn = document.getElementById('simulateBattle');
 const battleResultDiv = document.getElementById('battleResult');
 
-// Mapping for image extensions
-const unitImageExt = { support: 'png', general1: 'png', general2: 'png' };
-
 // Helpers
-function addUnits(army, listEl, type, count) {
+function addUnits(army, listEl, type, count, enhancement) {
     for (let i = 0; i < count; i++) {
-        army.push(type);
+        army.push({ type, enhancement });
     }
     renderArmy(listEl, army);
 }
 
 function renderArmy(listEl, army) {
-    // Clear existing table rows
     listEl.innerHTML = '';
-    // Count units
     const counts = army.reduce((acc, unit) => {
-        acc[unit] = (acc[unit] || 0) + 1;
+        const key = unit.enhancement !== 'None' ? `${unit.type} (${unit.enhancement})` : unit.type;
+        acc[key] = (acc[key] || 0) + 1;
         return acc;
     }, {});
-    // Populate table rows
-    for (const unit in counts) {
+    for (const unitKey in counts) {
         const tr = document.createElement('tr');
-        // Unit cell with image and name
         const tdUnit = document.createElement('td');
-        tdUnit.className = 'border px-2 py-1 flex items-center gap-2';
-        const ext = unitImageExt[unit] || 'jpg';
-        const img = document.createElement('img');
-        img.src = `images/${unit}.${ext}`;
-        img.alt = unit;
-        img.className = 'w-8 h-8 object-cover';
-        const nameSpan = document.createElement('span');
-        nameSpan.textContent = unit;
-        tdUnit.appendChild(img);
-        tdUnit.appendChild(nameSpan);
-        // Count cell
         const tdCount = document.createElement('td');
-        tdCount.className = 'border px-2 py-1 text-center';
-        tdCount.textContent = counts[unit];
-        // Append to row
+        tdUnit.textContent = unitKey;
+        tdCount.textContent = counts[unitKey];
+        tdUnit.className = 'border px-2 py-1';
+        tdCount.className = 'border px-2 py-1';
         tr.appendChild(tdUnit);
         tr.appendChild(tdCount);
         listEl.appendChild(tr);
@@ -79,11 +89,24 @@ function rollDie() {
     return Math.floor(Math.random() * 6) + 1;
 }
 
+// Generate city garrison defenders for siege by tier
+function generateDefenders(tier) {
+    const defs = [];
+    const heavyCount = tier === 1 ? 1 : tier === 2 ? 2 : 3;
+    const rangedCount = tier === 1 ? 2 : tier === 2 ? 3 : 4;
+    for (let i = 0; i < heavyCount; i++) defs.push('heavy');
+    for (let i = 0; i < rangedCount; i++) defs.push('ranged');
+    return defs;
+}
+
 // Simulate a battle with Skirmish, Pitch, Rally, and Action Report stages
-function simulateBattle(army1, army2) {
+function simulateBattle(army1, army2, genA, genB, battleType, cityTier) {
     let aUnits = [...army1];
-    let bUnits = [...army2];
+    let bUnits = battleType === 'siege' ? generateDefenders(cityTier) : [...army2];
     const log = [];
+
+    // Include general info
+    log.push(`General A: Lv${genA.level} (${genA.trait}), General B: Lv${genB.level} (${genB.trait})`);
 
     // Skirmish Stage
     log.push('--- Skirmish Stage ---');
@@ -117,11 +140,16 @@ function simulateBattle(army1, army2) {
 
     // Pitch Stage (up to 3 rounds)
     log.push('--- Pitch Stage ---');
+    // Calculate general pitch bonuses
+    const pitchBonusA = genA.trait === 'Brilliant' ? genA.level * 2 : genA.level;
+    const pitchBonusB = genB.trait === 'Brilliant' ? genB.level * 2 : genB.level;
     let tally = 0;
     for (let round = 1; round <= 3; round++) {
         let aPitch = 0, bPitch = 0;
         aUnits.forEach(u => aPitch += rollDie() + unitStats[u].attack);
         bUnits.forEach(u => bPitch += rollDie() + unitStats[u].attack);
+        aPitch += pitchBonusA;
+        bPitch += pitchBonusB;
         tally += (aPitch - bPitch);
         log.push(`Round ${round}: A ${aPitch} vs B ${bPitch}, Tally ${tally}`);
         if (tally >= 20 || tally <= -20) break;
@@ -153,53 +181,30 @@ function simulateBattle(army1, army2) {
 // Event Listeners
 addUnitA.addEventListener('click', () => {
     const count = parseInt(unitCountA.value);
-    addUnits(armyA, armyAList, unitTypeA.value, count);
+    addUnits(armyA, armyAList, unitTypeA.value, count, enhancementA.value);
 });
 addUnitB.addEventListener('click', () => {
     const count = parseInt(unitCountB.value);
-    addUnits(armyB, armyBList, unitTypeB.value, count);
+    addUnits(armyB, armyBList, unitTypeB.value, count, enhancementB.value);
 });
 
-// Handle battle type selection
+// Update event listener to include generals and siege settings
 simulateBattleBtn.addEventListener('click', () => {
-    if (!armyA.length || !armyB.length) {
+    if (!armyA.length || (!armyB.length && document.getElementById('battleType').value === 'open')) {
         battleResultDiv.textContent = 'Both armies must have at least one unit.';
         return;
     }
-    const type = document.getElementById('battleType').value;
-    let log;
-    if (type === 'siege') {
-        // Add default tier-1 city garrison for siege: 1 heavy, 2 ranged
-        const siegeDefenders = [...armyB, 'heavy', 'ranged', 'ranged'];
-        log = simulateBattle(armyA, siegeDefenders);
-        log = `--- Siege Mode ---\n${log}`;
-    } else {
-        log = simulateBattle(armyA, armyB);
-        log = `--- Open Battle ---\n${log}`;
-    }
-    battleResultDiv.innerHTML = `<pre class="text-left whitespace-pre-wrap">${log}</pre>`;
-});
-
-// Listener for running predefined GM battle
-const runGMBattleBtn = document.getElementById('runGMBattle');
-runGMBattleBtn.addEventListener('click', () => {
-    // Clear existing armies
-    armyA.length = 0;
-    armyB.length = 0;
-    // Bohemian Army (Army A)
-    armyA.push('light'); // Light - Assault Squad
-    armyA.push('heavy'); // Heavy - Artillery Detachment
-    armyA.push('support'); // Support - Field Hospital
-    armyA.push('support'); // Support - Combat Engineers
-    armyA.push('ranged'); // Ranged - Sharpshooters
-    // Austrian Garrison (Army B)
-    armyB.push('heavy');
-    armyB.push('ranged');
-    armyB.push('ranged');
-    // Update UI
-    renderArmy(armyAList, armyA);
-    renderArmy(armyBList, armyB);
-    // Simulate as open battle
-    const log = simulateBattle(armyA, armyB);
-    battleResultDiv.innerHTML = `<pre class="text-left whitespace-pre-wrap">--- GM Battle ---\n${log}</pre>`;
+    const genLevelA = parseInt(document.getElementById('generalLevelA').value);
+    const genTraitA = document.getElementById('generalTraitA').value;
+    const genLevelB = parseInt(document.getElementById('generalLevelB').value);
+    const genTraitB = document.getElementById('generalTraitB').value;
+    const battleType = document.getElementById('battleType').value;
+    const cityTier = battleType === 'siege' ? parseInt(document.getElementById('cityTier').value) : null;
+    const result = simulateBattle(
+        armyA, armyB,
+        { level: genLevelA, trait: genTraitA },
+        { level: genLevelB, trait: genTraitB },
+        battleType, cityTier
+    );
+    battleResultDiv.innerHTML = `<pre class="text-left whitespace-pre-wrap">${result}</pre>`;
 });

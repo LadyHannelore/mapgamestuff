@@ -50,22 +50,53 @@
                         <option value="ranged">Ranged</option>
                         <option value="cav">Cavalry</option>
                         <option value="support">Support</option>
-                        <option value="general1">General 1</option>
-                        <option value="general2">General 2</option>
                     </select>
-                    <input id="unitCountA" type="number" min="1" value="1" class="border p-1 rounded w-16" />
-                    <button id="addUnitA" class="bg-blue-500 text-white px-2 py-1 rounded">Add</button>
-                </div>
+                    <select id="enhancementA" class="border p-1 rounded">
+                        <!-- Options will be populated by JS -->
+                    </select>
+                     <input id="unitCountA" type="number" min="1" value="1" class="border p-1 rounded w-16" />
+                     <button id="addUnitA" class="bg-blue-500 text-white px-2 py-1 rounded">Add</button>
+                 </div>
                 <table class="table-auto w-full border-collapse bg-white">
                     <thead>
                         <tr>
+                            <th class="border px-2 py-1">Image</th>
                             <th class="border px-2 py-1">Unit</th>
                             <th class="border px-2 py-1">Count</th>
                         </tr>
                     </thead>
                     <tbody id="armyAList"></tbody>
                 </table>
-            </div>
+                <!-- General inputs for Army A -->
+                <div class="mt-4">
+                    <label for="generalLevelA" class="block">General Level:</label>
+                    <input id="generalLevelA" type="number" min="1" max="10" value="1" class="border p-1 rounded w-20 mb-2" />
+                    <label for="generalTraitA" class="block">General Trait:</label>
+                    <select id="generalTraitA" class="border p-1 rounded w-full">
+                        <option value="None">None</option>
+                        <option value="Ambitious">Ambitious</option>
+                        <option value="Bold">Bold</option>
+                        <option value="Brilliant">Brilliant</option>
+                        <option value="Brutal">Brutal</option>
+                        <option value="Cautious">Cautious</option>
+                        <option value="Chivalrous">Chivalrous</option>
+                        <option value="Confident">Confident</option>
+                        <option value="Defiant">Defiant</option>
+                        <option value="Disciplined">Disciplined</option>
+                        <option value="Dogged">Dogged</option>
+                        <option value="Heroic">Heroic</option>
+                        <option value="Inspiring">Inspiring</option>
+                        <option value="Lucky">Lucky</option>
+                        <option value="Mariner">Mariner</option>
+                        <option value="Merciless">Merciless</option>
+                        <option value="Prodigious">Prodigious</option>
+                        <option value="Relentless">Relentless</option>
+                        <option value="Resolute">Resolute</option>
+                        <option value="Wary">Wary</option>
+                        <option value="Zealous">Zealous</option>
+                     </select>
+                 </div>
+             </div>
             <!-- Army B -->
             <div id="armyB" class="bg-white p-4 rounded shadow">
                 <h2 class="text-2xl font-semibold mb-2">Army B</h2>
@@ -76,28 +107,68 @@
                         <option value="ranged">Ranged</option>
                         <option value="cav">Cavalry</option>
                         <option value="support">Support</option>
-                        <option value="general1">General 1</option>
-                        <option value="general2">General 2</option>
                     </select>
-                    <input id="unitCountB" type="number" min="1" value="1" class="border p-1 rounded w-16" />
-                    <button id="addUnitB" class="bg-green-500 text-white px-2 py-1 rounded">Add</button>
-                </div>
+                    <select id="enhancementB" class="border p-1 rounded">
+                        <!-- Options will be populated by JS -->
+                    </select>
+                     <input id="unitCountB" type="number" min="1" value="1" class="border p-1 rounded w-16" />
+                     <button id="addUnitB" class="bg-green-500 text-white px-2 py-1 rounded">Add</button>
+                 </div>
                 <table class="table-auto w-full border-collapse bg-white">
                     <thead>
                         <tr>
+                            <th class="border px-2 py-1">Image</th>
                             <th class="border px-2 py-1">Unit</th>
                             <th class="border px-2 py-1">Count</th>
                         </tr>
                     </thead>
                     <tbody id="armyBList"></tbody>
                 </table>
-            </div>
+                <!-- General inputs for Army B -->
+                <div class="mt-4">
+                    <label for="generalLevelB" class="block">General Level:</label>
+                    <input id="generalLevelB" type="number" min="1" max="10" value="1" class="border p-1 rounded w-20 mb-2" />
+                    <label for="generalTraitB" class="block">General Trait:</label>
+                    <select id="generalTraitB" class="border p-1 rounded w-full">
+                        <option value="None">None</option>
+                        <option value="Ambitious">Ambitious</option>
+                        <option value="Bold">Bold</option>
+                        <option value="Brilliant">Brilliant</option>
+                        <option value="Brutal">Brutal</option>
+                        <option value="Cautious">Cautious</option>
+                        <option value="Chivalrous">Chivalrous</option>
+                        <option value="Confident">Confident</option>
+                        <option value="Defiant">Defiant</option>
+                        <option value="Disciplined">Disciplined</option>
+                        <option value="Dogged">Dogged</option>
+                        <option value="Heroic">Heroic</option>
+                        <option value="Inspiring">Inspiring</option>
+                        <option value="Lucky">Lucky</option>
+                        <option value="Mariner">Mariner</option>
+                        <option value="Merciless">Merciless</option>
+                        <option value="Prodigious">Prodigious</option>
+                        <option value="Relentless">Relentless</option>
+                        <option value="Resolute">Resolute</option>
+                        <option value="Wary">Wary</option>
+                        <option value="Zealous">Zealous</option>
+                     </select>
+                 </div>
+             </div>
         </div>
         <div class="text-center mb-4">
             <label for="battleType" class="mr-2">Battle Type:</label>
             <select id="battleType" class="border p-1 rounded">
                 <option value="open">Open Battle</option>
                 <option value="siege">Siege</option>
+            </select>
+        </div>
+        <!-- Siege options: city tier selection -->
+        <div id="siegeOptions" class="text-center mb-4 hidden">
+            <label for="cityTier" class="mr-2">City Tier:</label>
+            <select id="cityTier" class="border p-1 rounded">
+                <option value="1">Tier 1</option>
+                <option value="2">Tier 2</option>
+                <option value="3">Tier 3</option>
             </select>
         </div>
         <div class="text-center mb-4">
@@ -114,9 +185,61 @@
             <!-- Voting UI will be rendered here by weightedVoting.js -->
         </div>
         <!-- Optional: Background music with controls -->
-        <audio id="bgMusic" src="background-music.mp3" autoplay loop controls class="fixed bottom-4 right-4 w-24"></audio>
+        <audio id="bgMusic" src="background-music.mp3" loop></audio>
+        <button id="toggleMusic" class="fixed bottom-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg w-14 h-14 flex items-center justify-center">
+            <i class="fas fa-play"></i>
+        </button>
     </div>
     <script src="battle.js"></script>
     <script src="weightedVoting.js"></script>
+    <script>
+        // Enhancement options based on unit type
+        const enhancementOptions = {
+            cav: ['None', 'Life Guard', 'Lancers', 'Dragoons'],
+            heavy: ['None', 'Artillery Team', 'Grenadiers', 'Stormtroopers'],
+            light: ['None', 'Rangers', 'Assault Team', 'Commando'],
+            ranged: ['None', 'Sharpshooters', 'Mobile Platforms', 'Mortar Team'],
+            support: ['None', 'Field Hospital', 'Combat Engineers', 'Officer Corps'],
+            universal: ['Sentry Team', 'Marines']
+        };
+
+        function populateEnhancements(unitTypeEl, enhancementEl) {
+            const selectedType = unitTypeEl.value;
+            const options = [...enhancementOptions[selectedType], ...enhancementOptions.universal];
+            enhancementEl.innerHTML = options.map(e => `<option value="${e}">${e}</option>`).join('');
+        }
+
+        const unitTypeA = document.getElementById('unitTypeA');
+        const enhancementA = document.getElementById('enhancementA');
+        const unitTypeB = document.getElementById('unitTypeB');
+        const enhancementB = document.getElementById('enhancementB');
+
+        // Initial population and event listeners
+        populateEnhancements(unitTypeA, enhancementA);
+        populateEnhancements(unitTypeB, enhancementB);
+        unitTypeA.addEventListener('change', () => populateEnhancements(unitTypeA, enhancementA));
+        unitTypeB.addEventListener('change', () => populateEnhancements(unitTypeB, enhancementB));
+
+        // Toggle siege options visibility
+        const battleTypeEl = document.getElementById('battleType');
+        const siegeOpts = document.getElementById('siegeOptions');
+        battleTypeEl.addEventListener('change', () => {
+            siegeOpts.classList.toggle('hidden', battleTypeEl.value !== 'siege');
+        });
+
+        // Music toggle
+        const music = document.getElementById('bgMusic');
+        const toggleBtn = document.getElementById('toggleMusic');
+        toggleBtn.addEventListener('click', () => {
+            const icon = toggleBtn.querySelector('i');
+            if (music.paused) {
+                music.play().catch(e => console.error("Audio play failed:", e));
+                icon.className = 'fas fa-pause';
+            } else {
+                music.pause();
+                icon.className = 'fas fa-play';
+            }
+        });
+    </script>
 </body>
 </html>
