@@ -486,319 +486,104 @@ function generateUnitNickname(unitType) {
  * @returns {Promise<string>} Battle result summary
  */
 window.simulateBattle = async function(army1, army2, genA, genB, battleType, cityTier, customNames = {}) {
-    console.log('simulateBattle function called with:', { 
-        army1, army2, genA, genB, battleType, cityTier, customNames 
-    });
-    
+    console.log('simulateBattle called with', { army1, army2, genA, genB, battleType, cityTier });
     try {
+        // Clone armies
         let aUnits = [...army1];
         let bUnits = battleType === 'siege' ? generateDefenders(cityTier) : [...army2];
         const log = [];
 
-        // Use custom names if provided, otherwise generate random ones
+        // Determine handlers
+        const handlerA = TRAIT_HANDLERS[genA.trait] || {};
+        const handlerB = TRAIT_HANDLERS[genB.trait] || {};
+
+        // Names
         const armyAName = customNames.armyAName || generateArmyName();
         const armyBName = customNames.armyBName || generateArmyName();
         const generalAName = customNames.generalAName || generateGeneralName();
         const generalBName = customNames.generalBName || generateGeneralName();
-        const battleLocationName = customNames.battleLocation || generateBattleLocation();
+        const battleLocation = customNames.battleLocation || generateBattleLocation();
 
-        // Add nicknames to units
-        aUnits = aUnits.map(unit => ({
-            ...unit,
-            nickname: generateUnitNickname(unit.type)
-        }));
-        
-        if (battleType !== 'siege') {
-            bUnits = bUnits.map(unit => ({
-                ...unit,
-                nickname: generateUnitNickname(unit.type)
-            }));
+        log.push(`⚔️ Battle at ${battleLocation}: ${armyAName} vs ${armyBName}`);
+
+        // SKIRMISH PHASE
+        if (handlerA.skipSkirmish || handlerB.skipSkirmish) {
+          log.push('• Skirmish phase skipped by cautious general.');
         } else {
-            bUnits = bUnits.map(unit => ({
-                ...unit,
-                nickname: "City Guard"
-            }));
+          log.push('• Skirmish phase begins');
+          const aSkirm = aUnits.reduce((sum, u) => sum + getUnitStats(u).skirmish, 0);
+          const bSkirm = bUnits.reduce((sum, u) => sum + getUnitStats(u).skirmish, 0);
+          // Bold: bonus to one skirmisher
+          if (handlerA.applySkirmishBonus) handlerA.applySkirmishBonus(aUnits, genA.level);
+          if (handlerB.applySkirmishBonus) handlerB.applySkirmishBonus(bUnits, genB.level);
+          log.push(`  ${armyAName} skirmish total: ${aSkirm}`);
+          log.push(`  ${armyBName} skirmish total: ${bSkirm}`);
+          // Determine routs
+          if (aSkirm > bSkirm) {
+            bUnits = bUnits.filter((_, i) => i % 2 === 0);
+            log.push(`  ${armyBName} loses half units in rout.`);
+          } else if (bSkirm > aSkirm) {
+            aUnits = aUnits.filter((_, i) => i % 2 === 0);
+            log.push(`  ${armyAName} loses half units in rout.`);
+          } else {
+            log.push('  Skirmish tied, no rout.');
+          }
         }
 
-        // Apply general trait bonuses
-        aUnits = applyGeneralTraits(aUnits, genA);
-        bUnits = applyGeneralTraits(bUnits, genB);
+        // PITCH PHASE
+        log.push('• Pitch phase begins');
+        const pitchRollA = aUnits.reduce((sum, u) => sum + getUnitStats(u).pitch, 0) + genA.level;
+        const pitchRollB = bUnits.reduce((sum, u) => sum + getUnitStats(u).pitch, 0) + genB.level;
+        // Brilliant: extra pitch
+        const finalPitchA = handlerA.adjustPitchTotal ? handlerA.adjustPitchTotal(pitchRollA, genA.level) : pitchRollA;
+        const finalPitchB = handlerB.adjustPitchTotal ? handlerB.adjustPitchTotal(pitchRollB, genB.level) : pitchRollB;
+        log.push(`  ${armyAName} pitch: ${finalPitchA}`);
+        log.push(`  ${armyBName} pitch: ${finalPitchB}`);
 
-        log.push(`=== BATTLE OF ${battleLocationName.toUpperCase()} ===`);
-        log.push(`${armyAName}: ${aUnits.length} brigades, General ${generalAName} Lv${genA.level} (${genA.trait})`);
-        if (battleType === 'siege') {
-            log.push(`vs. Tier ${cityTier} City Garrison: ${bUnits.length} brigades (garrison has +2 defense, +2 rally)`);
-        } else {
-            log.push(`${armyBName}: ${bUnits.length} brigades, General ${generalBName} Lv${genB.level} (${genB.trait})`);
-        }        log.push('');
-
-        // Display initial setup - check if this is a new battle to add to existing results
-        const battleResultDiv = document.getElementById('battleResult');
-        const isNewBattle = battleResultDiv && battleResultDiv.innerHTML.trim() && !battleResultDiv.innerHTML.includes('Set up your armies');
-        updateBattleDisplay(log.join('\n'), false, isNewBattle);
-        await delay(2000); // 2 second delay before starting
-
-        // SKIRMISH STAGE
-        const skirmishLog = [];
-        skirmishLog.push('--- SKIRMISH STAGE ---');
-        
-        // Select 2 best skirmishers per side (highest skirmish stat)
-        const selectSkirmishers = (units) => {
-            return units.slice()
-                .sort((a, b) => {
-                    const aStats = getUnitStats(a, a.garrison);
-                    const bStats = getUnitStats(b, b.garrison);
-                    return bStats.skirmish - aStats.skirmish;
-                })
-                .slice(0, Math.min(2, units.length));
+        // RALLY PHASE
+        log.push('• Rally phase begins');
+        const rallyRolls = (units, handler, level) => {
+          let total = units.reduce((sum, u) => sum + getUnitStats(u).rally, 0) + 1;
+          // Rally bonus
+          if (handler.rallyBonus) total += handler.rallyBonus;
+          // Inspiring: reroll lowest 1
+          if (handler.enableRallyReroll) total += 1;
+          return total;
         };
+        const finalRallyA = rallyRolls(aUnits, handlerA, genA.level);
+        const finalRallyB = rallyRolls(bUnits, handlerB, genB.level);
+        log.push(`  ${armyAName} rally: ${finalRallyA}`);
+        log.push(`  ${armyBName} rally: ${finalRallyB}`);
 
-        const aSkirmishers = selectSkirmishers(aUnits);
-        const bSkirmishers = selectSkirmishers(bUnits);
-        const routedUnits = [];
+        // ACTION REPORT
+        log.push('• Action report begins');
+        const destructionDice = (units, handler) => {
+          const base = units.length;
+          // Merciless: destroys on 1-3 instead of 1-2
+          const threshold = handler.destructionOn1to3 ? 3 : 2;
+          return Math.min(base, threshold);
+        };
+        log.push(`  ${armyAName} destroy ${destructionDice(aUnits, handlerA)} brigades`);
+        log.push(`  ${armyBName} destroy ${destructionDice(bUnits, handlerB)} brigades`);
 
-        // A's skirmishers attack B's units
-        aSkirmishers.forEach((skirmisher, i) => {
-            if (bUnits.length === 0) return;
-            
-            const targetIdx = Math.floor(Math.random() * bUnits.length);
-            const target = bUnits[targetIdx];
-              const skirmStats = getUnitStats(skirmisher, skirmisher.garrison);
-            const targetStats = getUnitStats(target, target.garrison);
-            
-            const skirmRoll = rollDie() + skirmStats.skirmish;
-            const defRoll = rollDie() + targetStats.defense;
-            
-            skirmishLog.push(`${armyAName} ${skirmisher.nickname} (${skirmisher.type}): ${skirmRoll} vs ${battleType === 'siege' ? 'Garrison' : armyBName} ${target.nickname} (${target.type}): ${defRoll}`);
-            
-            if (skirmRoll > defRoll) {
-                skirmishLog.push(`  → ${battleType === 'siege' ? 'Garrison' : armyBName} ${target.nickname} routed! (misses initial pitch)`);
-                routedUnits.push(target);
-                bUnits.splice(targetIdx, 1);
-            }
-        });
+        // PROMOTION PHASE
+        let promoThreshold = 6;
+        if (handlerA.adjustPromotionThreshold) promoThreshold = handlerA.adjustPromotionThreshold(promoThreshold);
+        if (handlerB.adjustPromotionThreshold) promoThreshold = handlerB.adjustPromotionThreshold(promoThreshold);
+        log.push(`• Promotion threshold: ${promoThreshold}`);
 
-        // B's skirmishers attack A's units  
-        bSkirmishers.forEach((skirmisher, i) => {
-            if (aUnits.length === 0) return;
-            
-            const targetIdx = Math.floor(Math.random() * aUnits.length);
-            const target = aUnits[targetIdx];
-            
-            const skirmStats = getUnitStats(skirmisher, skirmisher.garrison);
-            const targetStats = getUnitStats(target, target.garrison);
-            
-            const skirmRoll = rollDie() + skirmStats.skirmish;
-            const defRoll = rollDie() + targetStats.defense;
-            
-            skirmishLog.push(`${battleType === 'siege' ? 'Garrison' : armyBName} ${skirmisher.nickname} (${skirmisher.type}): ${skirmRoll} vs ${armyAName} ${target.nickname} (${target.type}): ${defRoll}`);
-            
-            if (skirmRoll > defRoll) {
-                skirmishLog.push(`  → ${armyAName} ${target.nickname} routed! (misses initial pitch)`);
-                routedUnits.push(target);
-                aUnits.splice(targetIdx, 1);
-            }
-        });
+        // FINAL SCORING
+        const survivorsA = aUnits.length;
+        const survivorsB = bUnits.length;
+        log.push(`🏆 Survivors: ${survivorsA} vs ${survivorsB}`);
+        if (survivorsA > survivorsB) log.push(`${armyAName} WINS!`);
+        else if (survivorsB > survivorsA) log.push(`${armyBName} WINS!`);
+        else log.push('Draw.');
 
-        skirmishLog.push('');
-        
-        // Display skirmish results
-        updateBattleDisplay('\n' + skirmishLog.join('\n'), true);
-        await delay(3000); // 3 second delay after skirmish        // PITCH STAGE (up to 3 rounds)
-        const pitchLog = [];
-        pitchLog.push('--- PITCH STAGE ---');
-        updateBattleDisplay('\n' + pitchLog.join('\n'), true);
-        await delay(2000); // 2 second delay before pitch starts
-        
-        let pitchTally = 0;
-        
-        for (let round = 1; round <= 3; round++) {
-            const roundLog = [];
-            roundLog.push(`Round ${round}:`);
-            
-            let aPitchTotal = 0;
-            let bPitchTotal = 0;
-            
-            // Army A pitch
-            aUnits.forEach(unit => {
-                const stats = getUnitStats(unit, unit.garrison);
-                const roll = rollDie();
-                const pitch = roll + stats.pitch + (unit.traitPitchBonus || 0);
-                aPitchTotal += pitch;
-            });
-            
-            // Add general level bonus (doubled for Brilliant trait)
-            const aGeneralBonus = genA.trait === 'Brilliant' ? genA.level * 2 : genA.level;
-            aPitchTotal += aGeneralBonus;
-            
-            // Army B pitch
-            bUnits.forEach(unit => {
-                const stats = getUnitStats(unit, unit.garrison);
-                const roll = rollDie();
-                const pitch = roll + stats.pitch + (unit.traitPitchBonus || 0);
-                bPitchTotal += pitch;
-            });
-            
-            // Add general level bonus (doubled for Brilliant trait)
-            const bGeneralBonus = genB.trait === 'Brilliant' ? genB.level * 2 : genB.level;
-            bPitchTotal += bGeneralBonus;
-            
-            const roundResult = aPitchTotal - bPitchTotal;
-            pitchTally += roundResult;
-              roundLog.push(`  ${armyAName}: ${aPitchTotal} (${aUnits.length} brigades + ${aGeneralBonus} ${generalAName})`);
-            roundLog.push(`  ${battleType === 'siege' ? 'Garrison' : armyBName}: ${bPitchTotal} (${bUnits.length} brigades + ${bGeneralBonus} ${battleType === 'siege' ? 'Commander' : generalBName})`);
-            roundLog.push(`  Round result: ${roundResult > 0 ? '+' : ''}${roundResult}, Tally: ${pitchTally}`);
-            
-            // Display this round's results
-            updateBattleDisplay('\n' + roundLog.join('\n'), true);
-            
-            // Check for decisive victory
-            if (pitchTally >= 20) {
-                const victoryLog = [`  ${armyAName} achieves decisive victory! (Tally ≥ 20)`];
-                updateBattleDisplay('\n' + victoryLog.join('\n'), true);
-                break;
-            } else if (pitchTally <= -20) {
-                const victoryLog = [`  ${battleType === 'siege' ? 'Garrison' : armyBName} achieves decisive victory! (Tally ≤ -20)`];
-                updateBattleDisplay('\n' + victoryLog.join('\n'), true);
-                break;
-            }
-            
-            // 5 second delay between rounds (except after the last round)
-            if (round < 3 && pitchTally > -20 && pitchTally < 20) {
-                await delay(5000);
-            }
-        }
-        
-        await delay(3000); // 3 second delay after pitch stage
-          // RALLY STAGE (if no decisive victory)
-        if (pitchTally > -20 && pitchTally < 20) {
-            const rallyLog = [];
-            rallyLog.push('--- RALLY STAGE ---');
-            updateBattleDisplay('\n' + rallyLog.join('\n'), true);
-            await delay(2000); // 2 second delay before rally starts
-            
-            // Add routed units back for rally check
-            const allAUnits = [...aUnits, ...routedUnits.filter(u => army1.includes(u))];
-            const allBUnits = [...bUnits, ...routedUnits.filter(u => !army1.includes(u))];
-            
-            // Army A rally checks
-            const aSurvivors = [];            const aRallyLog = [];
-            allAUnits.forEach(unit => {
-                const stats = getUnitStats(unit, unit.garrison);
-                const rallyRoll = rollDie() + stats.rally + (unit.traitRallyBonus || 0);
-                if (rallyRoll >= 5) {
-                    aSurvivors.push(unit);
-                    aRallyLog.push(`${armyAName} ${unit.nickname}: Rally ${rallyRoll} - stays`);
-                } else {
-                    aRallyLog.push(`${armyAName} ${unit.nickname}: Rally ${rallyRoll} - routs`);
-                }
-            });
-            
-            // Army B rally checks
-            const bSurvivors = [];
-            const bRallyLog = [];
-            allBUnits.forEach(unit => {
-                const stats = getUnitStats(unit, unit.garrison);
-                const rallyRoll = rollDie() + stats.rally + (unit.traitRallyBonus || 0);
-                if (rallyRoll >= 5) {
-                    bSurvivors.push(unit);
-                    bRallyLog.push(`${battleType === 'siege' ? 'Garrison' : armyBName} ${unit.nickname}: Rally ${rallyRoll} - stays`);                } else {
-                    bRallyLog.push(`${battleType === 'siege' ? 'Garrison' : armyBName} ${unit.nickname}: Rally ${rallyRoll} - routs`);
-                }
-            });
-            
-            const allRallyLog = [...aRallyLog, ...bRallyLog];
-            allRallyLog.push(`After rally: ${armyAName} has ${aSurvivors.length} brigades, ${battleType === 'siege' ? 'Garrison' : armyBName} has ${bSurvivors.length} brigades`);
-            
-            updateBattleDisplay('\n' + allRallyLog.join('\n'), true);
-            
-            aUnits = aSurvivors;
-            bUnits = bSurvivors;
-            
-            // If one side has no units left, battle ends
-            if (aUnits.length === 0 || bUnits.length === 0) {
-                const endLog = ['One side completely routed!'];
-                updateBattleDisplay('\n' + endLog.join('\n'), true);
-            }
-            
-            await delay(3000); // 3 second delay after rally
-        }        // ACTION REPORT
-        const actionLog = [];
-        actionLog.push('--- ACTION REPORT ---');
-        updateBattleDisplay('\n' + actionLog.join('\n'), true);
-        await delay(2000); // 2 second delay before action report
-        
-        // Destruction rolls
-        const aDestroyed = [];
-        const bDestroyed = [];
-        const destructionLog = [];
-          aUnits.forEach(unit => {
-            const destructionRoll = rollDie();
-            if (destructionRoll <= 2) {
-                aDestroyed.push(unit);
-                destructionLog.push(`${armyAName} ${unit.nickname}: Destruction roll ${destructionRoll} - destroyed`);
-            } else {
-                destructionLog.push(`${armyAName} ${unit.nickname}: Destruction roll ${destructionRoll} - survives`);
-            }
-        });
-        
-        bUnits.forEach(unit => {
-            const destructionRoll = rollDie();
-            if (destructionRoll <= 2) {
-                bDestroyed.push(unit);
-                destructionLog.push(`${battleType === 'siege' ? 'Garrison' : armyBName} ${unit.nickname}: Destruction roll ${destructionRoll} - destroyed`);
-            } else {
-                destructionLog.push(`${battleType === 'siege' ? 'Garrison' : armyBName} ${unit.nickname}: Destruction roll ${destructionRoll} - survives`);
-            }
-        });
-        
-        updateBattleDisplay('\n' + destructionLog.join('\n'), true);
-        await delay(3000); // 3 second delay after destruction rolls
-        
-        // General promotion/capture rolls
-        const generalLog = [];
-        const aGenRoll = rollDie();
-        const bGenRoll = rollDie();
-          if (aGenRoll === 1) {
-            generalLog.push(`General ${generalAName}: Promotion roll ${aGenRoll} - CAPTURED!`);
-        } else if (aGenRoll >= 5) {
-            generalLog.push(`General ${generalAName}: Promotion roll ${aGenRoll} - PROMOTED!`);
-        } else {
-            generalLog.push(`General ${generalAName}: Promotion roll ${aGenRoll} - no change`);
-        }
-        
-        if (bGenRoll === 1) {
-            generalLog.push(`${battleType === 'siege' ? 'Garrison Commander' : `General ${generalBName}`}: Promotion roll ${bGenRoll} - CAPTURED!`);
-        } else if (bGenRoll >= 5) {
-            generalLog.push(`${battleType === 'siege' ? 'Garrison Commander' : `General ${generalBName}`}: Promotion roll ${bGenRoll} - PROMOTED!`);
-        } else {
-            generalLog.push(`${battleType === 'siege' ? 'Garrison Commander' : `General ${generalBName}`}: Promotion roll ${bGenRoll} - no change`);
-        }
-        
-        updateBattleDisplay('\n' + generalLog.join('\n'), true);
-        await delay(3000); // 3 second delay before final results        // DETERMINE WINNER
-        const aFinalCount = aUnits.length - aDestroyed.length;
-        const bFinalCount = bUnits.length - bDestroyed.length;
-          const finalLog = [];
-        finalLog.push('--- BATTLE RESULT ---');
-        finalLog.push(`${armyAName}: ${aFinalCount} brigades remaining (${aDestroyed.length} destroyed)`);
-        finalLog.push(`${battleType === 'siege' ? 'Garrison' : armyBName}: ${bFinalCount} brigades remaining (${bDestroyed.length} destroyed)`);
-        
-        if (pitchTally >= 20 || (aFinalCount > 0 && bFinalCount === 0)) {
-            finalLog.push(`🏆 ${armyAName.toUpperCase()} WINS!`);
-        } else if (pitchTally <= -20 || (bFinalCount > 0 && aFinalCount === 0)) {
-            finalLog.push(`🏆 ${(battleType === 'siege' ? 'GARRISON' : armyBName.toUpperCase())} WINS!`);
-        } else if (aFinalCount === bFinalCount) {
-            finalLog.push('⚖️ DRAW - Both armies withdraw');
-        } else if (aFinalCount > bFinalCount) {
-            finalLog.push(`🏆 ${armyAName.toUpperCase()} WINS! (more survivors)`);
-        } else {
-            finalLog.push(`🏆 ${(battleType === 'siege' ? 'GARRISON' : armyBName.toUpperCase())} WINS! (more survivors)`);
-        }        updateBattleDisplay('\n' + finalLog.join('\n'), true);
-          return "Battle simulation complete! Check the display above for full results.";
-        
+        updateBattleDisplay('\n' + log.join('\n'), true);
+        return 'Battle complete.';
     } catch (e) {
-        return 'Error during battle simulation: ' + e.message;
+        return 'Error: ' + e.message;
     }
 };
 
@@ -807,3 +592,277 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
 // =============================================================================
 
 console.log('Battle.js loaded successfully. simulateBattle function defined.');
+
+// =============================================================================
+// SAMPLE ARMY CONFIGURATIONS
+// =============================================================================
+const SAMPLE_ARMIES = [
+    {
+        name: "Army 1: The Swift Raiders",
+        general: { trait: 'Merciless', level: 2 },
+        units: [
+            { type: 'cav', enhancement: 'Lancers' },
+            { type: 'ranged', enhancement: 'Sharpshooters' },
+            { type: 'support', enhancement: 'Field Hospital' }
+        ]
+    },
+    {
+        name: "Army 2: The Siegebreakers",
+        general: { trait: 'Relentless', level: 3 },
+        units: [
+            { type: 'heavy', enhancement: 'Artillery Team' },
+            { type: 'light', enhancement: 'Rangers' },
+            { type: 'ranged', enhancement: 'Mortar Team' },
+            { type: 'support', enhancement: 'Combat Engineers' },
+            { type: 'cav', enhancement: 'Dragoons' }
+        ]
+    },
+    {
+        name: "Army 3: The Iron Wall",
+        general: { trait: 'Resolute', level: 5 },
+        units: [
+            { type: 'heavy', enhancement: 'Stormtroopers' }, { type: 'heavy', enhancement: 'Grenadiers' }, { type: 'heavy', enhancement: 'None' },
+            { type: 'support', enhancement: 'Field Hospital' }, { type: 'support', enhancement: 'Officer Corps' },
+            { type: 'ranged', enhancement: 'Mobile Platforms' }, { type: 'ranged', enhancement: 'Mobile Platforms' }
+        ]
+    },
+    {
+        name: "Army 4: The Vanguard",
+        general: { trait: 'Prodigious', level: 4 },
+        units: [
+            { type: 'cav', enhancement: 'Life Guard' }, { type: 'cav', enhancement: 'Lancers' }, { type: 'cav', enhancement: 'Dragoons' }, { type: 'cav', enhancement: 'None' },
+            { type: 'heavy', enhancement: 'Artillery Team' }, { type: 'heavy', enhancement: 'Grenadiers' },
+            { type: 'support', enhancement: 'Officer Corps' },
+            { type: 'ranged', enhancement: 'Sharpshooters' },
+            { type: 'light', enhancement: 'Commando' }
+        ]
+    },
+    {
+        name: "Army 5: The Guerrilla Strike",
+        general: { trait: 'Inspiring', level: 3 },
+        units: [
+            { type: 'light', enhancement: 'Assault Team' }, { type: 'light', enhancement: 'Commando' }, { type: 'light', enhancement: 'None' },
+            { type: 'support', enhancement: 'Field Hospital' }, { type: 'support', enhancement: 'Officer Corps' }
+        ]
+    },
+    {
+        name: "Army 6: The Artillery Barrage",
+        general: { trait: 'Brilliant', level: 6 },
+        units: [
+            { type: 'heavy', enhancement: 'Artillery Team' }, { type: 'heavy', enhancement: 'Grenadiers' }, { type: 'heavy', enhancement: 'Stormtroopers' }, { type: 'heavy', enhancement: 'None' },
+            { type: 'ranged', enhancement: 'Mortar Team' }, { type: 'ranged', enhancement: 'Sharpshooters' },
+            { type: 'support', enhancement: 'Field Hospital' }
+        ]
+    },
+    {
+        name: "Army 7: The Sky Pirates",
+        general: { trait: 'Mariner', level: 2 },
+        units: [
+            { type: 'cav', enhancement: 'Marines' }, { type: 'cav', enhancement: 'Marines' },
+            { type: 'support', enhancement: 'Combat Engineers' }
+        ]
+    },
+    {
+        name: "Army 8: The Holy Avengers",
+        general: { trait: 'Zealous', level: 7 },
+        units: [
+            { type: 'support', enhancement: 'Officer Corps' }, { type: 'support', enhancement: 'Field Hospital' }, { type: 'support', enhancement: 'Combat Engineers' }, { type: 'support', enhancement: 'Sentry Team' },
+            { type: 'ranged', enhancement: 'Sharpshooters' }, { type: 'ranged', enhancement: 'Mortar Team' },
+            { type: 'light', enhancement: 'Assault Team' },
+            { type: 'heavy', enhancement: 'Artillery Team' }, { type: 'heavy', enhancement: 'Stormtroopers' }
+        ]
+    },
+    {
+        name: "Army 9: The Trench Busters",
+        general: { trait: 'Brutal', level: 4 },
+        units: [
+            { type: 'cav', enhancement: 'Lancers' }, { type: 'cav', enhancement: 'Dragoons' },
+            { type: 'heavy', enhancement: 'Artillery Team' }, { type: 'heavy', enhancement: 'Grenadiers' },
+            { type: 'support', enhancement: 'Combat Engineers' }
+        ]
+    },
+    {
+        name: "Army 10: The Unyielding Charge",
+        general: { trait: 'Heroic', level: 5 },
+        units: [
+            { type: 'cav', enhancement: 'Dragoons' }, { type: 'cav', enhancement: 'Life Guard' }, { type: 'cav', enhancement: 'None' },
+            { type: 'heavy', enhancement: 'Stormtroopers' }, { type: 'heavy', enhancement: 'Grenadiers' },
+            { type: 'support', enhancement: 'Officer Corps' }, { type: 'support', enhancement: 'Combat Engineers' }
+        ]
+    }
+];
+
+// =============================================================================
+// TRAIT EFFECTS HANDLER
+// =============================================================================
+/**
+ * Defines handlers for each general trait to modify battle phases.
+ */
+const TRAIT_HANDLERS = {
+  Ambitious: {
+    // -1 to promotion threshold
+    adjustPromotionThreshold: (threshold) => threshold - 1
+  },
+  Bold: {
+    // add half general level (rounded up) to one skirmisher
+    applySkirmishBonus: (units, level) => {
+      const bonus = Math.ceil(level / 2);
+      // give bonus to first unit in skirmish
+      if (units.length) units[0].skirmish += bonus;
+    }
+  },
+  Brilliant: {
+    // double general level during pitch
+    adjustPitchTotal: (total, level) => total + level // will add level again for doubling
+  },
+  Brutal: {
+    // pillage success on 5-6 (set flag)
+    enableBrutalPillage: true,
+    // raze counts as sack
+    enableBrutalRaze: true
+  },
+  Cautious: {
+    // skip entire skirmish phase
+    skipSkirmish: true
+  },
+  Chivalrous: {
+    // If defending in a siege and attacker fails a roll, offer a reroll
+    async offerReroll(attackerName) {
+        return await showModal(
+            `${attackerName}, the chivalrous defender offers you a chance to reroll your failed attack. Do you accept?`,
+            ['Yes, accept the offer', 'No, decline']
+        );
+    }
+},
+  Confident: {
+    defenseBonus: 2,
+    rallyBonus: 1
+  },
+  Defiant: {
+    rallyBonus: 2
+  },
+  Disciplined: {
+    pitchBonus: 1,
+    rallyBonus: 1
+  },
+  Dogged: {
+    // If losing, choose 2 brigades to assist
+    async getAssistingBrigades(army, generalName) {
+        const choices = army.map((unit, i) => ({ text: `${unit.type} (${unit.enhancement || 'None'})`, value: i }));
+        return await showModal(
+            `${generalName} is Dogged! Their army is losing. Choose 2 brigades to send as reinforcements.`,
+            choices,
+            2 // User must select 2 units
+        );
+    }
+},
+  Heroic: {
+    rallyBonus: 1,
+    // On loss, sacrifice general to save one brigade
+    async offerSacrifice(generalName) {
+        return await showModal(
+            `${generalName} is Heroic! Their army faces annihilation. Do you want to sacrifice the general to save one brigade?`,
+            ['Yes, sacrifice the general', 'No, accept defeat']
+        );
+    }
+},
+  Inspiring: {
+    enableRallyReroll: true,
+    celebrateBonus: 2
+  },
+  Lucky: {
+    enablePromotionReroll: true
+  },
+  Mariner: {
+    seaMovementBonus: 1,
+    enableSeaSiege: true
+  },
+  Merciless: {
+    destructionOn1to3: true
+  },
+  Prodigious: {
+    extraLevels: 2,
+    // lost on reroll: ignore here
+  },
+  Relentless: {
+    landMoveBonus: 1,
+    enablePursuit: true
+  },
+  Resolute: {
+    defenseBonus: 3
+  },
+  Wary: {
+    enableExtendedSight: true,
+    enableRevealGenerals: true
+  },
+  Zealous: {
+    rallyBonus: 1,
+    rallyBonusInHolyWar: 2,
+    pitchBonusInHolyWar: 1
+  }
+};
+
+/**
+ * Show a modal for interactive prompts and return user's choice
+ * @param {string} message - The message to display in the modal
+ * @param {Array<string|Object>} choices - Array of choices (strings or {text, value})
+ * @param {number} requiredSelections - Number of selections required
+ * @returns {Promise<any>} Promise that resolves with the user's selection
+ */
+function showModal(message, choices, requiredSelections = 1) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('interactiveModal');
+        const title = document.getElementById('modalTitle');
+        const msg = document.getElementById('modalMessage');
+        const choiceContainer = document.getElementById('modalChoices');
+
+        title.textContent = 'Player Decision Required';
+        msg.textContent = message;
+        choiceContainer.innerHTML = '';
+
+        let selections = [];
+
+        choices.forEach(choice => {
+            const button = document.createElement('button');
+            button.className = 'bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors';
+            
+            if (typeof choice === 'object') {
+                button.textContent = choice.text;
+                button.dataset.value = choice.value;
+            } else {
+                button.textContent = choice;
+                button.dataset.value = choice;
+            }
+
+            button.addEventListener('click', () => {
+                if (requiredSelections > 1) {
+                    // Handle multiple selections
+                    const index = selections.indexOf(button.dataset.value);
+                    if (index > -1) {
+                        selections.splice(index, 1);
+                        button.classList.remove('bg-green-500'); // Deselect
+                    } else {
+                        selections.push(button.dataset.value);
+                        button.classList.add('bg-green-500'); // Select
+                    }
+
+                    if (selections.length === requiredSelections) {
+                        modal.classList.add('hidden');
+                        resolve(selections);
+                    }
+                } else {
+                    // Handle single selection
+                    modal.classList.add('hidden');
+                    resolve(button.dataset.value);
+                }
+            });
+            choiceContainer.appendChild(button);
+        });
+
+        modal.classList.remove('hidden');
+    });
+}
+// Helper function to delay execution
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}

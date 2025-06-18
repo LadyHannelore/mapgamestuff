@@ -373,6 +373,20 @@
         <div class="battle-setup p-6 rounded-lg mb-6 relative z-10">
             <h2 class="text-2xl font-semibold mb-4 text-center">⚔️ Battle Setup ⚔️</h2>
             
+            <!-- Sample Army Loader -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 items-end border-b-2 border-gray-400 pb-6">
+                <div>
+                    <label for="sampleArmySelect" class="block text-sm font-medium mb-1 text-white">Fight a Sample Army:</label>
+                    <select id="sampleArmySelect" class="w-full border p-2 rounded bg-white text-gray-800">
+                        <option value="-1">-- Choose an Opponent --</option>
+                        <!-- Options will be populated by JS -->
+                    </select>
+                </div>
+                <div>
+                    <button id="loadSampleArmy" class="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-all duration-300 ease-in-out transform hover:scale-105">Load Opponent</button>
+                </div>
+            </div>
+
             <!-- Battle Configuration -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div>
@@ -440,20 +454,20 @@
                                             <option value="Brutal">Brutal</option>
                                             <option value="Cautious">Cautious</option>
                                             <option value="Chivalrous">Chivalrous</option>
-                                            <option value="Coward">Coward</option>
-                                            <option value="Cruel">Cruel</option>
-                                            <option value="Decisive">Decisive</option>
-                                            <option value="Diligent">Diligent</option>
-                                            <option value="Faint-hearted">Faint-hearted</option>
-                                            <option value="Gregarious">Gregarious</option>
-                                            <option value="Honest">Honest</option>
-                                            <option value="Just">Just</option>
-                                            <option value="Paranoid">Paranoid</option>
-                                            <option value="Patient">Patient</option>
-                                            <option value="Shy">Shy</option>
-                                            <option value="Temperate">Temperate</option>
-                                            <option value="Trusting">Trusting</option>
-                                            <option value="Wrathful">Wrathful</option>
+                                            <option value="Confident">Confident</option>
+                                            <option value="Defiant">Defiant</option>
+                                            <option value="Disciplined">Disciplined</option>
+                                            <option value="Dogged">Dogged</option>
+                                            <option value="Heroic">Heroic</option>
+                                            <option value="Inspiring">Inspiring</option>
+                                            <option value="Lucky">Lucky</option>
+                                            <option value="Mariner">Mariner</option>
+                                            <option value="Merciless">Merciless</option>
+                                            <option value="Prodigious">Prodigious</option>
+                                            <option value="Relentless">Relentless</option>
+                                            <option value="Resolute">Resolute</option>
+                                            <option value="Wary">Wary</option>
+                                            <option value="Zealous">Zealous</option>
                                         </select>
                                     </div>
                                 </div>
@@ -552,20 +566,20 @@
                                             <option value="Brutal">Brutal</option>
                                             <option value="Cautious">Cautious</option>
                                             <option value="Chivalrous">Chivalrous</option>
-                                            <option value="Coward">Coward</option>
-                                            <option value="Cruel">Cruel</option>
-                                            <option value="Decisive">Decisive</option>
-                                            <option value="Diligent">Diligent</option>
-                                            <option value="Faint-hearted">Faint-hearted</option>
-                                            <option value="Gregarious">Gregarious</option>
-                                            <option value="Honest">Honest</option>
-                                            <option value="Just">Just</option>
-                                            <option value="Paranoid">Paranoid</option>
-                                            <option value="Patient">Patient</option>
-                                            <option value="Shy">Shy</option>
-                                            <option value="Temperate">Temperate</option>
-                                            <option value="Trusting">Trusting</option>
-                                            <option value="Wrathful">Wrathful</option>
+                                            <option value="Confident">Confident</option>
+                                            <option value="Defiant">Defiant</option>
+                                            <option value="Disciplined">Disciplined</option>
+                                            <option value="Dogged">Dogged</option>
+                                            <option value="Heroic">Heroic</option>
+                                            <option value="Inspiring">Inspiring</option>
+                                            <option value="Lucky">Lucky</option>
+                                            <option value="Mariner">Mariner</option>
+                                            <option value="Merciless">Merciless</option>
+                                            <option value="Prodigious">Prodigious</option>
+                                            <option value="Relentless">Relentless</option>
+                                            <option value="Resolute">Resolute</option>
+                                            <option value="Wary">Wary</option>
+                                            <option value="Zealous">Zealous</option>
                                         </select>
                                     </div>
                                 </div>
@@ -853,8 +867,8 @@
                 try {
                     const result = await window.simulateBattle(
                         window.armyA, window.armyB,
-                        { level: genLevelA, trait: genTraitA },
-                        { level: genLevelB, trait: genTraitB },
+                        { level: genLevelA, trait: genTraitA, name: generalANameInput || 'General A' },
+                        { level: genLevelB, trait: genTraitB, name: generalBNameInput || 'General B' },
                         battleType, cityTier,
                         {
                             battleLocation: battleLocationInput,
@@ -916,6 +930,58 @@
                 cityTierMain.value = this.value;
             });
         }
+
+        // Sample army loading
+        const sampleArmySelect = document.getElementById('sampleArmySelect');
+        const loadSampleArmyBtn = document.getElementById('loadSampleArmy');
+        loadSampleArmyBtn.addEventListener('click', () => {
+            const selectedValue = sampleArmySelect.value;
+            if (selectedValue === '-1') return; // No valid selection
+            
+            // Load sample army data (mocked for this example)
+            const sampleArmies = {
+                '1': { name: 'Barbarians', units: [{ type: 'cav', count: 10 }, { type: 'light', count: 50 }] },
+                '2': { name: 'Knights', units: [{ type: 'heavy', count: 20 }, { type: 'cav', count: 15 }] },
+                '3': { name: 'Archers', units: [{ type: 'ranged', count: 30 }, { type: 'support', count: 5 }] },
+                '4': { name: 'Samurai', units: [{ type: 'heavy', count: 10 }, { type: 'light', count: 40 }] },
+                '5': { name: 'Vikings', units: [{ type: 'cav', count: 25 }, { type: 'ranged', count: 10 }] },
+                '6': { name: 'Spartans', units: [{ type: 'heavy', count: 15 }, { type: 'light', count: 35 }] },
+                '7': { name: 'Mongols', units: [{ type: 'cav', count: 20 }, { type: 'ranged', count: 20 }] },
+                '8': { name: 'Persians', units: [{ type: 'heavy', count: 10 }, { type: 'support', count: 10 }] },
+                '9': { name: 'Chinese', units: [{ type: 'light', count: 30 }, { type: 'ranged', count: 15 }] },
+                '10': { name: 'Indians', units: [{ type: 'cav', count: 15 }, { type: 'heavy', count: 10 }] }
+            };
+            
+            const selectedArmy = sampleArmies[selectedValue];
+            if (selectedArmy) {
+                // Clear existing units
+                window.armyB = [];
+                
+                // Add sample units to Army B
+                selectedArmy.units.forEach(unit => {
+                    window.armyB.push({ type: unit.type, count: unit.count });
+                });
+                
+                // Update UI (you may want to create a separate function for this)
+                const armyBList = document.getElementById('armyBList');
+                armyBList.innerHTML = ''; // Clear existing rows
+                window.armyB.forEach((unit, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="border px-2 py-1"><img src="images/${unit.type}.png" alt="${unit.type}" class="w-10 h-10 object-cover rounded"></td>
+                        <td class="border px-2 py-1 capitalize">${unit.type}</td>
+                        <td class="border px-2 py-1">${unit.count}</td>
+                        <td class="border px-2 py-1">
+                            <button class="removeUnitA px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600" data-index="${index}">Remove</button>
+                        </td>
+                    `;
+                    armyBList.appendChild(row);
+                });
+                
+                // Optionally, you can auto-select this army in the setup
+                document.getElementById('armyBName').value = selectedArmy.name;
+            }
+        });
     }
     
     // Debug: Check if battle.js functions are loaded
@@ -926,5 +992,15 @@
             console.error('Battle.js not loaded properly');
         }
     });    </script>
+    <!-- Modal for interactive prompts -->
+<div id="interactiveModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+        <h3 id="modalTitle" class="text-xl font-bold mb-4"></h3>
+        <div id="modalMessage" class="mb-4"></div>
+        <div id="modalChoices" class="flex justify-end gap-4 flex-wrap">
+            <!-- Buttons or inputs will be added here dynamically -->
+        </div>
+    </div>
+</div>
 </body>
 </html>
