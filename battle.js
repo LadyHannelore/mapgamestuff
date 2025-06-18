@@ -1,5 +1,7 @@
 // battle.js
 
+console.log('Battle.js loading...');
+
 // Unit stats definitions (matches tutorial exactly)
 const unitStats = {
     cav: { skirmish: 1, pitch: 1, defense: 0, rally: 0, move: 5 },
@@ -106,23 +108,78 @@ document.addEventListener('DOMContentLoaded', function() {
             addUnits(window.armyB, armyBList, unitTypeB.value, count, enhancementB.value);
         });
     }
-    
-    // General image selection
+      // General image selection
     const generalImageSelectA = document.getElementById('generalImageSelectA');
     const generalImageA = document.getElementById('generalImageA');
+    const customImageA = document.getElementById('customImageA');
+    const customUrlA = document.getElementById('customUrlA');
     
     if (generalImageSelectA && generalImageA) {
         generalImageSelectA.addEventListener('change', function() {
-            generalImageA.src = this.value;
+            if (this.value === 'custom') {
+                customImageA.classList.remove('hidden');
+                customUrlA.classList.remove('hidden');
+            } else {
+                customImageA.classList.add('hidden');
+                customUrlA.classList.add('hidden');
+                generalImageA.src = this.value;
+            }
+        });
+        
+        // Handle file upload for General A
+        customImageA.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    generalImageA.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Handle URL input for General A
+        customUrlA.addEventListener('input', function() {
+            if (this.value.trim()) {
+                generalImageA.src = this.value.trim();
+            }
         });
     }
     
     const generalImageSelectB = document.getElementById('generalImageSelectB');
     const generalImageB = document.getElementById('generalImageB');
+    const customImageB = document.getElementById('customImageB');
+    const customUrlB = document.getElementById('customUrlB');
     
     if (generalImageSelectB && generalImageB) {
         generalImageSelectB.addEventListener('change', function() {
-            generalImageB.src = this.value;
+            if (this.value === 'custom') {
+                customImageB.classList.remove('hidden');
+                customUrlB.classList.remove('hidden');
+            } else {
+                customImageB.classList.add('hidden');
+                customUrlB.classList.add('hidden');
+                generalImageB.src = this.value;
+            }
+        });
+        
+        // Handle file upload for General B
+        customImageB.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    generalImageB.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Handle URL input for General B
+        customUrlB.addEventListener('input', function() {
+            if (this.value.trim()) {
+                generalImageB.src = this.value.trim();
+            }
         });
     }
 });
@@ -364,6 +421,7 @@ function generateUnitNickname(unitType) {
 
 // Make simulateBattle function global so it can be called from HTML
 window.simulateBattle = async function(army1, army2, genA, genB, battleType, cityTier, customNames = {}) {
+    console.log('simulateBattle function called with:', { army1, army2, genA, genB, battleType, cityTier, customNames });
     try {
         let aUnits = [...army1];
         let bUnits = battleType === 'siege' ? generateDefenders(cityTier) : [...army2];
@@ -678,3 +736,5 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
         return 'Error during battle simulation: ' + e.message;
     }
 }
+
+console.log('Battle.js loaded successfully. simulateBattle function defined.');

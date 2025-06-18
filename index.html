@@ -418,14 +418,16 @@
                     </thead>
                     <tbody id="armyAList"></tbody>
                 </table>                <!-- General inputs for Army A -->
-                <div class="mt-4">                    <div class="flex items-center mb-4">
-                        <img id="generalImageA" src="images/general1.png" alt="General A" class="w-20 h-20 max-w-[200px] max-h-[200px] rounded-full border-4 border-purple-500 mr-4 object-cover shadow-lg">
+                <div class="mt-4">                    <div class="flex items-center mb-4">                        <img id="generalImageA" src="images/general1.png" alt="General A" class="w-24 h-24 max-w-[300px] max-h-[300px] rounded-full border-4 border-purple-500 mr-4 object-cover shadow-lg">
                         <div class="flex-1">
-                            <label for="generalImageSelectA" class="block">General Image:</label>
+                            <label for="generalImageSelectA" class="block">General A Image:</label>
                             <select id="generalImageSelectA" class="border p-1 rounded w-full mb-2">
-                                <option value="images/general1.png">General 1</option>
-                                <option value="images/general2.png">General 2</option>
+                                <option value="images/general1.png">General A (Default)</option>
+                                <option value="images/general2.png">General B</option>
+                                <option value="custom">Custom Image...</option>
                             </select>
+                            <input type="file" id="customImageA" accept="image/*" class="hidden">
+                            <input type="url" id="customUrlA" placeholder="Or enter image URL..." class="border p-1 rounded w-full mb-2 hidden">
                             <label for="generalLevelA" class="block">General Level:</label>
                             <input id="generalLevelA" type="number" min="1" max="10" value="1" class="border p-1 rounded w-20 mb-2" />
                             <label for="generalTraitA" class="block">General Trait:</label>
@@ -478,14 +480,16 @@
                     </thead>
                     <tbody id="armyBList"></tbody>
                 </table>                <!-- General inputs for Army B -->
-                <div class="mt-4">                    <div class="flex items-center mb-4">
-                        <img id="generalImageB" src="images/general2.png" alt="General B" class="w-20 h-20 max-w-[200px] max-h-[200px] rounded-full border-4 border-red-500 mr-4 object-cover shadow-lg">
+                <div class="mt-4">                    <div class="flex items-center mb-4">                        <img id="generalImageB" src="images/general2.png" alt="General B" class="w-24 h-24 max-w-[300px] max-h-[300px] rounded-full border-4 border-red-500 mr-4 object-cover shadow-lg">
                         <div class="flex-1">
-                            <label for="generalImageSelectB" class="block">General Image:</label>
+                            <label for="generalImageSelectB" class="block">General B Image:</label>
                             <select id="generalImageSelectB" class="border p-1 rounded w-full mb-2">
-                                <option value="images/general1.png">General 1</option>
-                                <option value="images/general2.png" selected>General 2</option>
+                                <option value="images/general1.png">General A</option>
+                                <option value="images/general2.png" selected>General B (Default)</option>
+                                <option value="custom">Custom Image...</option>
                             </select>
+                            <input type="file" id="customImageB" accept="image/*" class="hidden">
+                            <input type="url" id="customUrlB" placeholder="Or enter image URL..." class="border p-1 rounded w-full mb-2 hidden">
                             <label for="generalLevelB" class="block">General Level:</label>
                             <input id="generalLevelB" type="number" min="1" max="10" value="1" class="border p-1 rounded w-20 mb-2" />
                             <label for="generalTraitB" class="block">General Trait:</label>
@@ -613,14 +617,21 @@
             newBattleBtn.addEventListener('click', () => {
                 battleResultDiv.innerHTML = '<p class="text-gray-500">Set up your armies and click "Simulate Battle" to begin...</p>';
             });
-        }
-
-        // Simulate Battle button
+        }        // Simulate Battle button
         const simulateBattleBtn = document.getElementById('simulateBattle');
         if (simulateBattleBtn && battleResultDiv) {
             simulateBattleBtn.addEventListener('click', async () => {
+                console.log('Simulate battle button clicked');
+                
                 if (!window.armyA?.length || (!window.armyB?.length && document.getElementById('battleType').value === 'open')) {
                     battleResultDiv.textContent = 'Both armies must have at least one unit.';
+                    return;
+                }
+                
+                // Check if simulateBattle function exists
+                if (typeof window.simulateBattle !== 'function') {
+                    console.error('simulateBattle function not found. Available window properties:', Object.keys(window).filter(k => k.includes('simulate')));
+                    battleResultDiv.innerHTML = '<p class="text-red-500">❌ Error: Battle simulation function not loaded. Please refresh the page and try again.</p>';
                     return;
                 }
                 
@@ -662,10 +673,32 @@
                     // Re-enable button
                     simulateBattleBtn.disabled = false;
                     simulateBattleBtn.textContent = 'Simulate Battle';                }
-            });
-        }
+            });        }
     });
-    </script>
+    
+    // Debug: Check if battle.js functions are loaded
+    window.addEventListener('load', function() {
+        console.log('Page fully loaded');
+        console.log('simulateBattle function available:', typeof window.simulateBattle === 'function');
+        if (typeof window.simulateBattle !== 'function') {
+            console.error('Battle.js not loaded properly');
+        }
+    });    </script>
     <script src="battle.js"></script>
+    <script>
+        // Additional failsafe to ensure battle.js functions are available
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait a bit for external scripts to fully load
+            setTimeout(() => {
+                if (typeof window.simulateBattle !== 'function') {
+                    console.error('simulateBattle still not available after page load');
+                    const battleDiv = document.getElementById('battleResults');
+                    if (battleDiv) {
+                        battleDiv.innerHTML = '<p class="text-red-500">⚠️ Battle simulation is not available. This may be due to script loading issues. Please refresh the page.</p>';
+                    }
+                }
+            }, 100);
+        });
+    </script>
 </body>
 </html>
