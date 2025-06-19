@@ -329,6 +329,14 @@ function applyGeneralTraits(units, general) {
     });
 }
 
+// Global variables to store battle data for reporting
+window.battleData = {
+    rounds: [],
+    finalResult: null,
+    armies: { A: null, B: null },
+    generals: { A: null, B: null }
+};
+
 // Helper function to delay execution
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -448,7 +456,28 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
         log.push(`⚔️ Battle at ${battleLocation}: ${armyAName} vs ${armyBName}`);
         log.push(`- ${generalAName} (Lvl ${genA.level}, ${genA.trait}) vs ${generalBName} (Lvl ${genB.level}, ${genB.trait})`);
         log.push(`- Army Sizes: ${aUnits.length} vs ${bUnits.length}`);
-        updateBattleDisplay(log.join('\n'));
+        updateBattleDisplay(log.join('\n'));        // Store initial battle data for reporting
+        window.battleData = {
+            rounds: [],
+            finalResult: null,
+            armies: { 
+                A: { 
+                    name: armyAName, 
+                    initialSize: aUnits.length,
+                    units: aUnits.map(u => ({ type: u.type, enhancement: u.enhancement }))
+                }, 
+                B: { 
+                    name: armyBName, 
+                    initialSize: bUnits.length,
+                    units: bUnits.map(u => ({ type: u.type, enhancement: u.enhancement }))
+                } 
+            },
+            generals: { 
+                A: { name: generalAName, level: genA.level, trait: genA.trait }, 
+                B: { name: generalBName, level: genB.level, trait: genB.trait } 
+            },
+            battleLocation: battleLocation
+        };
 
         let round = 1;
         const MAX_ROUNDS = 50; // Safety limit
@@ -556,7 +585,14 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                 aUnits.splice(randomIndex, 1);
             }
               roundLog.push(`  End of Round: ${armyAName} has ${aUnits.length} brigades, ${armyBName} has ${bUnits.length} brigades.`);
-            updateBattleDisplay(roundLog.join('\n'), true);
+            updateBattleDisplay(roundLog.join('\n'), true);            // Store round data for chart generation
+            window.battleData.rounds.push({
+                round: round,
+                armyAUnits: aUnits.length,
+                armyBUnits: bUnits.length,
+                skirmishResult: `${aLosses || 0} vs ${bLosses || 0}`,
+                details: roundLog.join('\n')
+            });
 
             round++;
             await delay(3000); // 3 second delay for readability
@@ -718,6 +754,29 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
         actionLog.push(`${generalBName}: Level ${genB.level}`);
 
         updateBattleDisplay(actionLog.join('\n'), true);
+          // Store final battle result
+        window.battleData.finalResult = {
+            winner: victor,
+            armyA: {
+                totalUnits: aUnits.length,
+                unitsLost: window.battleData.armies.A.initialSize - aUnits.length,
+                generalStatus: genA.captured ? 'Captured' : genA.promoted ? 'Promoted' : 'Survived'
+            },
+            armyB: {
+                totalUnits: bUnits.length,
+                unitsLost: window.battleData.armies.B.initialSize - bUnits.length,
+                generalStatus: genB.captured ? 'Captured' : genB.promoted ? 'Promoted' : 'Survived'
+            },
+            totalRounds: round - 1,
+            battleLocation: window.battleData.battleLocation
+        };
+
+        // Show the generate report button
+        const generateBtn = document.getElementById('generateReport');
+        if (generateBtn) {
+            generateBtn.classList.remove('hidden');
+        }
+
         return 'Battle complete.';
     } catch (e) {
         console.error("Battle simulation error:", e);
@@ -1000,3 +1059,415 @@ function showModal(message, choices, requiredSelections = 1) {
         modal.classList.remove('hidden');
     });
 }
+
+/**
+ * Generate a visual battle report as a downloadable image
+ * Creates charts showing round-by-round data and final battle results
+ */
+function generateBattleReport() {
+    const canvas = document.getElementById('battleCanvas');
+    if (!canvas || !window.battleData || !window.battleData.finalResult) {
+        console.error('Cannot generate report: missing canvas or battle data');
+        return;
+    }
+    
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height);
+    
+    // Set background gradient
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, '#f8fafc');
+    gradient.addColorStop(1, '#e2e8f0');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+    
+    // Add border
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(10, 10, width - 20, height - 20);
+    
+    // Title
+    ctx.fillStyle = '#1e293b';
+    ctx.font = 'bold 36px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('BATTLE REPORT', width / 2, 60);
+      // Battle info
+    const finalResult = window.battleData.finalResult;
+    const armies = window.battleData.armies;
+    const generals = window.battleData.generals;
+    const battleLocation = window.battleData.battleLocation;
+    
+    ctx.font = '20px Arial';
+    ctx.fillStyle = '#475569';
+    
+    const armyAName = armies.A ? armies.A.name || 'Army A' : 'Army A';
+    const armyBName = armies.B ? armies.B.name || 'Army B' : 'Army B';
+    const generalAName = generals.A ? generals.A.name || 'General A' : 'General A';
+    const generalBName = generals.B ? generals.B.name || 'General B' : 'General B';
+    
+    ctx.fillText(`${armyAName} vs ${armyBName}`, width / 2, 100);
+    ctx.fillText(`${generalAName} vs ${generalBName}`, width / 2, 130);
+    if (battleLocation) {
+        ctx.font = '16px Arial';
+        ctx.fillText(`Location: ${battleLocation}`, width / 2, 155);
+    }
+      // Battle outcome
+    ctx.font = 'bold 28px Arial';
+    ctx.fillStyle = finalResult.winner === 'A' ? '#059669' : '#dc2626';
+    const winnerName = finalResult.winner === 'A' ? armyAName : armyBName;
+    ctx.fillText(`🏆 VICTORY: ${winnerName} 🏆`, width / 2, 190);
+    
+    // Battle summary stats
+    ctx.font = '16px Arial';
+    ctx.fillStyle = '#374151';
+    ctx.textAlign = 'left';
+    
+    const leftCol = 50;
+    const rightCol = width / 2 + 50;
+    let yPos = 230;
+    
+    // Army A Stats
+    ctx.fillStyle = '#7c3aed';
+    ctx.font = 'bold 18px Arial';
+    ctx.fillText(`${armyAName} Final Status:`, leftCol, yPos);
+    ctx.font = '16px Arial';
+    ctx.fillStyle = '#374151';
+    yPos += 25;
+      if (finalResult.armyA) {
+        ctx.fillText(`Units Remaining: ${finalResult.armyA.totalUnits}`, leftCol, yPos);
+        yPos += 20;
+        ctx.fillText(`Units Lost: ${finalResult.armyA.unitsLost || 0}`, leftCol, yPos);
+        yPos += 20;
+        ctx.fillText(`General Status: ${finalResult.armyA.generalStatus}`, leftCol, yPos);
+        yPos += 25;
+        ctx.fillText(`Battle Duration: ${finalResult.totalRounds} rounds`, leftCol, yPos);
+        yPos += 20;
+    }
+      // Army B Stats
+    yPos = 230;
+    ctx.fillStyle = '#dc2626';
+    ctx.font = 'bold 18px Arial';
+    ctx.fillText(`${armyBName} Final Status:`, rightCol, yPos);
+    ctx.font = '16px Arial';
+    ctx.fillStyle = '#374151';
+    yPos += 25;
+    
+    if (finalResult.armyB) {
+        ctx.fillText(`Units Remaining: ${finalResult.armyB.totalUnits}`, rightCol, yPos);
+        yPos += 20;
+        ctx.fillText(`Units Lost: ${finalResult.armyB.unitsLost || 0}`, rightCol, yPos);
+        yPos += 20;
+        ctx.fillText(`General Status: ${finalResult.armyB.generalStatus}`, rightCol, yPos);
+        yPos += 20;
+    }
+    
+    // Round-by-round chart
+    if (window.battleData.rounds && window.battleData.rounds.length > 0) {
+        drawRoundChart(ctx, window.battleData.rounds, 50, 370, width - 100, 220);
+    }
+    
+    // Unit composition chart
+    if (armies.A && armies.B) {
+        drawUnitCompositionChart(ctx, armies.A, armies.B, 50, 620, width - 100, 180);
+    }
+    
+    // Add timestamp
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#6b7280';
+    ctx.textAlign = 'right';
+    ctx.fillText(`Generated: ${new Date().toLocaleString()}`, width - 30, height - 20);
+    
+    // Convert to downloadable image
+    const link = document.createElement('a');
+    link.download = `battle_report_${Date.now()}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+}
+
+/**
+ * Draw round-by-round chart showing army strength over time
+ */
+function drawRoundChart(ctx, rounds, x, y, width, height) {
+    ctx.save();
+    
+    // Chart background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x, y, width, height);
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, width, height);
+    
+    // Chart title
+    ctx.fillStyle = '#1f2937';
+    ctx.font = 'bold 16px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Army Strength by Round', x + width / 2, y - 10);
+    
+    if (rounds.length === 0) {
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '14px Arial';
+        ctx.fillText('No round data available', x + width / 2, y + height / 2);
+        ctx.restore();
+        return;
+    }
+    
+    // Chart margins
+    const margin = 30;
+    const chartX = x + margin;
+    const chartY = y + margin;
+    const chartWidth = width - margin * 2;
+    const chartHeight = height - margin * 2;
+    
+    // Find max values for scaling
+    const maxUnits = Math.max(
+        ...rounds.map(r => Math.max(r.armyAUnits || 0, r.armyBUnits || 0))
+    );
+    
+    if (maxUnits === 0) {
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('No unit data available', x + width / 2, y + height / 2);
+        ctx.restore();
+        return;
+    }
+    
+    // Draw grid lines
+    ctx.strokeStyle = '#f3f4f6';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 5; i++) {
+        const gridY = chartY + (chartHeight * i / 5);
+        ctx.beginPath();
+        ctx.moveTo(chartX, gridY);
+        ctx.lineTo(chartX + chartWidth, gridY);
+        ctx.stroke();
+    }
+    
+    // Draw axes
+    ctx.strokeStyle = '#374151';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(chartX, chartY);
+    ctx.lineTo(chartX, chartY + chartHeight);
+    ctx.lineTo(chartX + chartWidth, chartY + chartHeight);
+    ctx.stroke();
+    
+    // Draw data lines
+    const stepX = chartWidth / Math.max(rounds.length - 1, 1);
+    
+    // Army A line (purple)
+    ctx.strokeStyle = '#7c3aed';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    rounds.forEach((round, index) => {
+        const x_pos = chartX + index * stepX;
+        const y_pos = chartY + chartHeight - ((round.armyAUnits || 0) / maxUnits) * chartHeight;
+        if (index === 0) {
+            ctx.moveTo(x_pos, y_pos);
+        } else {
+            ctx.lineTo(x_pos, y_pos);
+        }
+    });
+    ctx.stroke();
+    
+    // Army B line (red)
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    rounds.forEach((round, index) => {
+        const x_pos = chartX + index * stepX;
+        const y_pos = chartY + chartHeight - ((round.armyBUnits || 0) / maxUnits) * chartHeight;
+        if (index === 0) {
+            ctx.moveTo(x_pos, y_pos);
+        } else {
+            ctx.lineTo(x_pos, y_pos);
+        }
+    });
+    ctx.stroke();
+    
+    // Add data points
+    rounds.forEach((round, index) => {
+        const x_pos = chartX + index * stepX;
+        
+        // Army A points
+        const y_posA = chartY + chartHeight - ((round.armyAUnits || 0) / maxUnits) * chartHeight;
+        ctx.fillStyle = '#7c3aed';
+        ctx.beginPath();
+        ctx.arc(x_pos, y_posA, 4, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Army B points
+        const y_posB = chartY + chartHeight - ((round.armyBUnits || 0) / maxUnits) * chartHeight;
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath();
+        ctx.arc(x_pos, y_posB, 4, 0, 2 * Math.PI);
+        ctx.fill();
+    });
+    
+    // Y-axis labels
+    ctx.fillStyle = '#374151';
+    ctx.font = '12px Arial';
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 5; i++) {
+        const value = Math.round((maxUnits * (5 - i)) / 5);
+        const labelY = chartY + (chartHeight * i / 5) + 4;
+        ctx.fillText(value.toString(), chartX - 5, labelY);
+    }
+    
+    // X-axis labels (round numbers)
+    ctx.textAlign = 'center';
+    rounds.forEach((round, index) => {
+        const x_pos = chartX + index * stepX;
+        ctx.fillText(`R${index + 1}`, x_pos, chartY + chartHeight + 15);
+    });
+    
+    // Legend
+    ctx.font = '14px Arial';
+    ctx.textAlign = 'left';
+    
+    // Army A legend
+    ctx.fillStyle = '#7c3aed';
+    ctx.fillRect(chartX + chartWidth - 150, chartY + 10, 15, 15);
+    ctx.fillText('Army A', chartX + chartWidth - 130, chartY + 22);
+    
+    // Army B legend
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(chartX + chartWidth - 150, chartY + 30, 15, 15);
+    ctx.fillText('Army B', chartX + chartWidth - 130, chartY + 42);
+    
+    ctx.restore();
+}
+
+/**
+ * Draw unit composition comparison chart
+ */
+function drawUnitCompositionChart(ctx, armyA, armyB, x, y, width, height) {
+    ctx.save();
+    
+    // Chart background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x, y, width, height);
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, width, height);
+    
+    // Chart title
+    ctx.fillStyle = '#1f2937';
+    ctx.font = 'bold 16px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Initial Army Composition', x + width / 2, y - 10);
+    
+    // Get unit counts for both armies
+    const unitTypes = ['cav', 'heavy', 'light', 'ranged', 'support'];
+    const unitNames = ['Cavalry', 'Heavy Inf.', 'Light Inf.', 'Ranged', 'Support'];
+    const colors = ['#8b5cf6', '#ef4444', '#22c55e', '#3b82f6', '#f59e0b'];
+    
+    const armyAUnits = {};
+    const armyBUnits = {};
+    
+    // Count units in Army A
+    if (armyA.units) {
+        armyA.units.forEach(unit => {
+            armyAUnits[unit.type] = (armyAUnits[unit.type] || 0) + 1;
+        });
+    }
+    
+    // Count units in Army B  
+    if (armyB.units) {
+        armyB.units.forEach(unit => {
+            armyBUnits[unit.type] = (armyBUnits[unit.type] || 0) + 1;
+        });
+    }
+    
+    // Calculate max for scaling
+    const maxCount = Math.max(
+        ...unitTypes.map(type => Math.max(armyAUnits[type] || 0, armyBUnits[type] || 0))
+    );
+    
+    if (maxCount === 0) {
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('No unit data available', x + width / 2, y + height / 2);
+        ctx.restore();
+        return;
+    }
+    
+    // Chart dimensions
+    const margin = 40;
+    const chartX = x + margin;
+    const chartY = y + margin;
+    const chartWidth = width - margin * 2;
+    const chartHeight = height - margin * 2;
+    
+    // Bar width and spacing
+    const barGroupWidth = chartWidth / unitTypes.length;
+    const barWidth = barGroupWidth * 0.35;
+    const barSpacing = barGroupWidth * 0.1;
+    
+    // Draw bars
+    unitTypes.forEach((type, index) => {
+        const baseX = chartX + index * barGroupWidth;
+        
+        // Army A bar
+        const countA = armyAUnits[type] || 0;
+        const heightA = (countA / maxCount) * chartHeight;
+        const yA = chartY + chartHeight - heightA;
+        
+        ctx.fillStyle = colors[index];
+        ctx.globalAlpha = 0.8;
+        ctx.fillRect(baseX, yA, barWidth, heightA);
+        
+        // Army B bar
+        const countB = armyBUnits[type] || 0;
+        const heightB = (countB / maxCount) * chartHeight;
+        const yB = chartY + chartHeight - heightB;
+        
+        ctx.globalAlpha = 0.5;
+        ctx.fillRect(baseX + barWidth + barSpacing, yB, barWidth, heightB);
+        
+        ctx.globalAlpha = 1;
+        
+        // Labels
+        ctx.fillStyle = '#374151';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(unitNames[index], baseX + barGroupWidth / 2, chartY + chartHeight + 20);
+        
+        // Values on bars
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px Arial';
+        if (heightA > 15) {
+            ctx.fillText(countA.toString(), baseX + barWidth / 2, yA + heightA / 2 + 3);
+        }
+        if (heightB > 15) {
+            ctx.fillText(countB.toString(), baseX + barWidth + barSpacing + barWidth / 2, yB + heightB / 2 + 3);
+        }
+    });
+    
+    // Legend
+    ctx.font = '14px Arial';
+    ctx.textAlign = 'left';
+    
+    // Army A legend
+    ctx.fillStyle = '#374151';
+    ctx.globalAlpha = 0.8;
+    ctx.fillRect(chartX + chartWidth - 120, chartY + 10, 15, 15);
+    ctx.globalAlpha = 1;
+    ctx.fillText('Army A', chartX + chartWidth - 100, chartY + 22);
+    
+    // Army B legend
+    ctx.globalAlpha = 0.5;
+    ctx.fillRect(chartX + chartWidth - 120, chartY + 30, 15, 15);
+    ctx.globalAlpha = 1;
+    ctx.fillText('Army B', chartX + chartWidth - 100, chartY + 42);
+    
+    ctx.restore();
+}
+
+// Make function available globally
+window.generateBattleReport = generateBattleReport;

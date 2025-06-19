@@ -83,7 +83,23 @@
             background: linear-gradient(135deg, #44bd32, #4ecdff);
         }
         
-        /* Input field styling */
+        /* Generate report button styling */
+        #generateReport {
+            background: linear-gradient(135deg, #10b981, #047857);
+            border: none;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        #generateReport:hover {
+            background: linear-gradient(135deg, #047857, #10b981);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        #generateReport:active {
+            transform: translateY(-1px);
+        }
         input[type="text"], input[type="number"], select {
             transition: all 0.3s ease;
             border: 2px solid #e2e8f0;
@@ -710,6 +726,14 @@
             <p class="text-gray-500">Set up your armies and click "Simulate Battle" to begin...</p>
         </div>
 
+        <!-- Battle Report Generation -->
+        <div class="text-center mb-6">
+            <button id="generateReport" class="px-6 py-3 bg-green-500 text-white rounded-lg font-bold shadow-lg hover:bg-green-600 transition-colors hidden">
+                📊 Generate Battle Report Image 📊
+            </button>
+        </div>        <!-- Hidden canvas for image generation -->
+        <canvas id="battleCanvas" width="1400" height="1000" style="display: none;"></canvas>
+
         <audio id="bgMusic" src="background-music.mp3" loop></audio>
         <button id="toggleMusic" class="fixed bottom-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg w-14 h-14 flex items-center justify-center">
             <i class="fas fa-play"></i>
@@ -933,13 +957,43 @@
                 }
             });
         }
-    }
-
-    /**
+    }    /**
      * Setup battle simulation
      */
-    function setupBattleSimulation() {
-        // Battle simulation setup is handled in setupArmyControllers
+    function setupBattleSimulation() {        // Setup generate battle report button
+        const generateReportBtn = document.getElementById('generateReport');
+        if (generateReportBtn) {
+            generateReportBtn.addEventListener('click', function() {
+                if (window.generateBattleReport && typeof window.generateBattleReport === 'function') {
+                    // Show loading state
+                    const originalText = this.textContent;
+                    this.textContent = '📊 Generating Report... 📊';
+                    this.disabled = true;
+                    
+                    // Generate report with a small delay to show loading state
+                    setTimeout(() => {
+                        try {
+                            window.generateBattleReport();
+                            this.textContent = '✅ Report Downloaded! 📊';
+                            setTimeout(() => {
+                                this.textContent = originalText;
+                                this.disabled = false;
+                            }, 2000);
+                        } catch (error) {
+                            console.error('Error generating report:', error);
+                            this.textContent = '❌ Report Error 📊';
+                            setTimeout(() => {
+                                this.textContent = originalText;
+                                this.disabled = false;
+                            }, 2000);
+                        }
+                    }, 100);
+                } else {
+                    console.error('generateBattleReport function not available');
+                    alert('Battle report generation is not available. Please ensure battle.js is loaded.');
+                }
+            });
+        }
     }
 
     /**
