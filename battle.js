@@ -125,80 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
             addUnits(window.armyB, armyBList, unitTypeB.value, count, enhancementB.value);
         });
     }
-      // General image selection
-    const generalImageSelectA = document.getElementById('generalImageSelectA');
-    const generalImageA = document.getElementById('generalImageA');
-    const customImageA = document.getElementById('customImageA');
-    const customUrlA = document.getElementById('customUrlA');
-    
-    if (generalImageSelectA && generalImageA) {
-        generalImageSelectA.addEventListener('change', function() {
-            if (this.value === 'custom') {
-                customImageA.classList.remove('hidden');
-                customUrlA.classList.remove('hidden');
-            } else {
-                customImageA.classList.add('hidden');
-                customUrlA.classList.add('hidden');
-                generalImageA.src = this.value;
-            }
-        });
-        
-        // Handle file upload for General A
-        customImageA.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    generalImageA.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        // Handle URL input for General A
-        customUrlA.addEventListener('input', function() {
-            if (this.value.trim()) {
-                generalImageA.src = this.value.trim();
-            }
-        });
-    }
-    
-    const generalImageSelectB = document.getElementById('generalImageSelectB');
-    const generalImageB = document.getElementById('generalImageB');
-    const customImageB = document.getElementById('customImageB');
-    const customUrlB = document.getElementById('customUrlB');
-    
-    if (generalImageSelectB && generalImageB) {
-        generalImageSelectB.addEventListener('change', function() {
-            if (this.value === 'custom') {
-                customImageB.classList.remove('hidden');
-                customUrlB.classList.remove('hidden');
-            } else {
-                customImageB.classList.add('hidden');
-                customUrlB.classList.add('hidden');
-                generalImageB.src = this.value;
-            }
-        });
-        
-        // Handle file upload for General B
-        customImageB.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    generalImageB.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        // Handle URL input for General B
-        customUrlB.addEventListener('input', function() {
-            if (this.value.trim()) {
-                generalImageB.src = this.value.trim();
-            }
-        });
-    }
 });
 
 // =============================================================================
@@ -488,16 +414,18 @@ function generateUnitNickname(unitType) {
 window.simulateBattle = async function(army1, army2, genA, genB, battleType, cityTier, customNames = {}) {
     console.log('simulateBattle called with', { army1, army2, genA, genB, battleType, cityTier });
     try {
-        // Clone armies
-        let aUnits = [...army1];
-        let bUnits = battleType === 'siege' ? generateDefenders(cityTier) : [...army2];
+        updateBattleDisplay('', false, true); // Clear previous results and add separator
+
+        let aUnits = JSON.parse(JSON.stringify(army1));
+        let bUnits = battleType === 'siege' 
+            ? generateDefenders(cityTier) 
+            : JSON.parse(JSON.stringify(army2));
+        
         const log = [];
 
-        // Determine handlers
         const handlerA = TRAIT_HANDLERS[genA.trait] || {};
         const handlerB = TRAIT_HANDLERS[genB.trait] || {};
 
-        // Names
         const armyAName = customNames.armyAName || generateArmyName();
         const armyBName = customNames.armyBName || generateArmyName();
         const generalAName = customNames.generalAName || generateGeneralName();
@@ -505,84 +433,113 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
         const battleLocation = customNames.battleLocation || generateBattleLocation();
 
         log.push(`⚔️ Battle at ${battleLocation}: ${armyAName} vs ${armyBName}`);
+        log.push(`- ${generalAName} (Lvl ${genA.level}, ${genA.trait}) vs ${generalBName} (Lvl ${genB.level}, ${genB.trait})`);
+        log.push(`- Army Sizes: ${aUnits.length} vs ${bUnits.length}`);
+        updateBattleDisplay(log.join('\n'));
 
-        // SKIRMISH PHASE
-        if (handlerA.skipSkirmish || handlerB.skipSkirmish) {
-          log.push('• Skirmish phase skipped by cautious general.');
-        } else {
-          log.push('• Skirmish phase begins');
-          const aSkirm = aUnits.reduce((sum, u) => sum + getUnitStats(u).skirmish, 0);
-          const bSkirm = bUnits.reduce((sum, u) => sum + getUnitStats(u).skirmish, 0);
-          // Bold: bonus to one skirmisher
-          if (handlerA.applySkirmishBonus) handlerA.applySkirmishBonus(aUnits, genA.level);
-          if (handlerB.applySkirmishBonus) handlerB.applySkirmishBonus(bUnits, genB.level);
-          log.push(`  ${armyAName} skirmish total: ${aSkirm}`);
-          log.push(`  ${armyBName} skirmish total: ${bSkirm}`);
-          // Determine routs
-          if (aSkirm > bSkirm) {
-            bUnits = bUnits.filter((_, i) => i % 2 === 0);
-            log.push(`  ${armyBName} loses half units in rout.`);
-          } else if (bSkirm > aSkirm) {
-            aUnits = aUnits.filter((_, i) => i % 2 === 0);
-            log.push(`  ${armyAName} loses half units in rout.`);
-          } else {
-            log.push('  Skirmish tied, no rout.');
-          }
+        let round = 1;
+        const MAX_ROUNDS = 50; // Safety limit
+
+        while (aUnits.length > 0 && bUnits.length > 0 && round <= MAX_ROUNDS) {
+            const roundLog = [];
+            roundLog.push(`\n--- Round ${round} ---`);
+
+            // SKIRMISH PHASE
+            if (handlerA.skipSkirmish || handlerB.skipSkirmish) {
+                roundLog.push('• Skirmish phase skipped by cautious general.');
+            } else {
+                roundLog.push('• Skirmish phase begins');
+                const aSkirm = aUnits.reduce((sum, u) => sum + getUnitStats(u).skirmish, 0);
+                const bSkirm = bUnits.reduce((sum, u) => sum + getUnitStats(u).skirmish, 0);
+                // Bold: bonus to one skirmisher
+                if (handlerA.applySkirmishBonus) handlerA.applySkirmishBonus(aUnits, genA.level);
+                if (handlerB.applySkirmishBonus) handlerB.applySkirmishBonus(bUnits, genB.level);
+                roundLog.push(`  ${armyAName} skirmish total: ${aSkirm}`);
+                roundLog.push(`  ${armyBName} skirmish total: ${bSkirm}`);
+                // Determine routs
+                if (aSkirm > bSkirm) {
+                    bUnits = bUnits.filter((_, i) => i % 2 === 0);
+                    roundLog.push(`  ${armyBName} loses half units in rout.`);
+                } else if (bSkirm > aSkirm) {
+                    aUnits = aUnits.filter((_, i) => i % 2 === 0);
+                    roundLog.push(`  ${armyAName} loses half units in rout.`);
+                } else {
+                    roundLog.push('  Skirmish tied, no rout.');
+                }
+            }
+
+            // PITCH PHASE
+            roundLog.push('• Pitch phase begins');
+            const pitchRollA = aUnits.reduce((sum, u) => sum + getUnitStats(u).pitch, 0) + genA.level;
+            const pitchRollB = bUnits.reduce((sum, u) => sum + getUnitStats(u).pitch, 0) + genB.level;
+            // Brilliant: extra pitch
+            const finalPitchA = handlerA.adjustPitchTotal ? handlerA.adjustPitchTotal(pitchRollA, genA.level) : pitchRollA;
+            const finalPitchB = handlerB.adjustPitchTotal ? handlerB.adjustPitchTotal(pitchRollB, genB.level) : pitchRollB;
+            roundLog.push(`  ${armyAName} pitch: ${finalPitchA}`);
+            roundLog.push(`  ${armyBName} pitch: ${finalPitchB}`);
+
+            // RALLY PHASE
+            roundLog.push('• Rally phase begins');
+            const rallyRolls = (units, handler, level) => {
+              let total = units.reduce((sum, u) => sum + getUnitStats(u).rally, 0) + 1;
+              // Rally bonus
+              if (handler.rallyBonus) total += handler.rallyBonus;
+              // Inspiring: reroll lowest 1
+              if (handler.enableRallyReroll) total += 1;
+              return total;
+            };
+            const finalRallyA = rallyRolls(aUnits, handlerA, genA.level);
+            const finalRallyB = rallyRolls(bUnits, handlerB, genB.level);
+            roundLog.push(`  ${armyAName} rally: ${finalRallyA}`);
+            roundLog.push(`  ${armyBName} rally: ${finalRallyB}`);
+
+            // ACTION REPORT (DESTRUCTION)
+            roundLog.push('• Action Report: Destruction');
+            const destroyedByA = destructionDice(aUnits, handlerA);
+            const destroyedByB = destructionDice(bUnits, handlerB);
+
+            roundLog.push(`  ${armyAName} destroys ${destroyedByA} of ${armyBName}'s brigades.`);
+            roundLog.push(`  ${armyBName} destroys ${destroyedByB} of ${armyAName}'s brigades.`);
+
+            // Randomly remove units
+            for (let i = 0; i < destroyedByA && bUnits.length > 0; i++) {
+                const randomIndex = Math.floor(Math.random() * bUnits.length);
+                bUnits.splice(randomIndex, 1);
+            }
+            for (let i = 0; i < destroyedByB && aUnits.length > 0; i++) {
+                const randomIndex = Math.floor(Math.random() * aUnits.length);
+                aUnits.splice(randomIndex, 1);
+            }
+            
+            roundLog.push(`  End of Round: ${armyAName} has ${aUnits.length} brigades, ${armyBName} has ${bUnits.length} brigades.`);
+            updateBattleDisplay(roundLog.join('\n'), true);
+
+            round++;
+            await delay(200); // Small delay for readability
         }
 
-        // PITCH PHASE
-        log.push('• Pitch phase begins');
-        const pitchRollA = aUnits.reduce((sum, u) => sum + getUnitStats(u).pitch, 0) + genA.level;
-        const pitchRollB = bUnits.reduce((sum, u) => sum + getUnitStats(u).pitch, 0) + genB.level;
-        // Brilliant: extra pitch
-        const finalPitchA = handlerA.adjustPitchTotal ? handlerA.adjustPitchTotal(pitchRollA, genA.level) : pitchRollA;
-        const finalPitchB = handlerB.adjustPitchTotal ? handlerB.adjustPitchTotal(pitchRollB, genB.level) : pitchRollB;
-        log.push(`  ${armyAName} pitch: ${finalPitchA}`);
-        log.push(`  ${armyBName} pitch: ${finalPitchB}`);
-
-        // RALLY PHASE
-        log.push('• Rally phase begins');
-        const rallyRolls = (units, handler, level) => {
-          let total = units.reduce((sum, u) => sum + getUnitStats(u).rally, 0) + 1;
-          // Rally bonus
-          if (handler.rallyBonus) total += handler.rallyBonus;
-          // Inspiring: reroll lowest 1
-          if (handler.enableRallyReroll) total += 1;
-          return total;
-        };
-        const finalRallyA = rallyRolls(aUnits, handlerA, genA.level);
-        const finalRallyB = rallyRolls(bUnits, handlerB, genB.level);
-        log.push(`  ${armyAName} rally: ${finalRallyA}`);
-        log.push(`  ${armyBName} rally: ${finalRallyB}`);
-
-        // ACTION REPORT
-        log.push('• Action report begins');
-        const destructionDice = (units, handler) => {
-          const base = units.length;
-          // Merciless: destroys on 1-3 instead of 1-2
-          const threshold = handler.destructionOn1to3 ? 3 : 2;
-          return Math.min(base, threshold);
-        };
-        log.push(`  ${armyAName} destroy ${destructionDice(aUnits, handlerA)} brigades`);
-        log.push(`  ${armyBName} destroy ${destructionDice(bUnits, handlerB)} brigades`);
-
-        // PROMOTION PHASE
-        let promoThreshold = 6;
-        if (handlerA.adjustPromotionThreshold) promoThreshold = handlerA.adjustPromotionThreshold(promoThreshold);
-        if (handlerB.adjustPromotionThreshold) promoThreshold = handlerB.adjustPromotionThreshold(promoThreshold);
-        log.push(`• Promotion threshold: ${promoThreshold}`);
-
         // FINAL SCORING
+        const finalLog = ['\n--- Battle End ---'];
         const survivorsA = aUnits.length;
         const survivorsB = bUnits.length;
-        log.push(`🏆 Survivors: ${survivorsA} vs ${survivorsB}`);
-        if (survivorsA > survivorsB) log.push(`${armyAName} WINS!`);
-        else if (survivorsB > survivorsA) log.push(`${armyBName} WINS!`);
-        else log.push('Draw.');
+        finalLog.push(`🏆 Final Survivors: ${armyAName}: ${survivorsA} | ${armyBName}: ${survivorsB}`);
+        
+        if (survivorsA > survivorsB) {
+            finalLog.push(`${armyAName} WINS!`);
+        } else if (survivorsB > survivorsA) {
+            finalLog.push(`${armyBName} WINS!`);
+        } else {
+            finalLog.push('The battle is a bloody DRAW.');
+        }
+        
+        if (round > MAX_ROUNDS) {
+            finalLog.push('Battle reached maximum rounds and has been halted.');
+        }
 
-        updateBattleDisplay('\n' + log.join('\n'), true);
+        updateBattleDisplay(finalLog.join('\n'), true);
         return 'Battle complete.';
     } catch (e) {
+        console.error("Battle simulation error:", e);
         return 'Error: ' + e.message;
     }
 };
@@ -596,7 +553,7 @@ console.log('Battle.js loaded successfully. simulateBattle function defined.');
 // =============================================================================
 // SAMPLE ARMY CONFIGURATIONS
 // =============================================================================
-const SAMPLE_ARMIES = [
+window.SAMPLE_ARMIES = [
     {
         name: "Army 1: The Swift Raiders",
         general: { trait: 'Merciless', level: 2 },
