@@ -455,30 +455,62 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
 
         while (aUnits.length > 0 && bUnits.length > 0 && round <= MAX_ROUNDS) {
             const roundLog = [];
-            roundLog.push(`\n--- Round ${round} ---`);
-
-            // SKIRMISH PHASE
+            roundLog.push(`\n--- Round ${round} ---`);            // SKIRMISH PHASE
             if (handlerA.skipSkirmish || handlerB.skipSkirmish) {
                 roundLog.push('• Skirmish phase skipped by cautious general.');
             } else {
                 roundLog.push('• Skirmish phase begins');
-                const aSkirm = aUnits.reduce((sum, u) => sum + getUnitStats(u).skirmish, 0);
-                const bSkirm = bUnits.reduce((sum, u) => sum + getUnitStats(u).skirmish, 0);
-                // Bold: bonus to one skirmisher
-                if (handlerA.applySkirmishBonus) handlerA.applySkirmishBonus(aUnits, genA.level);
-                if (handlerB.applySkirmishBonus) handlerB.applySkirmishBonus(bUnits, genB.level);
-                roundLog.push(`  ${armyAName} skirmish total: ${aSkirm}`);
-                roundLog.push(`  ${armyBName} skirmish total: ${bSkirm}`);
-                // Determine routs
-                if (aSkirm > bSkirm) {
-                    bUnits = bUnits.filter((_, i) => i % 2 === 0);
-                    roundLog.push(`  ${armyBName} loses half units in rout.`);
-                } else if (bSkirm > aSkirm) {
-                    aUnits = aUnits.filter((_, i) => i % 2 === 0);
-                    roundLog.push(`  ${armyAName} loses half units in rout.`);
-                } else {
-                    roundLog.push('  Skirmish tied, no rout.');
+                
+                // Determine how many 1v1 skirmish matchups occur (max 2 per round)
+                const maxSkirmishes = Math.min(aUnits.length, bUnits.length, 2);
+                roundLog.push(`  ${maxSkirmishes} skirmish matchup(s) will occur.`);
+                
+                let aLosses = 0;
+                let bLosses = 0;
+                
+                for (let i = 0; i < maxSkirmishes; i++) {
+                    // Select random units for skirmish
+                    const aSkirmisher = aUnits[Math.floor(Math.random() * aUnits.length)];
+                    const bSkirmisher = bUnits[Math.floor(Math.random() * bUnits.length)];
+                    
+                    let aSkirmishValue = getUnitStats(aSkirmisher).skirmish;
+                    let bSkirmishValue = getUnitStats(bSkirmisher).skirmish;
+                    
+                    // Apply Bold trait bonus to one skirmisher
+                    if (handlerA.applySkirmishBonus && i === 0) {
+                        const bonus = Math.ceil(genA.level / 2);
+                        aSkirmishValue += bonus;
+                        roundLog.push(`  ${aSkirmisher.type} gets +${bonus} from Bold trait.`);
+                    }
+                    if (handlerB.applySkirmishBonus && i === 0) {
+                        const bonus = Math.ceil(genB.level / 2);
+                        bSkirmishValue += bonus;
+                        roundLog.push(`  ${bSkirmisher.type} gets +${bonus} from Bold trait.`);
+                    }
+                    
+                    roundLog.push(`  Matchup ${i + 1}: ${aSkirmisher.type} (${aSkirmishValue}) vs ${bSkirmisher.type} (${bSkirmishValue})`);
+                    
+                    if (aSkirmishValue > bSkirmishValue) {
+                        roundLog.push(`    ${armyAName}'s ${aSkirmisher.type} wins - ${armyBName}'s ${bSkirmisher.type} destroyed.`);
+                        bLosses++;
+                    } else if (bSkirmishValue > aSkirmishValue) {
+                        roundLog.push(`    ${armyBName}'s ${bSkirmisher.type} wins - ${armyAName}'s ${aSkirmisher.type} destroyed.`);
+                        aLosses++;
+                    } else {
+                        roundLog.push(`    Tied skirmish - no casualties.`);
+                    }
                 }
+                
+                // Remove the losing units
+                for (let i = 0; i < aLosses && aUnits.length > 0; i++) {
+                    const randomIndex = Math.floor(Math.random() * aUnits.length);
+                    aUnits.splice(randomIndex, 1);
+                }
+                for (let i = 0; i < bLosses && bUnits.length > 0; i++) {
+                    const randomIndex = Math.floor(Math.random() * bUnits.length);
+                    bUnits.splice(randomIndex, 1);
+                }
+                  roundLog.push(`  Skirmish results: ${armyAName} lost ${aLosses}, ${armyBName} lost ${bLosses}.`);
             }
 
             // PITCH PHASE
@@ -523,8 +555,8 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                 const randomIndex = Math.floor(Math.random() * aUnits.length);
                 aUnits.splice(randomIndex, 1);
             }
-            
-            roundLog.push(`  End of Round: ${armyAName} has ${aUnits.length} brigades, ${armyBName} has ${bUnits.length} brigades.`);            updateBattleDisplay(roundLog.join('\n'), true);
+              roundLog.push(`  End of Round: ${armyAName} has ${aUnits.length} brigades, ${armyBName} has ${bUnits.length} brigades.`);
+            updateBattleDisplay(roundLog.join('\n'), true);
 
             round++;
             await delay(3000); // 3 second delay for readability
@@ -536,10 +568,13 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
         const survivorsB = bUnits.length;
         finalLog.push(`🏆 Final Survivors: ${armyAName}: ${survivorsA} | ${armyBName}: ${survivorsB}`);
         
+        let victor = null;
         if (survivorsA > survivorsB) {
             finalLog.push(`${armyAName} WINS!`);
+            victor = 'A';
         } else if (survivorsB > survivorsA) {
             finalLog.push(`${armyBName} WINS!`);
+            victor = 'B';
         } else {
             finalLog.push('The battle is a bloody DRAW.');
         }
@@ -549,6 +584,140 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
         }
 
         updateBattleDisplay(finalLog.join('\n'), true);
+        await delay(3000);
+
+        // ACTION REPORT PHASE (Post-Battle)
+        const actionLog = ['\n--- Action Report Phase ---'];
+        actionLog.push('All surviving brigades and generals roll for casualties and promotions.');
+        
+        // Brigade casualty rolls for Army A
+        actionLog.push(`\n${armyAName} Brigade Casualties:`);
+        const aInitialCount = aUnits.length;
+        for (let i = aUnits.length - 1; i >= 0; i--) {
+            const roll = rollDie();
+            const isDestroyed = roll <= 2;
+            const unit = aUnits[i];
+            actionLog.push(`  ${unit.type} (${unit.enhancement || 'None'}): Rolled ${roll} - ${isDestroyed ? 'DESTROYED' : 'Survives'}`);
+            
+            if (isDestroyed) {
+                aUnits.splice(i, 1);
+            }
+        }
+        
+        // Victor rerolls for Army A
+        if (victor === 'A' && aInitialCount > aUnits.length) {
+            actionLog.push(`\n${armyAName} is victorious and may reroll destroyed brigades:`);
+            const destroyedCount = aInitialCount - aUnits.length;
+            // Simulate rerolls (simplified - would need actual user interaction)
+            let saved = 0;
+            for (let i = 0; i < destroyedCount; i++) {
+                const reroll = rollDie();
+                if (reroll > 2) {
+                    saved++;
+                    actionLog.push(`  Reroll ${i + 1}: Rolled ${reroll} - Brigade SAVED!`);
+                } else {
+                    actionLog.push(`  Reroll ${i + 1}: Rolled ${reroll} - Still destroyed.`);
+                }
+            }
+            // Add saved brigades back (simplified)
+            for (let i = 0; i < saved; i++) {
+                aUnits.push({ type: 'heavy', enhancement: 'None' }); // placeholder
+            }
+        }
+
+        // Brigade casualty rolls for Army B
+        actionLog.push(`\n${armyBName} Brigade Casualties:`);
+        const bInitialCount = bUnits.length;
+        for (let i = bUnits.length - 1; i >= 0; i--) {
+            const roll = rollDie();
+            const isDestroyed = roll <= 2;
+            const unit = bUnits[i];
+            actionLog.push(`  ${unit.type} (${unit.enhancement || 'None'}): Rolled ${roll} - ${isDestroyed ? 'DESTROYED' : 'Survives'}`);
+            
+            if (isDestroyed) {
+                bUnits.splice(i, 1);
+            }
+        }
+
+        // Victor rerolls for Army B
+        if (victor === 'B' && bInitialCount > bUnits.length) {
+            actionLog.push(`\n${armyBName} is victorious and may reroll destroyed brigades:`);
+            const destroyedCount = bInitialCount - bUnits.length;
+            let saved = 0;
+            for (let i = 0; i < destroyedCount; i++) {
+                const reroll = rollDie();
+                if (reroll > 2) {
+                    saved++;
+                    actionLog.push(`  Reroll ${i + 1}: Rolled ${reroll} - Brigade SAVED!`);
+                } else {
+                    actionLog.push(`  Reroll ${i + 1}: Rolled ${reroll} - Still destroyed.`);
+                }
+            }
+            for (let i = 0; i < saved; i++) {
+                bUnits.push({ type: 'heavy', enhancement: 'None' });
+            }
+        }
+
+        // General casualty/promotion rolls
+        actionLog.push(`\n--- General Rolls ---`);
+        
+        // General A roll
+        const genARoll = rollDie();
+        if (genARoll === 1) {
+            actionLog.push(`${generalAName}: Rolled ${genARoll} - CAPTURED!`);
+        } else if (genARoll >= 5) {
+            actionLog.push(`${generalAName}: Rolled ${genARoll} - PROMOTED! (Level ${genA.level} → ${genA.level + 1})`);
+            genA.level++;
+        } else {
+            actionLog.push(`${generalAName}: Rolled ${genARoll} - No effect.`);
+        }
+
+        // General B roll
+        const genBRoll = rollDie();
+        if (genBRoll === 1) {
+            actionLog.push(`${generalBName}: Rolled ${genBRoll} - CAPTURED!`);
+        } else if (genBRoll >= 5) {
+            actionLog.push(`${generalBName}: Rolled ${genBRoll} - PROMOTED! (Level ${genB.level} → ${genB.level + 1})`);
+            genB.level++;
+        } else {
+            actionLog.push(`${generalBName}: Rolled ${genBRoll} - No effect.`);
+        }
+
+        // Victor general reroll
+        if (victor === 'A' && (genARoll === 1 || genARoll < 5)) {
+            const reroll = rollDie();
+            actionLog.push(`${generalAName} (Victor) rerolls: ${reroll}`);
+            if (reroll >= 5) {
+                actionLog.push(`  PROMOTED on reroll! (Level ${genA.level} → ${genA.level + 1})`);
+                genA.level++;
+            } else if (reroll === 1) {
+                actionLog.push(`  Still captured on reroll.`);
+            } else {
+                actionLog.push(`  No effect on reroll.`);
+            }
+        }
+
+        if (victor === 'B' && (genBRoll === 1 || genBRoll < 5)) {
+            const reroll = rollDie();
+            actionLog.push(`${generalBName} (Victor) rerolls: ${reroll}`);
+            if (reroll >= 5) {
+                actionLog.push(`  PROMOTED on reroll! (Level ${genB.level} → ${genB.level + 1})`);
+                genB.level++;
+            } else if (reroll === 1) {
+                actionLog.push(`  Still captured on reroll.`);
+            } else {
+                actionLog.push(`  No effect on reroll.`);
+            }
+        }
+
+        // Final summary
+        actionLog.push(`\n--- Final Action Report Summary ---`);
+        actionLog.push(`${armyAName}: ${aUnits.length} brigades remaining`);
+        actionLog.push(`${armyBName}: ${bUnits.length} brigades remaining`);
+        actionLog.push(`${generalAName}: Level ${genA.level}`);
+        actionLog.push(`${generalBName}: Level ${genB.level}`);
+
+        updateBattleDisplay(actionLog.join('\n'), true);
         return 'Battle complete.';
     } catch (e) {
         console.error("Battle simulation error:", e);
