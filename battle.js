@@ -433,14 +433,17 @@ function generateUnitNickname(unitType) {
  * @returns {Promise<string>} Battle result summary
  */
 window.simulateBattle = async function(army1, army2, genA, genB, battleType, cityTier, customNames = {}) {
-    console.log('simulateBattle called with', { army1, army2, genA, genB, battleType, cityTier });
-    try {
+    console.log('simulateBattle called with', { army1, army2, genA, genB, battleType, cityTier });    try {
         updateBattleDisplay('', false, true); // Clear previous results and add separator
-
+        
         let aUnits = JSON.parse(JSON.stringify(army1));
         let bUnits = battleType === 'siege' 
             ? generateDefenders(cityTier) 
             : JSON.parse(JSON.stringify(army2));
+        
+        // Track routed units (temporarily out of battle)
+        let aRoutedUnits = [];
+        let bRoutedUnits = [];
         
         const log = [];
 
@@ -454,9 +457,10 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
         const battleLocation = customNames.battleLocation || generateBattleLocation();
 
         log.push(`⚔️ Battle at ${battleLocation}: ${armyAName} vs ${armyBName}`);
-        log.push(`- ${generalAName} (Lvl ${genA.level}, ${genA.trait}) vs ${generalBName} (Lvl ${genB.level}, ${genB.trait})`);
-        log.push(`- Army Sizes: ${aUnits.length} vs ${bUnits.length}`);
-        updateBattleDisplay(log.join('\n'));        // Store initial battle data for reporting
+        log.push(`- ${generalAName} (Lvl ${genA.level}, ${genA.trait}) vs ${generalBName} (Lvl ${genB.level}, ${genB.trait})`);        log.push(`- Army Sizes: ${aUnits.length} vs ${bUnits.length}`);
+        updateBattleDisplay(log.join('\n'));
+        
+        // Store initial battle data for reporting
         window.battleData = {
             rounds: [],
             finalResult: null,
@@ -478,24 +482,39 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
             },
             battleLocation: battleLocation
         };
-
-        let round = 1;
+          let round = 1;
         const MAX_ROUNDS = 50; // Safety limit
-
-        while (aUnits.length > 0 && bUnits.length > 0 && round <= MAX_ROUNDS) {
-            const roundLog = [];
-            roundLog.push(`\n--- Round ${round} ---`);            // SKIRMISH PHASE
+          console.log('Starting battle loop with conditions:', {
+            aUnitsLength: aUnits.length,
+            bUnitsLength: bUnits.length,
+            round: round,
+            maxRounds: MAX_ROUNDS
+        });
+        
+        try {            while (aUnits.length > 0 && bUnits.length > 0 && round <= MAX_ROUNDS) {
+                console.log(`=== BEGINNING ROUND ${round} ===`);
+                const roundLog = [];
+                roundLog.push(`\n--- Round ${round} ---`);
+                  // Initialize loss counters for the round
+                let aLosses = 0;
+                let bLosses = 0;
+                
+                // Initialize routed units tracking for this round
+                let aRoutedThisRound = [];
+                let bRoutedThisRound = [];
+                
+                // SKIRMISH PHASE
             if (handlerA.skipSkirmish || handlerB.skipSkirmish) {
                 roundLog.push('• Skirmish phase skipped by cautious general.');
             } else {
                 roundLog.push('• Skirmish phase begins');
-                
-                // Determine how many 1v1 skirmish matchups occur (max 2 per round)
+                  // Determine how many 1v1 skirmish matchups occur (max 2 per round)
                 const maxSkirmishes = Math.min(aUnits.length, bUnits.length, 2);
                 roundLog.push(`  ${maxSkirmishes} skirmish matchup(s) will occur.`);
                 
-                let aLosses = 0;
-                let bLosses = 0;
+                // Reset loss counters for this skirmish phase
+                aLosses = 0;
+                bLosses = 0;
                 
                 for (let i = 0; i < maxSkirmishes; i++) {
                     // Select random units for skirmish
@@ -517,20 +536,77 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                         roundLog.push(`  ${bSkirmisher.type} gets +${bonus} from Bold trait.`);
                     }
                     
-                    roundLog.push(`  Matchup ${i + 1}: ${aSkirmisher.type} (${aSkirmishValue}) vs ${bSkirmisher.type} (${bSkirmishValue})`);
-                    
-                    if (aSkirmishValue > bSkirmishValue) {
-                        roundLog.push(`    ${armyAName}'s ${aSkirmisher.type} wins - ${armyBName}'s ${bSkirmisher.type} destroyed.`);
-                        bLosses++;
+                    roundLog.push(`  Matchup ${i + 1}: ${aSkirmisher.type} (${aSkirmishValue}) vs ${bSkirmisher.type} (${bSkirmishValue})`);                    if (aSkirmishValue > bSkirmishValue) {
+                        const difference = aSkirmishValue - bSkirmishValue;
+                        const isLancer = aSkirmisher.type === 'cav' && (aSkirmisher.enhancement === 'Lancers' || aSkirmisher.enhancement === 'Lancer');
+                        
+                        if (isLancer && difference >= 3) {
+                            // Lancer forces a destruction roll instead of routing
+                            const destructionRoll = rollDie();
+                            roundLog.push(`    ${armyAName}'s ${aSkirmisher.type} wins by ${difference} - ${armyBName}'s ${bSkirmisher.type} must roll for destruction: ${destructionRoll}`);
+                            if (destructionRoll <= 2) {
+                                roundLog.push(`      ${armyBName}'s ${bSkirmisher.type} DESTROYED by lancer charge!`);
+                                bLosses++;
+                            } else {
+                                roundLog.push(`      ${armyBName}'s ${bSkirmisher.type} survives but is routed.`);
+                                // Route the unit
+                                const routedUnit = bUnits[Math.floor(Math.random() * bUnits.length)];
+                                bRoutedThisRound.push(routedUnit);
+                                const routedIndex = bUnits.indexOf(routedUnit);
+                                if (routedIndex > -1) {
+                                    bUnits.splice(routedIndex, 1);
+                                    bRoutedUnits.push(routedUnit);
+                                }
+                            }
+                        } else {
+                            roundLog.push(`    ${armyAName}'s ${aSkirmisher.type} wins - ${armyBName}'s ${bSkirmisher.type} routed.`);
+                            // Route the unit instead of destroying it
+                            const routedUnit = bUnits[Math.floor(Math.random() * bUnits.length)];
+                            bRoutedThisRound.push(routedUnit);
+                            const routedIndex = bUnits.indexOf(routedUnit);
+                            if (routedIndex > -1) {
+                                bUnits.splice(routedIndex, 1);
+                                bRoutedUnits.push(routedUnit);
+                            }
+                        }
                     } else if (bSkirmishValue > aSkirmishValue) {
-                        roundLog.push(`    ${armyBName}'s ${bSkirmisher.type} wins - ${armyAName}'s ${aSkirmisher.type} destroyed.`);
-                        aLosses++;
+                        const difference = bSkirmishValue - aSkirmishValue;
+                        const isLancer = bSkirmisher.type === 'cav' && (bSkirmisher.enhancement === 'Lancers' || bSkirmisher.enhancement === 'Lancer');
+                        
+                        if (isLancer && difference >= 3) {
+                            // Lancer forces a destruction roll instead of routing
+                            const destructionRoll = rollDie();
+                            roundLog.push(`    ${armyBName}'s ${bSkirmisher.type} wins by ${difference} - ${armyAName}'s ${aSkirmisher.type} must roll for destruction: ${destructionRoll}`);
+                            if (destructionRoll <= 2) {
+                                roundLog.push(`      ${armyAName}'s ${aSkirmisher.type} DESTROYED by lancer charge!`);
+                                aLosses++;
+                            } else {
+                                roundLog.push(`      ${armyAName}'s ${aSkirmisher.type} survives but is routed.`);
+                                // Route the unit
+                                const routedUnit = aUnits[Math.floor(Math.random() * aUnits.length)];
+                                aRoutedThisRound.push(routedUnit);
+                                const routedIndex = aUnits.indexOf(routedUnit);
+                                if (routedIndex > -1) {
+                                    aUnits.splice(routedIndex, 1);
+                                    aRoutedUnits.push(routedUnit);
+                                }
+                            }
+                        } else {
+                            roundLog.push(`    ${armyBName}'s ${bSkirmisher.type} wins - ${armyAName}'s ${aSkirmisher.type} routed.`);
+                            // Route the unit instead of destroying it
+                            const routedUnit = aUnits[Math.floor(Math.random() * aUnits.length)];
+                            aRoutedThisRound.push(routedUnit);
+                            const routedIndex = aUnits.indexOf(routedUnit);
+                            if (routedIndex > -1) {
+                                aUnits.splice(routedIndex, 1);
+                                aRoutedUnits.push(routedUnit);
+                            }
+                        }
                     } else {
                         roundLog.push(`    Tied skirmish - no casualties.`);
-                    }
-                }
+                    }}
                 
-                // Remove the losing units
+                // Remove only the actually destroyed units (by lancers)
                 for (let i = 0; i < aLosses && aUnits.length > 0; i++) {
                     const randomIndex = Math.floor(Math.random() * aUnits.length);
                     aUnits.splice(randomIndex, 1);
@@ -539,7 +615,10 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                     const randomIndex = Math.floor(Math.random() * bUnits.length);
                     bUnits.splice(randomIndex, 1);
                 }
-                  roundLog.push(`  Skirmish results: ${armyAName} lost ${aLosses}, ${armyBName} lost ${bLosses}.`);
+                
+                const totalALosses = aLosses + aRoutedThisRound.length;
+                const totalBLosses = bLosses + bRoutedThisRound.length;
+                roundLog.push(`  Skirmish results: ${armyAName} lost ${totalALosses} (${aLosses} destroyed, ${aRoutedThisRound.length} routed), ${armyBName} lost ${totalBLosses} (${bLosses} destroyed, ${bRoutedThisRound.length} routed).`);
             }
 
             // PITCH PHASE
@@ -550,9 +629,7 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
             const finalPitchA = handlerA.adjustPitchTotal ? handlerA.adjustPitchTotal(pitchRollA, genA.level) : pitchRollA;
             const finalPitchB = handlerB.adjustPitchTotal ? handlerB.adjustPitchTotal(pitchRollB, genB.level) : pitchRollB;
             roundLog.push(`  ${armyAName} pitch: ${finalPitchA}`);
-            roundLog.push(`  ${armyBName} pitch: ${finalPitchB}`);
-
-            // RALLY PHASE
+            roundLog.push(`  ${armyBName} pitch: ${finalPitchB}`);            // RALLY PHASE
             roundLog.push('• Rally phase begins');
             const rallyRolls = (units, handler, level) => {
               let total = units.reduce((sum, u) => sum + getUnitStats(u).rally, 0) + 1;
@@ -566,36 +643,99 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
             const finalRallyB = rallyRolls(bUnits, handlerB, genB.level);
             roundLog.push(`  ${armyAName} rally: ${finalRallyA}`);
             roundLog.push(`  ${armyBName} rally: ${finalRallyB}`);
+            
+            // ROUTED UNIT RECOVERY
+            if (aRoutedUnits.length > 0 || bRoutedUnits.length > 0) {
+                roundLog.push('• Routed Unit Recovery');
+                
+                // Army A routed unit recovery
+                if (aRoutedUnits.length > 0) {
+                    roundLog.push(`  ${armyAName} attempts to rally ${aRoutedUnits.length} routed unit(s):`);
+                    for (let i = aRoutedUnits.length - 1; i >= 0; i--) {
+                        const routedUnit = aRoutedUnits[i];
+                        const rallyRoll = rollDie();
+                        if (rallyRoll >= 4) { // Need 4+ to rally back
+                            roundLog.push(`    ${routedUnit.type} (${routedUnit.enhancement || 'None'}): Rolled ${rallyRoll} - Rallied back to battle!`);
+                            aUnits.push(routedUnit);
+                            aRoutedUnits.splice(i, 1);
+                        } else {
+                            roundLog.push(`    ${routedUnit.type} (${routedUnit.enhancement || 'None'}): Rolled ${rallyRoll} - Still routed.`);
+                        }
+                    }
+                }
+                
+                // Army B routed unit recovery
+                if (bRoutedUnits.length > 0) {
+                    roundLog.push(`  ${armyBName} attempts to rally ${bRoutedUnits.length} routed unit(s):`);
+                    for (let i = bRoutedUnits.length - 1; i >= 0; i--) {
+                        const routedUnit = bRoutedUnits[i];
+                        const rallyRoll = rollDie();
+                        if (rallyRoll >= 4) { // Need 4+ to rally back
+                            roundLog.push(`    ${routedUnit.type} (${routedUnit.enhancement || 'None'}): Rolled ${rallyRoll} - Rallied back to battle!`);
+                            bUnits.push(routedUnit);
+                            bRoutedUnits.splice(i, 1);
+                        } else {
+                            roundLog.push(`    ${routedUnit.type} (${routedUnit.enhancement || 'None'}): Rolled ${rallyRoll} - Still routed.`);
+                        }
+                    }
+                }
+            }
 
             // ACTION REPORT (DESTRUCTION)
             roundLog.push('• Action Report: Destruction');
             const destroyedByA = destructionDice(aUnits, handlerA);
-            const destroyedByB = destructionDice(bUnits, handlerB);
-
-            roundLog.push(`  ${armyAName} destroys ${destroyedByA} of ${armyBName}'s brigades.`);
+            const destroyedByB = destructionDice(bUnits, handlerB);            roundLog.push(`  ${armyAName} destroys ${destroyedByA} of ${armyBName}'s brigades.`);
             roundLog.push(`  ${armyBName} destroys ${destroyedByB} of ${armyAName}'s brigades.`);
-
+            
             // Randomly remove units
             for (let i = 0; i < destroyedByA && bUnits.length > 0; i++) {
                 const randomIndex = Math.floor(Math.random() * bUnits.length);
                 bUnits.splice(randomIndex, 1);
-            }
-            for (let i = 0; i < destroyedByB && aUnits.length > 0; i++) {
+            }            for (let i = 0; i < destroyedByB && aUnits.length > 0; i++) {
                 const randomIndex = Math.floor(Math.random() * aUnits.length);
                 aUnits.splice(randomIndex, 1);
             }
-              roundLog.push(`  End of Round: ${armyAName} has ${aUnits.length} brigades, ${armyBName} has ${bUnits.length} brigades.`);
-            updateBattleDisplay(roundLog.join('\n'), true);            // Store round data for chart generation
+            roundLog.push(`  End of Round: ${armyAName} has ${aUnits.length} brigades active (${aRoutedUnits.length} routed), ${armyBName} has ${bUnits.length} brigades active (${bRoutedUnits.length} routed).`);
+            updateBattleDisplay(roundLog.join('\n'), true);
+            
+            // Store round data for chart generation
             window.battleData.rounds.push({
                 round: round,
                 armyAUnits: aUnits.length,
-                armyBUnits: bUnits.length,
-                skirmishResult: `${aLosses || 0} vs ${bLosses || 0}`,
+                armyBUnits: bUnits.length,                skirmishResult: `${aLosses || 0} vs ${bLosses || 0}`,
                 details: roundLog.join('\n')
             });
-
+            
             round++;
-            await delay(3000); // 3 second delay for readability
+            console.log(`Round ${round - 1} completed, checking loop condition:`, {
+                aUnitsLength: aUnits.length,
+                bUnitsLength: bUnits.length,
+                round: round,
+                maxRounds: MAX_ROUNDS,
+                shouldContinue: aUnits.length > 0 && bUnits.length > 0 && round <= MAX_ROUNDS
+            });
+            
+            // Add a small delay between phases within the round
+            await delay(1000); // 1 second delay for readability
+              // Check if battle should continue and log it
+            if (aUnits.length > 0 && bUnits.length > 0 && round <= MAX_ROUNDS) {
+                console.log(`Starting Round ${round}...`);
+                await delay(2000); // Additional 2 second delay before next round
+            } else {
+                console.log('Battle ending conditions met:', {
+                    aUnitsLength: aUnits.length,
+                    bUnitsLength: bUnits.length,
+                    round: round,
+                    maxRounds: MAX_ROUNDS
+                });
+                break; // Explicitly break the loop
+            }        }
+        
+        console.log('=== BATTLE LOOP ENDED ===');
+        
+        } catch (loopError) {
+            console.error('Error in battle loop:', loopError);
+            updateBattleDisplay(`\nBattle loop error: ${loopError.message}`, true);
         }
 
         // FINAL SCORING
@@ -770,7 +910,7 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
             totalRounds: round - 1,
             battleLocation: window.battleData.battleLocation
         };
-
+        
         // Show the generate report button
         const generateBtn = document.getElementById('generateReport');
         if (generateBtn) {
@@ -781,6 +921,8 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
     } catch (e) {
         console.error("Battle simulation error:", e);
         return 'Error: ' + e.message;
+    } finally {
+        // Optional: Add any cleanup code here that needs to run regardless of success or failure
     }
 };
 
@@ -1471,3 +1613,9 @@ function drawUnitCompositionChart(ctx, armyA, armyB, x, y, width, height) {
 
 // Make function available globally
 window.generateBattleReport = generateBattleReport;
+
+// Debug: Confirm all functions are loaded
+console.log('battle.js fully loaded. Available functions:', {
+    simulateBattle: typeof window.simulateBattle,
+    generateBattleReport: typeof window.generateBattleReport
+});
