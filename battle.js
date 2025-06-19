@@ -226,6 +226,9 @@ function renderArmy(listEl, army) {
     }
 }
 
+// Make renderArmy available globally
+window.renderArmy = renderArmy;
+
 // Helper function to remove units from army
 function removeUnits(army, listEl, type, enhancement, count) {
     let removed = 0;
@@ -329,6 +332,16 @@ function applyGeneralTraits(units, general) {
 // Helper function to delay execution
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Helper function to calculate destruction dice
+function destructionDice(units, handler) {
+    const base = Math.min(units.length, 2); // Max 2 units destroyed per round
+    // Merciless: destroys on 1-3 instead of 1-2
+    if (handler && handler.destructionOn1to3) {
+        return Math.min(base, 3);
+    }
+    return Math.min(base, 2);
 }
 
 // Helper function to update battle result display
@@ -511,11 +524,10 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                 aUnits.splice(randomIndex, 1);
             }
             
-            roundLog.push(`  End of Round: ${armyAName} has ${aUnits.length} brigades, ${armyBName} has ${bUnits.length} brigades.`);
-            updateBattleDisplay(roundLog.join('\n'), true);
+            roundLog.push(`  End of Round: ${armyAName} has ${aUnits.length} brigades, ${armyBName} has ${bUnits.length} brigades.`);            updateBattleDisplay(roundLog.join('\n'), true);
 
             round++;
-            await delay(200); // Small delay for readability
+            await delay(3000); // 3 second delay for readability
         }
 
         // FINAL SCORING
@@ -818,8 +830,4 @@ function showModal(message, choices, requiredSelections = 1) {
 
         modal.classList.remove('hidden');
     });
-}
-// Helper function to delay execution
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
 }

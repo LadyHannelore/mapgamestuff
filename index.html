@@ -637,38 +637,43 @@
                 </div>
             </div>
         </div>        <!-- Army Display Tables -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <!-- Army A Display -->
-            <div id="armyA" class="army-section p-6 rounded shadow-lg border-2 border-purple-300">
-                <h2 class="text-2xl font-semibold mb-4 text-purple-700">🛡️ Army A Units 🛡️</h2>
-                <table class="table-auto w-full border-collapse bg-white">
-                    <thead>
-                        <tr class="bg-purple-100">
-                            <th class="border px-2 py-1">Image</th>
-                            <th class="border px-2 py-1">Unit</th>
-                            <th class="border px-2 py-1">Count</th>
-                            <th class="border px-2 py-1">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="armyAList"></tbody>
-                </table>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Army A Display (Left Side) -->
+            <div class="order-1">
+                <div id="armyA" class="army-section p-6 rounded shadow-lg border-2 border-purple-300">
+                    <h2 class="text-2xl font-semibold mb-4 text-purple-700">🛡️ Army A Units 🛡️</h2>
+                    <table class="table-auto w-full border-collapse bg-white">
+                        <thead>
+                            <tr class="bg-purple-100">
+                                <th class="border px-2 py-1">Image</th>
+                                <th class="border px-2 py-1">Unit</th>
+                                <th class="border px-2 py-1">Count</th>
+                                <th class="border px-2 py-1">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="armyAList"></tbody>
+                    </table>
+                </div>
             </div>
 
-            <!-- Army B Display -->
-            <div id="armyB" class="army-section p-6 rounded shadow-lg border-2 border-red-300">
-                <h2 class="text-2xl font-semibold mb-4 text-red-700">⚔️ Army B Units ⚔️</h2>
-                <table class="table-auto w-full border-collapse bg-white">
-                    <thead>
-                        <tr class="bg-red-100">
-                            <th class="border px-2 py-1">Image</th>
-                            <th class="border px-2 py-1">Unit</th>
-                            <th class="border px-2 py-1">Count</th>
-                            <th class="border px-2 py-1">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="armyBList"></tbody>
-                </table>
-            </div>        </div>
+            <!-- Army B Display (Right Side) -->
+            <div class="order-2">
+                <div id="armyB" class="army-section p-6 rounded shadow-lg border-2 border-red-300">
+                    <h2 class="text-2xl font-semibold mb-4 text-red-700">⚔️ Army B Units ⚔️</h2>
+                    <table class="table-auto w-full border-collapse bg-white">
+                        <thead>
+                            <tr class="bg-red-100">
+                                <th class="border px-2 py-1">Image</th>
+                                <th class="border px-2 py-1">Unit</th>
+                                <th class="border px-2 py-1">Count</th>
+                                <th class="border px-2 py-1">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="armyBList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
         <!-- Battle Controls Section -->
         <div class="text-center mb-6 p-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg text-white">
@@ -752,8 +757,188 @@
         setupGeneralImageHandlers();
         setupBattleSimulation();
         setupMusicControls();
+        setupSampleArmies();
     }
-      /**
+
+    /**
+     * Setup sample army dropdown and loading functionality
+     */
+    function setupSampleArmies() {
+        const sampleArmySelect = document.getElementById('sampleArmySelect');
+        const loadSampleBtn = document.getElementById('loadSampleArmy');
+        
+        if (!sampleArmySelect || !loadSampleBtn) {
+            console.warn('Sample army elements not found');
+            return;
+        }
+
+        // Populate dropdown with sample armies
+        if (window.SAMPLE_ARMIES && window.SAMPLE_ARMIES.length > 0) {
+            window.SAMPLE_ARMIES.forEach((army, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${army.name} (Size: ${army.units.length})`;
+                sampleArmySelect.appendChild(option);
+            });
+        }
+
+        // Load sample army button event
+        loadSampleBtn.addEventListener('click', function() {
+            const selectedIndex = parseInt(sampleArmySelect.value);
+            if (selectedIndex === -1 || !window.SAMPLE_ARMIES[selectedIndex]) return;
+
+            const selectedArmy = window.SAMPLE_ARMIES[selectedIndex];
+            
+            // Set Army B name and general info
+            document.getElementById('armyBName').value = selectedArmy.name;
+            document.getElementById('generalLevelB').value = selectedArmy.general.level;
+            document.getElementById('generalTraitB').value = selectedArmy.general.trait;
+            
+            // Clear existing Army B units
+            window.armyB.length = 0;
+            
+            // Add units from selected army
+            selectedArmy.units.forEach(unit => {
+                window.armyB.push({
+                    type: unit.type,
+                    enhancement: unit.enhancement || 'None'
+                });
+            });
+            
+            // Update the display
+            const armyBList = document.getElementById('armyBList');
+            if (armyBList && window.renderArmy) {
+                window.renderArmy(armyBList, window.armyB);
+            }
+            
+            console.log('Loaded sample army:', selectedArmy.name, 'Units:', window.armyB);
+        });
+    }
+
+    /**
+     * Setup general image handlers for both generals
+     */
+    function setupGeneralImageHandlers() {
+        // General A image selection
+        const generalImageSelectA = document.getElementById('generalImageSelectA');
+        const generalImageA = document.getElementById('generalImageA');
+        const customImageA = document.getElementById('customImageA');
+        const customUrlA = document.getElementById('customUrlA');
+        
+        if (generalImageSelectA && generalImageA) {
+            generalImageSelectA.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customImageA.classList.remove('hidden');
+                    customUrlA.classList.remove('hidden');
+                } else {
+                    customImageA.classList.add('hidden');
+                    customUrlA.classList.add('hidden');
+                    generalImageA.src = this.value;
+                }
+            });
+            
+            // Handle file upload for General A
+            if (customImageA) {
+                customImageA.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            generalImageA.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            // Handle URL input for General A
+            if (customUrlA) {
+                customUrlA.addEventListener('input', function() {
+                    if (this.value.trim()) {
+                        generalImageA.src = this.value.trim();
+                    }
+                });
+            }
+        }
+        
+        // General B image selection
+        const generalImageSelectB = document.getElementById('generalImageSelectB');
+        const generalImageB = document.getElementById('generalImageB');
+        const customImageB = document.getElementById('customImageB');
+        const customUrlB = document.getElementById('customUrlB');
+        
+        if (generalImageSelectB && generalImageB) {
+            generalImageSelectB.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customImageB.classList.remove('hidden');
+                    customUrlB.classList.remove('hidden');
+                } else {
+                    customImageB.classList.add('hidden');
+                    customUrlB.classList.add('hidden');
+                    generalImageB.src = this.value;
+                }
+            });
+            
+            // Handle file upload for General B
+            if (customImageB) {
+                customImageB.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            generalImageB.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            // Handle URL input for General B
+            if (customUrlB) {
+                customUrlB.addEventListener('input', function() {
+                    if (this.value.trim()) {
+                        generalImageB.src = this.value.trim();
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Setup battle type handlers
+     */
+    function setupBattleTypeHandlers() {
+        // This function can be used for battle type specific logic
+    }
+
+    /**
+     * Setup music controls
+     */
+    function setupMusicControls() {
+        const music = document.getElementById('bgMusic');
+        const toggleBtn = document.getElementById('toggleMusic');
+        if (toggleBtn && music) {
+            toggleBtn.addEventListener('click', () => {
+                const icon = toggleBtn.querySelector('i');
+                if (music.paused) {
+                    music.play().catch(e => console.error("Audio play failed:", e));
+                    icon.className = 'fas fa-pause';
+                } else {
+                    music.pause();
+                    icon.className = 'fas fa-play';
+                }
+            });
+        }
+    }
+
+    /**
+     * Setup battle simulation
+     */
+    function setupBattleSimulation() {
+        // Battle simulation setup is handled in setupArmyControllers
+    }
+
+    /**
      * Setup enhancement dropdown options based on unit type
      */
     function setupEnhancementOptions() {
