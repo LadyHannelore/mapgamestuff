@@ -173,14 +173,117 @@ General Helena (Cautious, Lvl 2): Rolled 3 → No effect
 - Unit-by-unit results
 - All modifiers and bonuses explained
 
-## Testing the Enhanced System
+## Enhanced Visual Output
 
-1. Open the battle simulator in your browser
-2. Set up two armies with different unit types and enhancements
-3. Assign generals with different traits (try Brilliant, Bold, Merciless)
-4. Run a battle and observe the detailed logging
+The battle text output has been completely redesigned from a plain wall of text to a visually appealing, color-coded, and structured display:
 
-You'll now see every single dice roll, calculation, and modifier applied throughout the entire battle, giving you complete transparency into whether the system is working correctly.
+### Visual Enhancements Made:
+
+#### 1. **Battle Headers**
+**BEFORE:** Plain text header
+```
+⚔️ Battle at Crimson Fields: Iron Eagles vs Thunder Bears
+- Marcus Aurelius (Lvl 3, Brilliant) vs Helena Victrix (Lvl 2, Cautious)
+- Army Sizes: 3 vs 3
+```
+
+**AFTER:** Styled header cards with colors and icons
+```html
+🏆 Battle at Crimson Fields
+Iron Eagles VS Thunder Bears
+
+🎖️ Marcus Aurelius (Level 3) Brilliant    🎖️ Helena Victrix (Level 2) Cautious
+🛡️ Army Sizes: 3 vs 3
+```
+
+#### 2. **Phase Headers with Color Coding**
+- 🔄 **Round Headers**: Green gradient with round numbers
+- ⚔️ **Skirmish Phase**: Red theme for combat
+- 🎯 **Pitch Phase**: Blue theme for tactical maneuvering  
+- 🚩 **Rally Phase**: Green theme for regrouping
+- 🔄 **Recovery Phase**: Orange theme for unit recovery
+- 💀 **Destruction Phase**: Brown theme for casualties
+
+#### 3. **Enhanced Dice Roll Display**
+**BEFORE:** Plain calculation text
+```
+cav (Lancers): Roll(5) + Base(1) + Enhancement(1) = 7
+```
+
+**AFTER:** Formatted cards with color-coded elements
+```html
+🐎 Cavalry (Lancers): 🎲 5 + Base(1) + Enhancement(1) = 7
+```
+
+#### 4. **Interactive Unit Status Cards**
+- ✅ **Survived units**: Green background with success indicators
+- 💀 **Destroyed units**: Dark brown background with destruction icons  
+- 🔄 **Rallied units**: Green background with rally success
+- ❌ **Routed units**: Red background with failure indicators
+
+#### 5. **Special Ability Highlights**
+- 🐎 **Lancer Charges**: Orange highlight with special ability descriptions
+- ✨ **Trait Bonuses**: Purple highlight for general trait effects
+- 🎖️ **General Bonuses**: Gold highlight for leadership effects
+
+#### 6. **Victory Announcements**
+**BEFORE:** Simple text
+```
+Iron Eagles WINS!
+```
+
+**AFTER:** Animated victory banner
+```html
+🎉 IRON EAGLES WINS! 🎉
+```
+*Features golden gradient background with pulsing animation*
+
+#### 7. **Phase Comparison Results**
+- 🏆 **Phase Winners**: Highlighted with trophy icons and victory colors
+- 🤝 **Tied Results**: Neutral gray styling with handshake icons
+- 📊 **Statistical Summaries**: Organized in clean stat cards
+
+#### 8. **Army Status Tracking**
+- **Active Units**: Green text with shield icons
+- **Routed Units**: Red text with retreat indicators  
+- **Round Summaries**: Blue cards showing end-of-round status
+
+### CSS Features Implemented:
+
+#### **Color Themes:**
+- **Army A**: Purple theme (#a855f7)
+- **Army B**: Red theme (#ef4444)
+- **Success/Survival**: Green theme (#22c55e)
+- **Destruction/Failure**: Brown/Red theme (#78350f)
+- **Special Abilities**: Orange theme (#f59e0b)
+- **General Info**: Gold theme (#fbbf24)
+
+#### **Visual Effects:**
+- Gradient backgrounds for important sections
+- Box shadows for depth and separation
+- Border-left accents for categorization
+- Hover effects and animations
+- Responsive color-coded elements
+- Icon integration throughout
+
+#### **Typography:**
+- Bold emphasis for important values
+- Color-coded text for different armies
+- Size variations for hierarchy
+- Monospace for dice rolls and calculations
+- Icon fonts for visual appeal
+
+### Benefits of Enhanced Visual Design:
+
+1. **Improved Readability**: Information is now organized in cards and sections
+2. **Quick Scanning**: Color coding allows instant identification of outcomes
+3. **Professional Appearance**: Modern UI design with gradients and shadows
+4. **Better Information Hierarchy**: Headers, subheaders, and content clearly separated
+5. **Visual Feedback**: Icons and colors provide immediate context
+6. **Reduced Eye Strain**: Structured layout prevents wall-of-text fatigue
+7. **Enhanced User Experience**: Interactive elements and animations engage users
+
+The enhanced visual output transforms the battle simulation from a technical log into an engaging, professional battle report that's both informative and visually appealing.
 
 ## Benefits for Client Review
 

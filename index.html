@@ -381,6 +381,890 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
+        
+        /* Enhanced Battle Display Styling */
+        .battle-content {
+            position: relative;
+            z-index: 2;
+            animation: slideInFromRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .battle-separator {
+            margin: 20px 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, #764ba2, #667eea, transparent);
+            border-radius: 2px;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        .battle-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: 10px 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .battle-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .army-names {
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+        
+        .vs {
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .generals-info {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            backdrop-filter: blur(5px);
+        }
+        
+        .general-a {
+            color: #a855f7;
+            font-weight: bold;
+        }
+        
+        .general-b {
+            color: #ef4444;
+            font-weight: bold;
+        }
+        
+        .trait {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        
+        .army-sizes {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px;
+            border-radius: 6px;
+            margin: 8px 0;
+        }
+        
+        .army-a-size {
+            color: #a855f7;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .army-b-size {
+            color: #ef4444;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .round-header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+        }
+        
+        .round-number {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .phase-header {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+            text-align: center;
+            border-left: 4px solid;
+        }
+        
+        .phase-header.skirmish {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.1));
+            border-left-color: #ef4444;
+            color: #dc2626;
+        }
+        
+        .phase-header.pitch {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
+            border-left-color: #3b82f6;
+            color: #2563eb;
+        }
+        
+        .phase-header.rally {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+            border-left-color: #10b981;
+            color: #059669;
+        }
+        
+        .phase-header.recovery {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1));
+            border-left-color: #f59e0b;
+            color: #d97706;
+        }
+        
+        .phase-header.destruction {
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.2), rgba(120, 53, 15, 0.1));
+            border-left-color: #8b4513;
+            color: #78350f;
+        }
+        
+        .phase-name {
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .skirmish-matchup {
+            background: rgba(239, 68, 68, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-left: 3px solid #ef4444;
+            margin: 8px 0;
+            font-weight: bold;
+            color: #dc2626;
+        }
+        
+        .matchup-title {
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .army-calculation {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid;
+        }
+        
+        .army-calculation.Skirmish {
+            border-left-color: #ef4444;
+        }
+        
+        .army-calculation.Pitch {
+            border-left-color: #3b82f6;
+        }
+        
+        .army-calculation.Rally {
+            border-left-color: #10b981;
+        }
+        
+        .army-calculation.Routed {
+            border-left-color: #f59e0b;
+        }
+        
+        .army-name {
+            font-weight: bold;
+            color: #fbbf24;
+        }
+        
+        .calc-type {
+            color: #cbd5e1;
+            font-style: italic;
+        }
+        
+        .unit-roll {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 6px 12px;
+            margin: 4px 0;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            border-left: 2px solid #64748b;
+            display: inline-block;
+            animation: diceRoll 0.6s ease-out;
+        }
+        
+        @keyframes diceRoll {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(1); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        .unit-type {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .enhancement {
+            color: #94a3b8;
+            font-style: italic;
+        }
+        
+        .dice-roll {
+            color: #22c55e;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(34, 197, 94, 0.3);
+        }
+        
+        .modifiers {
+            color: #60a5fa;
+        }
+        
+        .total {
+            color: #f97316;
+            font-weight: bold;
+            background: rgba(249, 115, 22, 0.2);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        
+        .battle-result {
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .battle-result.win {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(22, 163, 74, 0.2));
+            border: 2px solid #22c55e;
+            color: #16a34a;
+        }
+        
+        .battle-result.tie {
+            background: linear-gradient(135deg, rgba(107, 114, 128, 0.3), rgba(75, 85, 99, 0.2));
+            border: 2px solid #6b7280;
+            color: #4b5563;
+        }
+        
+        .winner {
+            color: #15803d;
+            text-shadow: 0 0 5px rgba(21, 128, 61, 0.3);
+        }
+        
+        .margin {
+            background: rgba(34, 197, 94, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .tie-score {
+            background: rgba(107, 114, 128, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .unit-status {
+            padding: 6px 12px;
+            margin: 3px 0;
+            border-radius: 6px;
+            border-left: 3px solid;
+        }
+        
+        .unit-status.rallied {
+            background: rgba(34, 197, 94, 0.15);
+            border-left-color: #22c55e;
+            color: #16a34a;
+        }
+        
+        .unit-status.routed {
+            background: rgba(239, 68, 68, 0.15);
+            border-left-color: #ef4444;
+            color: #dc2626;
+        }
+        
+        .unit-status.survived {
+            background: rgba(34, 197, 94, 0.15);
+            border-left-color: #22c55e;
+            color: #16a34a;
+        }
+        
+        .unit-status.destroyed {
+            background: rgba(120, 53, 15, 0.15);
+            border-left-color: #78350f;
+            color: #92400e;
+        }
+        
+        .unit {
+            font-weight: bold;
+        }
+        
+        .roll {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .status {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .battle-end-header {
+            background: linear-gradient(135deg, #7c3aed, #6366f1);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+        
+        .end-title {
+            font-size: 1.2em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .final-survivors {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(99, 102, 241, 0.1));
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+            border: 2px solid #7c3aed;
+        }
+        
+        .survivors-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #fbbf24;
+        }
+        
+        .army-a {
+            color: #a855f7;
+        }
+        
+        .army-b {
+            color: #ef4444;
+        }
+        
+        .count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .victory-announcement {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #92400e;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.4em;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            border: 3px solid #f59e0b;
+            animation: victoryPulse 2s ease-in-out infinite alternate, slideInScale 0.8s ease-out;
+        }
+        
+        @keyframes victoryPulse {
+            0% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4); }
+            100% { transform: scale(1.02); box-shadow: 0 12px 35px rgba(255, 215, 0, 0.6); }
+        }
+        
+        @keyframes slideInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .winner-name {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .wins-text {
+            color: #dc2626;
+            text-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+        }
+        
+        .action-report-header {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(31, 41, 55, 0.3);
+        }
+        
+        .report-title {
+            font-size: 1.2em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .casualty-section, .reroll-section, .general-fate-section, .final-summary-header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #6366f1;
+        }
+        
+        .section-title, .summary-title {
+            font-weight: bold;
+            color: #fbbf24;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .content-section {
+            margin: 8px 0;
+        }
+        
+        .general-bonus {
+            background: rgba(251, 191, 36, 0.15);
+            padding: 6px 12px;
+            margin: 3px 0;
+            border-radius: 6px;
+            border-left: 3px solid #fbbf24;
+        }
+        
+        .general-name {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .bonus {
+            color: #22c55e;
+            font-weight: bold;
+            background: rgba(34, 197, 94, 0.2);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        
+        .trait-bonus {
+            background: rgba(168, 85, 247, 0.15);
+            padding: 6px 12px;
+            margin: 3px 0;
+            border-radius: 6px;
+            border-left: 3px solid #a855f7;
+        }
+        
+        .trait-name {
+            color: #a855f7;
+            font-weight: bold;
+        }
+        
+        .trait-desc {
+            color: #cbd5e1;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+          .army-total {
+            background: rgba(59, 130, 246, 0.15);
+            padding: 8px 15px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+            font-weight: bold;
+        }
+        
+        .army-total.skirmish-total {
+            background: rgba(239, 68, 68, 0.15);
+            border-left-color: #ef4444;
+        }
+        
+        .army-total.Pitch-total {
+            background: rgba(59, 130, 246, 0.15);
+            border-left-color: #3b82f6;
+        }
+        
+        .army-total.Rally-total {
+            background: rgba(16, 185, 129, 0.15);
+            border-left-color: #10b981;
+        }
+        
+        .total-value {
+            color: #f97316;
+            font-size: 1.1em;
+            background: rgba(249, 115, 22, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .phase-comparison {
+            background: rgba(16, 185, 129, 0.15);
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+            text-align: center;
+        }
+        
+        .phase-winner {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.1));
+            padding: 8px 15px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border: 2px solid #22c55e;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .phase {
+            color: #16a34a;
+            text-transform: capitalize;
+        }
+        
+        .special-ability {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+            font-weight: bold;
+        }
+        
+        .special-ability.lancer {
+            background: rgba(245, 158, 11, 0.15);
+            border-left-color: #f59e0b;
+            color: #d97706;
+        }
+        
+        .ability-name {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+        
+        .ability-desc {
+            color: #92400e;
+        }
+        
+        .destruction-roll {
+            background: rgba(120, 53, 15, 0.15);
+            padding: 6px 12px;
+            margin: 3px 0;
+            border-radius: 6px;
+            border-left: 3px solid #78350f;
+        }
+        
+        .threshold {
+            color: #6b7280;
+            font-style: italic;
+        }
+        
+        .army-status {
+            background: rgba(59, 130, 246, 0.15);
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .active {
+            color: #22c55e;
+            font-weight: bold;
+        }
+        
+        .routed {
+            color: #ef4444;
+            font-weight: bold;
+        }
+        
+        .army-losses {
+            background: rgba(120, 53, 15, 0.15);
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 6px;
+            border-left: 3px solid #78350f;
+        }
+        
+        .loss-count {
+            color: #dc2626;
+            font-weight: bold;
+            background: rgba(220, 38, 38, 0.2);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        
+        .round-summary {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(79, 70, 229, 0.1));
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 2px solid #6366f1;
+            text-align: center;
+        }
+        
+        .summary-title {
+            font-weight: bold;
+            color: #fbbf24;
+            font-size: 1.1em;
+        }
+        
+        .draw-announcement {
+            background: linear-gradient(135deg, #6b7280, #9ca3af);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.4em;
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
+            border: 3px solid #4b5563;
+        }
+        
+        .draw-text {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+          .content-break {
+            margin: 15px 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+        
+        .general-level {
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+        
+        .skirmish-result {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.1));
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 2px solid #ef4444;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .result-title {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        
+        .vs-divider {
+            color: #ffd700;
+            font-weight: bold;
+            margin: 0 10px;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+        
+        .casualty-result {
+            background: rgba(120, 53, 15, 0.15);
+            padding: 6px 12px;
+            margin: 3px 0;
+            border-radius: 6px;
+            border-left: 3px solid #78350f;
+            color: #92400e;
+        }
+        
+        .casualty-count {
+            color: #dc2626;
+            font-weight: bold;
+            background: rgba(220, 38, 38, 0.2);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        
+        .rout-count {
+            background: rgba(245, 158, 11, 0.15);
+            padding: 6px 12px;
+            margin: 3px 0;
+            border-radius: 6px;
+            border-left: 3px solid #f59e0b;
+            color: #d97706;
+        }
+        
+        .routed-number {
+            color: #ef4444;
+            font-weight: bold;
+            background: rgba(239, 68, 68, 0.2);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        
+        /* Animation for new battle content */
+        .battle-content {
+            animation: slideInFromRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Hover effects for interactive elements */
+        .unit-roll:hover,
+        .unit-status:hover,
+        .army-total:hover,
+        .phase-comparison:hover {
+            transform: translateX(5px);
+            transition: transform 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Enhanced separator with gradient animation */
+        .battle-separator {
+            margin: 20px 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, #764ba2, #667eea, transparent);
+            border-radius: 2px;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        /* Pulse effect for victory announcements */
+        .victory-announcement {
+            animation: victoryPulse 2s ease-in-out infinite alternate, slideInScale 0.8s ease-out;
+        }
+        
+        @keyframes slideInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Enhanced dice roll animation */
+        .dice-roll {
+            display: inline-block;
+            animation: diceRoll 0.6s ease-out;
+        }
+        
+        @keyframes diceRoll {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(1); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        /* Collapsible sections for better organization */
+        .collapsible-section {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .collapsible-header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.3s ease;
+        }
+        
+        .collapsible-header:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .collapsible-content {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Status indicators with better visual feedback */
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-indicator.active {
+            background: #22c55e;
+            box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+        }
+        
+        .status-indicator.routed {
+            background: #ef4444;
+            box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+        }
+        
+        .status-indicator.destroyed {
+            background: #78350f;
+            box-shadow: 0 0 6px rgba(120, 53, 15, 0.5);
+        }
+        
+        /* Enhanced typography with better hierarchy */
+        .battle-content h3 {
+            color: #fbbf24;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .battle-content .highlight {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        /* Progress bars for army strength */
+        .strength-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease-out;
+        }
+        
+        .strength-fill.army-a {
+            background: linear-gradient(90deg, #a855f7, #c084fc);
+        }
+        
+        .strength-fill.army-b {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900">    <div id="app" class="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-8">        <h1 class="text-4xl font-bold mb-6 text-center">
@@ -661,11 +1545,11 @@
                     <div class="bg-white rounded-lg p-4">
                         <table class="table-auto w-full border-collapse bg-white">
                             <thead>
-                                <tr class="bg-purple-100">
-                                    <th class="border px-3 py-2">Image</th>
-                                    <th class="border px-3 py-2">Unit</th>
-                                    <th class="border px-3 py-2">Count</th>
-                                    <th class="border px-3 py-2">Actions</th>
+                                <tr class="bg-purple-200 text-purple-800">
+                                    <th class="p-3 text-left">Unit Type</th>
+                                    <th class="p-3 text-left">Enhancement</th>
+                                    <th class="p-3 text-left">Skirmisher</th>
+                                    <th class="p-3 text-left">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="armyAList"></tbody>
@@ -681,11 +1565,11 @@
                     <div class="bg-white rounded-lg p-4">
                         <table class="table-auto w-full border-collapse bg-white">
                             <thead>
-                                <tr class="bg-red-100">
-                                    <th class="border px-3 py-2">Image</th>
-                                    <th class="border px-3 py-2">Unit</th>
-                                    <th class="border px-3 py-2">Count</th>
-                                    <th class="border px-3 py-2">Actions</th>
+                                <tr class="bg-red-200 text-red-800">
+                                    <th class="p-3 text-left">Unit Type</th>
+                                    <th class="p-3 text-left">Enhancement</th>
+                                    <th class="p-3 text-left">Skirmisher</th>
+                                    <th class="p-3 text-left">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="armyBList"></tbody>
@@ -732,7 +1616,7 @@
                 📊 Generate Battle Report Image 📊
             </button>
         </div>        <!-- Hidden canvas for image generation -->
-        <canvas id="battleCanvas" width="1400" height="1000" style="display: none;"></canvas>
+        <canvas id="battleCanvas" width="1400" height="1400" style="display: none;"></canvas>
 
         <audio id="bgMusic" src="background-music.mp3" loop></audio>
         <button id="toggleMusic" class="fixed bottom-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg w-14 h-14 flex items-center justify-center">
@@ -962,7 +1846,7 @@
      */
     function setupBattleSimulation() {        // Setup generate battle report button
         const generateReportBtn = document.getElementById('generateReport');
-        if (generateReportBtn) {
+        if ( generateReportBtn) {
             generateReportBtn.addEventListener('click', function() {
                 if (window.generateBattleReport && typeof window.generateBattleReport === 'function') {
                     // Show loading state
@@ -1113,7 +1997,7 @@
                         { level: genLevelA, trait: genTraitA, name: generalANameInput || 'General A' },
                         { level: genLevelB, trait: genTraitB, name: generalBNameInput || 'General B' },
                         battleType, cityTier,
-                        {
+                                               {
                             battleLocation: battleLocationInput,
                             armyAName: armyANameInput,
                             armyBName: armyBNameInput,
@@ -1234,7 +2118,8 @@
         if (typeof window.simulateBattle !== 'function') {
             console.error('Battle.js not loaded properly');
         }
-    });    </script>
+    });
+    </script>
     <!-- Modal for interactive prompts -->
 <div id="interactiveModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">

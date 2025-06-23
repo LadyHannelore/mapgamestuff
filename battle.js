@@ -165,65 +165,89 @@ function addUnits(army, listEl, type, count, enhancement) {
  */
 function renderArmy(listEl, army) {
     listEl.innerHTML = '';
-    const imageMap = UNIT_IMAGE_MAP;
-    const counts = army.reduce((acc, unit) => {
-        let key = unit.type;
-        if (unit.enhancement && unit.enhancement !== 'None' && unit.enhancement.trim() !== '') {
-            key += ` (${unit.enhancement})`;
-        }
-        if (!acc[key]) acc[key] = { count: 0, type: unit.type, enhancement: unit.enhancement };
-        acc[key].count++;
-        return acc;
-    }, {});
-    
-    for (const unitKey in counts) {
+    const armyId = listEl.id.includes('armyA') ? 'A' : 'B';
+    const opponentArmyId = armyId === 'A' ? 'B' : 'A';
+    const opponentArmy = window[`army${opponentArmyId}`];
+
+    army.forEach((unit, index) => {
         const tr = document.createElement('tr');
-        const tdImg = document.createElement('td');
+        tr.className = 'border-b';
+
+        // Unit type column
         const tdUnit = document.createElement('td');
-        const tdCount = document.createElement('td');
+        tdUnit.className = 'p-3';
+        tdUnit.textContent = unit.type;
+
+        // Enhancement column
+        const tdEnhancement = document.createElement('td');
+        tdEnhancement.className = 'p-3';
+        tdEnhancement.textContent = unit.enhancement || 'None';
+
+        // Skirmisher column with checkbox
+        const tdSkirmisher = document.createElement('td');
+        tdSkirmisher.className = 'p-3 text-center';
+        const skCheckbox = document.createElement('input');
+        skCheckbox.type = 'checkbox';
+        skCheckbox.className = 'h-5 w-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500';
+        skCheckbox.checked = unit.isSkirmisher || false;
+        skCheckbox.addEventListener('change', (e) => {
+            const armyUnits = window[`army${armyId}`];
+            const count = armyUnits.filter(u => u.isSkirmisher).length;
+            if (e.target.checked && count >= 2) {
+                e.target.checked = false;
+                alert('Only 2 skirmishers allowed per army.');
+                return;
+            }
+            unit.isSkirmisher = e.target.checked;
+            if (!unit.isSkirmisher) delete unit.target;
+            renderArmy(document.getElementById('armyAList'), window.armyA);
+            renderArmy(document.getElementById('armyBList'), window.armyB);
+        });
+        tdSkirmisher.appendChild(skCheckbox);
+
+        // Assault Team target selection
+        if (unit.isSkirmisher && unit.enhancement === 'Assault Team') {
+            const targetSelect = document.createElement('select');
+            targetSelect.className = 'ml-2 p-1 border rounded';
+
+            const defaultOpt = document.createElement('option');
+            defaultOpt.value = -1;
+            defaultOpt.textContent = 'Select Target';
+            targetSelect.appendChild(defaultOpt);
+
+            opponentArmy.forEach((opp, oppIndex) => {
+                const opt = document.createElement('option');
+                opt.value = oppIndex;
+                opt.textContent = `${opp.type} (${opp.enhancement || 'None'})`;
+                if (unit.target === oppIndex) opt.selected = true;
+                targetSelect.appendChild(opt);
+            });
+            targetSelect.addEventListener('change', (e) => {
+                const val = parseInt(e.target.value);
+                if (val >= 0) unit.target = val;
+                else delete unit.target;
+            });
+            tdSkirmisher.appendChild(targetSelect);
+        }
+
+        // Actions column
         const tdActions = document.createElement('td');
-        
-        const type = counts[unitKey].type;
-        const enhancement = counts[unitKey].enhancement;
-        
-        // Image
-        const img = document.createElement('img');
-        img.src = imageMap[type] || '';
-        img.alt = type;
-        tdImg.appendChild(img);
-        
-        // Unit name
-        tdUnit.textContent = unitKey;
-        
-        // Count
-        tdCount.textContent = counts[unitKey].count;
-        
-        // Actions (Remove buttons)
-        const removeOneBtn = document.createElement('button');
-        removeOneBtn.textContent = '-1';
-        removeOneBtn.className = 'bg-yellow-500 text-white px-2 py-1 rounded mr-1 text-xs hover:bg-yellow-600 transition-colors';
-        removeOneBtn.onclick = () => removeUnits(army, listEl, type, enhancement, 1);
-        
-        const removeAllBtn = document.createElement('button');
-        removeAllBtn.textContent = '❌';
-        removeAllBtn.className = 'bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 transition-colors';
-        removeAllBtn.onclick = () => removeUnits(army, listEl, type, enhancement, counts[unitKey].count);
-        
-        tdActions.appendChild(removeOneBtn);
-        tdActions.appendChild(removeAllBtn);
-        
-        // Apply classes
-        tdImg.className = 'border px-2 py-1';
-        tdUnit.className = 'border px-2 py-1';
-        tdCount.className = 'border px-2 py-1';
-        tdActions.className = 'border px-2 py-1';
-        
-        tr.appendChild(tdImg);
+        tdActions.className = 'p-3 text-center';
+        const removeBtn = document.createElement('button');
+        removeBtn.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+        removeBtn.className = 'px-2 py-1 rounded hover:bg-red-100';
+        removeBtn.onclick = () => {
+            army.splice(index, 1);
+            renderArmy(listEl, army);
+        };
+        tdActions.appendChild(removeBtn);
+
         tr.appendChild(tdUnit);
-        tr.appendChild(tdCount);
+        tr.appendChild(tdEnhancement);
+        tr.appendChild(tdSkirmisher);
         tr.appendChild(tdActions);
         listEl.appendChild(tr);
-    }
+    });
 }
 
 // Make renderArmy available globally
@@ -352,24 +376,170 @@ function destructionDice(units, handler) {
     return Math.min(base, 2);
 }
 
-// Helper function to update battle result display
+// Helper function to update battle result display with enhanced formatting
 function updateBattleDisplay(content, append = false, newBattle = false) {
     const battleResultDiv = document.getElementById('battleResult');
     if (battleResultDiv) {
         if (newBattle) {
             // For new battles, add a separator and append
             if (battleResultDiv.innerHTML.trim() && !battleResultDiv.innerHTML.includes('Set up your armies')) {
-                battleResultDiv.innerHTML += '<hr class="my-4 border-gray-400">';
+                battleResultDiv.innerHTML += '<div class="battle-separator"></div>';
             }
-            battleResultDiv.innerHTML += `<pre class="text-left whitespace-pre-wrap">${content}</pre>`;
+            battleResultDiv.innerHTML += formatBattleContent(content);
         } else if (append) {
-            battleResultDiv.innerHTML += `<pre class="text-left whitespace-pre-wrap">${content}</pre>`;
+            battleResultDiv.innerHTML += formatBattleContent(content);
         } else {
-            battleResultDiv.innerHTML = `<pre class="text-left whitespace-pre-wrap">${content}</pre>`;
+            battleResultDiv.innerHTML = formatBattleContent(content);
         }
         // Scroll to bottom to show latest content
         battleResultDiv.scrollTop = battleResultDiv.scrollHeight;
     }
+}
+
+// Enhanced formatting function to convert plain text to styled HTML
+function formatBattleContent(content) {
+    if (!content) return '';
+    
+    // Convert content to HTML with enhanced styling
+    let html = content
+        // Battle headers
+        .replace(/⚔️ Battle at (.+): (.+) vs (.+)/g, 
+            '<div class="battle-header">⚔️ <span class="battle-title">Battle at $1</span><br><span class="army-names">$2 <span class="vs">VS</span> $3</span></div>')
+        
+        // General information
+        .replace(/- (.+) \(Lvl (\d+), (.+)\) vs (.+) \(Lvl (\d+), (.+)\)/g,
+            '<div class="generals-info"><div class="general-a">🎖️ $1 (Level $2) <span class="trait">$3</span></div><div class="general-b">🎖️ $4 (Level $5) <span class="trait">$6</span></div></div>')
+        
+        // Army sizes
+        .replace(/- Army Sizes: (\d+) vs (\d+)/g,
+            '<div class="army-sizes">🛡️ Army Sizes: <span class="army-a-size">$1</span> vs <span class="army-b-size">$2</span></div>')
+        
+        // Round headers
+        .replace(/--- Round (\d+) ---/g,
+            '<div class="round-header">🔄 <span class="round-number">Round $1</span></div>')
+        
+        // Phase headers with icons and styling
+        .replace(/• Skirmish phase begins/g,
+            '<div class="phase-header skirmish">⚔️ <span class="phase-name">Skirmish Phase</span></div>')
+        .replace(/• Pitch phase begins/g,
+            '<div class="phase-header pitch">🎯 <span class="phase-name">Pitch Phase</span></div>')
+        .replace(/• Rally phase begins/g,
+            '<div class="phase-header rally">🚩 <span class="phase-name">Rally Phase</span></div>')
+        .replace(/• Routed Unit Recovery Phase/g,
+            '<div class="phase-header recovery">🔄 <span class="phase-name">Routed Unit Recovery</span></div>')
+        .replace(/• Action Report: Brigade Destruction Phase/g,
+            '<div class="phase-header destruction">💀 <span class="phase-name">Destruction Phase</span></div>')
+        
+        // Enhanced skirmish matchups
+        .replace(/=== Skirmish Matchup (\d+) ===/g,
+            '<div class="skirmish-matchup">⚔️ <span class="matchup-title">Skirmish Matchup $1</span></div>')
+        
+        // Army calculations sections
+        .replace(/=== (.+) (Skirmish|Pitch|Rally|Routed Unit Recovery) (Calculation|===)/g,
+            '<div class="army-calculation $2"><span class="army-name">$1</span> <span class="calc-type">$2 $3</span></div>')
+          // Enhanced dice rolls and calculations with better formatting
+        .replace(/(\w+) \((.+?)\): Roll\((\d+)\) \+ (.+?) = (\d+)/g,
+            '<div class="unit-roll"><span class="unit-type">$1</span> <span class="enhancement">($2)</span>: <span class="dice-roll">🎲 $3</span> + <span class="modifiers">$4</span> = <span class="total">$5</span></div>')
+        
+        // Enhanced army totals with more details
+        .replace(/(.+) Total (Skirmish): (\d+)/g,
+            '<div class="army-total skirmish-total"><span class="army-name">$1</span> Total <span class="phase-name">$2</span>: <span class="total-value">$3</span></div>')
+          // General bonuses with enhanced styling
+        .replace(/General (.+) \(Lvl (\d+)\): \+(\d+)/g,
+            '<div class="general-bonus">🎖️ <span class="general-name">General $1</span> <span class="general-level">(Level $2)</span>: <span class="bonus">+$3</span></div>')
+        
+        // Enhanced trait bonuses with better categorization
+        .replace(/(.+) Trait: \+(\d+) \((.+)\)/g,
+            '<div class="trait-bonus">✨ <span class="trait-name">$1 Trait</span>: <span class="bonus">+$2</span> <span class="trait-desc">($3)</span></div>')
+        
+        // Improved army totals with phase-specific styling
+        .replace(/(.+) Total (Pitch|Rally): (\d+)/g,
+            '<div class="army-total $2-total"><span class="army-name">$1</span> Total <span class="phase-name">$2</span>: <span class="total-value">$3</span></div>')
+        
+        // Enhanced skirmish totals
+        .replace(/(.+) Total (Skirmish): (\d+)/g,
+            '<div class="army-total skirmish-total"><span class="army-name">$1</span> Total <span class="phase-name">$2</span>: <span class="total-value">$3</span></div>')
+        
+        // Improved matchup results with better visibility
+        .replace(/Skirmish Results: (.+) \((\d+)\) vs (.+) \((\d+)\)/g,
+            '<div class="skirmish-result">⚔️ <span class="result-title">Skirmish Results</span>: <span class="army-a">$1 ($2)</span> <span class="vs-divider">VS</span> <span class="army-b">$3 ($4)</span></div>')
+        
+        // Enhanced casualties display
+        .replace(/(.+) takes (\d+) casualties/g,
+            '<div class="casualty-result">💀 <span class="army-name">$1</span> takes <span class="casualty-count">$2</span> casualties</div>')
+        
+        // Better routed unit tracking
+        .replace(/(\d+) units routed/g,
+            '<div class="rout-count">🏃 <span class="routed-number">$1</span> units routed</div>')
+        
+        // Phase comparisons
+        .replace(/(Pitch|Rally) Comparison: (.+)\((\d+)\) vs (.+)\((\d+)\)/g,
+            '<div class="phase-comparison"><span class="phase-name">$1 Comparison</span>: <span class="army-a">$2 ($3)</span> vs <span class="army-b">$4 ($5)</span></div>')
+        .replace(/(.+) wins (pitch|rally) phase by (\d+)/g,
+            '<div class="phase-winner">🏆 <span class="winner">$1</span> wins <span class="phase">$2 phase</span> by <span class="margin">$3</span></div>')
+        
+        // Results with visual indicators
+        .replace(/Result: (.+) wins by (\d+)/g,
+            '<div class="battle-result win">🏆 Result: <span class="winner">$1</span> wins by <span class="margin">$2</span></div>')
+        .replace(/Result: Tied at (\d+) - no casualties/g,
+            '<div class="battle-result tie">🤝 Result: Tied at <span class="tie-score">$1</span> - no casualties</div>')
+        
+        // Special abilities
+        .replace(/Lancer Special: (.+)/g,
+            '<div class="special-ability lancer">🐎 <span class="ability-name">Lancer Special</span>: <span class="ability-desc">$1</span></div>')
+        .replace(/(.+) destruction roll: (\d+) \(destroyed on (.+)\)/g,
+            '<div class="destruction-roll">💀 <span class="unit">$1</span> destruction roll: <span class="roll">🎲 $2</span> <span class="threshold">(destroyed on $3)</span></div>')
+        
+        // Unit status changes with enhanced formatting
+        .replace(/(\w+) \((.+?)\): Rolled (\d+) ✓ RALLIED \(need 4\+\)/g,
+            '<div class="unit-status rallied">✅ <span class="unit">$1 ($2)</span>: <span class="roll">🎲 $3</span> - <span class="status">RALLIED</span></div>')
+        .replace(/(\w+) \((.+?)\): Rolled (\d+) ✗ Still routed \(need 4\+\)/g,
+            '<div class="unit-status routed">❌ <span class="unit">$1 ($2)</span>: <span class="roll">🎲 $3</span> - <span class="status">Still routed</span></div>')
+        .replace(/(\w+) \((.+?)\): Rolled (\d+) ✓ SURVIVES \(destroyed on 1-(.)\)/g,
+            '<div class="unit-status survived">✅ <span class="unit">$1 ($2)</span>: <span class="roll">🎲 $3</span> - <span class="status">SURVIVES</span></div>')
+        .replace(/(\w+) \((.+?)\): Rolled (\d+) 💀 DESTROYED \(destroyed on 1-(.)\)/g,
+            '<div class="unit-status destroyed">💀 <span class="unit">$1 ($2)</span>: <span class="roll">🎲 $3</span> - <span class="status">DESTROYED</span></div>')
+        
+        // Army status summaries
+        .replace(/(.+) rally results: (\d+) active, (\d+) still routed/g,
+            '<div class="army-status">📊 <span class="army-name">$1</span> status: <span class="active">$2 active</span>, <span class="routed">$3 routed</span></div>')
+        .replace(/(.+) losses: (\d+) brigades destroyed/g,
+            '<div class="army-losses">💀 <span class="army-name">$1</span> losses: <span class="loss-count">$2</span> brigades destroyed</div>')
+        
+        // Round endings
+        .replace(/End of Round: (.+) has (\d+) brigades active \((\d+) routed\), (.+) has (\d+) brigades active \((\d+) routed\)/g,
+            '<div class="round-summary">🔚 <span class="summary-title">Round Summary</span><br><span class="army-a">$1: <span class="active">$2 active</span> (<span class="routed">$3 routed</span>)</span><br><span class="army-b">$4: <span class="active">$5 active</span> (<span class="routed">$6 routed</span>)</span></div>')
+        
+        // Battle end
+        .replace(/--- Battle End ---/g,
+            '<div class="battle-end-header">🏁 <span class="end-title">Battle End</span></div>')
+        .replace(/🏆 Final Survivors: (.+): (\d+) \| (.+): (\d+)/g,
+            '<div class="final-survivors">🏆 <span class="survivors-title">Final Survivors</span><br><span class="army-a">$1: <span class="count">$2</span></span> | <span class="army-b">$3: <span class="count">$4</span></span></div>')
+        .replace(/(.+) WINS!/g,
+            '<div class="victory-announcement">🎉 <span class="winner-name">$1</span> <span class="wins-text">WINS!</span> 🎉</div>')
+        .replace(/The battle is a bloody DRAW\./g,
+            '<div class="draw-announcement">🤝 <span class="draw-text">The battle is a bloody DRAW!</span> 🤝</div>')
+        
+        // Action report sections
+        .replace(/=== POST-BATTLE ACTION REPORT ===/g,
+            '<div class="action-report-header">📋 <span class="report-title">Post-Battle Action Report</span></div>')
+        .replace(/--- (.+) Final Brigade Casualty Rolls ---/g,
+            '<div class="casualty-section">💀 <span class="section-title">$1 Final Casualties</span></div>')
+        .replace(/--- (.+) Victory Rerolls ---/g,
+            '<div class="reroll-section">🎲 <span class="section-title">$1 Victory Rerolls</span></div>')
+        .replace(/--- General Fate Rolls ---/g,
+            '<div class="general-fate-section">🎖️ <span class="section-title">General Fate Rolls</span></div>')
+        .replace(/--- FINAL BATTLE SUMMARY ---/g,
+            '<div class="final-summary-header">📊 <span class="summary-title">Final Battle Summary</span></div>')
+        
+        // Remove extra line breaks and structure content
+        .replace(/\n\s*\n/g, '</div><div class="content-break"></div><div class="content-section">')
+        .replace(/\n/g, '<br>');
+    
+    // Wrap in container with better structure
+    return `<div class="battle-content">
+        <div class="content-section">${html}</div>
+    </div>`;
 }
 
 // Name generation arrays
@@ -508,149 +678,78 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                 roundLog.push('• Skirmish phase skipped by cautious general.');
             } else {
                 roundLog.push('• Skirmish phase begins');
-                  // Determine how many 1v1 skirmish matchups occur (max 2 per round)
-                const maxSkirmishes = Math.min(aUnits.length, bUnits.length, 2);
+                // Determine manual skirmishers if selected
+                const aSelected = aUnits.filter(u => u.isSkirmisher);
+                const bSelected = bUnits.filter(u => u.isSkirmisher);
+                const fallbackCount = 2;
+                // Fallback: top skirmish values
+                function topSkirmishers(units, count) {
+                    return [...units].sort((u1, u2) => {
+                        const s1 = (UNIT_STATS[u1.type].skirmish || 0) + ((ENHANCEMENTS[u1.enhancement]||{}).skirmish||0);
+                        const s2 = (UNIT_STATS[u2.type].skirmish || 0) + ((ENHANCEMENTS[u2.enhancement]||{}).skirmish||0);
+                        return s2 - s1;
+                    }).slice(0, count);
+                }
+                const aSkirmishers = aSelected.length > 0 ? aSelected : topSkirmishers(aUnits, fallbackCount);
+                const bSkirmishers = bSelected.length > 0 ? bSelected : topSkirmishers(bUnits, fallbackCount);
+                const maxSkirmishes = Math.min(aSkirmishers.length, bSkirmishers.length, fallbackCount);
                 roundLog.push(`  ${maxSkirmishes} skirmish matchup(s) will occur.`);
-                
-                // Reset loss counters for this skirmish phase
-                aLosses = 0;
-                bLosses = 0;
-                  for (let i = 0; i < maxSkirmishes; i++) {
-                    // Select random units for skirmish
-                    const aSkirmisher = aUnits[Math.floor(Math.random() * aUnits.length)];
-                    const bSkirmisher = bUnits[Math.floor(Math.random() * bUnits.length)];
-                    
-                    // Get base stats and show breakdown
-                    const aBaseStats = getUnitStats(aSkirmisher);
-                    const bBaseStats = getUnitStats(bSkirmisher);
-                    
-                    let aSkirmishValue = aBaseStats.skirmish;
-                    let bSkirmishValue = bBaseStats.skirmish;
-                    
+                for (let i = 0; i < maxSkirmishes; i++) {
+                    const aSk = aSkirmishers[i];
+                    let bSk = bSkirmishers[i];
+                    // Handle Assault Team target override
+                    if (aSk.enhancement === 'Assault Team' && aSk.target != null && bUnits[aSk.target]) {
+                        bSk = bUnits[aSk.target];
+                    }
+                    // Log pairing
                     roundLog.push(`\n  === Skirmish Matchup ${i + 1} ===`);
-                    roundLog.push(`  ${armyAName}'s ${aSkirmisher.type} (${aSkirmisher.enhancement || 'None'}) vs ${armyBName}'s ${bSkirmisher.type} (${bSkirmisher.enhancement || 'None'})`);
-                    
-                    // Show detailed stat breakdown for Army A skirmisher
-                    const aUnitBase = UNIT_STATS[aSkirmisher.type].skirmish || 0;
-                    const aEnhancement = aSkirmisher.enhancement && ENHANCEMENTS[aSkirmisher.enhancement] ? (ENHANCEMENTS[aSkirmisher.enhancement].skirmish || 0) : 0;
-                    roundLog.push(`  ${armyAName} Skirmish: Base(${aUnitBase}) + Enhancement(${aEnhancement}) = ${aSkirmishValue}`);
-                    
-                    // Show detailed stat breakdown for Army B skirmisher
-                    const bUnitBase = UNIT_STATS[bSkirmisher.type].skirmish || 0;
-                    const bEnhancement = bSkirmisher.enhancement && ENHANCEMENTS[bSkirmisher.enhancement] ? (ENHANCEMENTS[bSkirmisher.enhancement].skirmish || 0) : 0;
-                    roundLog.push(`  ${armyBName} Skirmish: Base(${bUnitBase}) + Enhancement(${bEnhancement}) = ${bSkirmishValue}`);
-                    
-                    // Apply Bold trait bonus to one skirmisher
+                    roundLog.push(`  ${armyAName}'s ${aSk.type} (${aSk.enhancement || 'None'}) vs ${armyBName}'s ${bSk.type} (${bSk.enhancement || 'None'})`);
+                    // Compute base and enhancement
+                    const aBase = UNIT_STATS[aSk.type].skirmish || 0;
+                    const aEnh = (ENHANCEMENTS[aSk.enhancement]||{}).skirmish||0;
+                    roundLog.push(`  ${armyAName} Skirmish: Base(${aBase}) + Enhancement(${aEnh}) = ${aBase + aEnh}`);
+                    const bBase = UNIT_STATS[bSk.type].skirmish || 0;
+                    const bEnh = (ENHANCEMENTS[bSk.enhancement]||{}).skirmish||0;
+                    roundLog.push(`  ${armyBName} Skirmish: Base(${bBase}) + Enhancement(${bEnh}) = ${bBase + bEnh}`);
+                    // Apply Bold trait bonus if applicable
                     if (handlerA.applySkirmishBonus && i === 0) {
-                        const bonus = Math.ceil(genA.level / 2);
-                        aSkirmishValue += bonus;
+                        const bonus = Math.ceil(genA.level/2);
                         roundLog.push(`  ${armyAName} Bold Trait Bonus: +${bonus} (General Level ${genA.level}/2 rounded up)`);
-                        roundLog.push(`  ${armyAName} Final Skirmish: ${aSkirmishValue - bonus} + ${bonus} = ${aSkirmishValue}`);
+                        roundLog.push(`  ${armyAName} Final Skirmish: ${aBase + aEnh} + ${bonus} = ${aBase + aEnh + bonus}`);
                     }
                     if (handlerB.applySkirmishBonus && i === 0) {
-                        const bonus = Math.ceil(genB.level / 2);
-                        bSkirmishValue += bonus;
+                        const bonus = Math.ceil(genB.level/2);
                         roundLog.push(`  ${armyBName} Bold Trait Bonus: +${bonus} (General Level ${genB.level}/2 rounded up)`);
-                        roundLog.push(`  ${armyBName} Final Skirmish: ${bSkirmishValue - bonus} + ${bonus} = ${bSkirmishValue}`);
+                        roundLog.push(`  ${armyBName} Final Skirmish: ${bBase + bEnh} + ${bonus} = ${bBase + bEnh + bonus}`);
                     }
-                    
-                    // Now roll dice for each skirmisher
+                    // Rolls
                     const aRoll = rollDie();
                     const bRoll = rollDie();
-                    const aTotal = aRoll + aSkirmishValue;
-                    const bTotal = bRoll + bSkirmishValue;
-                    
+                    const aTotal = aRoll + aBase + aEnh + ((handlerA.applySkirmishBonus && i===0)?Math.ceil(genA.level/2):0);
+                    const bTotal = bRoll + bBase + bEnh + ((handlerB.applySkirmishBonus && i===0)?Math.ceil(genB.level/2):0);
                     roundLog.push(`\n  Dice Rolls:`);
-                    roundLog.push(`  ${armyAName}: Roll(${aRoll}) + Skirmish(${aSkirmishValue}) = ${aTotal}`);
-                    roundLog.push(`  ${armyBName}: Roll(${bRoll}) + Skirmish(${bSkirmishValue}) = ${bTotal}`);                    if (aTotal > bTotal) {
-                        const difference = aTotal - bTotal;
-                        roundLog.push(`\n  Result: ${armyAName} wins by ${difference}`);
-                        
-                        const isLancer = aSkirmisher.type === 'cav' && (aSkirmisher.enhancement === 'Lancers' || aSkirmisher.enhancement === 'Lancer');
-                        
-                        if (isLancer && difference >= 3) {
-                            // Lancer forces a destruction roll instead of routing
-                            roundLog.push(`  Lancer Special: Difference ${difference} >= 3, forcing destruction roll`);
-                            const destructionRoll = rollDie();
-                            roundLog.push(`  ${armyBName}'s ${bSkirmisher.type} destruction roll: ${destructionRoll} (destroyed on 1-2)`);
-                            if (destructionRoll <= 2) {
-                                roundLog.push(`  ${armyBName}'s ${bSkirmisher.type} DESTROYED by lancer charge!`);
-                                bLosses++;
-                            } else {
-                                roundLog.push(`  ${armyBName}'s ${bSkirmisher.type} survives but is routed.`);
-                                // Route the unit
-                                const routedUnit = bUnits[Math.floor(Math.random() * bUnits.length)];
-                                bRoutedThisRound.push(routedUnit);
-                                const routedIndex = bUnits.indexOf(routedUnit);
-                                if (routedIndex > -1) {
-                                    bUnits.splice(routedIndex, 1);
-                                    bRoutedUnits.push(routedUnit);
-                                }
-                            }
-                        } else {
-                            roundLog.push(`  ${armyBName}'s ${bSkirmisher.type} is routed (will miss next pitch phase)`);
-                            // Route the unit instead of destroying it
-                            const routedUnit = bUnits[Math.floor(Math.random() * bUnits.length)];
-                            bRoutedThisRound.push(routedUnit);
-                            const routedIndex = bUnits.indexOf(routedUnit);
-                            if (routedIndex > -1) {
-                                bUnits.splice(routedIndex, 1);
-                                bRoutedUnits.push(routedUnit);
-                            }
-                        }
-                    } else if (bTotal > aTotal) {
-                        const difference = bTotal - aTotal;
-                        roundLog.push(`\n  Result: ${armyBName} wins by ${difference}`);
-                        
-                        const isLancer = bSkirmisher.type === 'cav' && (bSkirmisher.enhancement === 'Lancers' || bSkirmisher.enhancement === 'Lancer');
-                        
-                        if (isLancer && difference >= 3) {
-                            // Lancer forces a destruction roll instead of routing
-                            roundLog.push(`  Lancer Special: Difference ${difference} >= 3, forcing destruction roll`);
-                            const destructionRoll = rollDie();
-                            roundLog.push(`  ${armyAName}'s ${aSkirmisher.type} destruction roll: ${destructionRoll} (destroyed on 1-2)`);
-                            if (destructionRoll <= 2) {
-                                roundLog.push(`  ${armyAName}'s ${aSkirmisher.type} DESTROYED by lancer charge!`);
-                                aLosses++;
-                            } else {
-                                roundLog.push(`  ${armyAName}'s ${aSkirmisher.type} survives but is routed.`);
-                                // Route the unit
-                                const routedUnit = aUnits[Math.floor(Math.random() * aUnits.length)];
-                                aRoutedThisRound.push(routedUnit);
-                                const routedIndex = aUnits.indexOf(routedUnit);
-                                if (routedIndex > -1) {
-                                    aUnits.splice(routedIndex, 1);
-                                    aRoutedUnits.push(routedUnit);
-                                }
-                            }
-                        } else {
-                            roundLog.push(`  ${armyAName}'s ${aSkirmisher.type} is routed (will miss next pitch phase)`);
-                            // Route the unit instead of destroying it
-                            const routedUnit = aUnits[Math.floor(Math.random() * aUnits.length)];
-                            aRoutedThisRound.push(routedUnit);
-                            const routedIndex = aUnits.indexOf(routedUnit);
-                            if (routedIndex > -1) {
-                                aUnits.splice(routedIndex, 1);
-                                aRoutedUnits.push(routedUnit);
-                            }
-                        }
+                    roundLog.push(`  ${armyAName}: Roll(${aRoll}) + Skirmish(${aTotal - aRoll}) = ${aTotal}`);
+                    roundLog.push(`  ${armyBName}: Roll(${bRoll}) + Skirmish(${bTotal - bRoll}) = ${bTotal}`);
+                    // Determine result
+                    if (aTotal > bTotal) {
+                        const diff = aTotal - bTotal;
+                        roundLog.push(`\n  Result: ${armyAName} wins by ${diff}`);
+                        bLosses += 1;
                     } else {
-                        roundLog.push(`\n  Result: Tied at ${aTotal} - no casualties`);
-                    }}
-                
-                // Remove only the actually destroyed units (by lancers)
-                for (let i = 0; i < aLosses && aUnits.length > 0; i++) {
-                    const randomIndex = Math.floor(Math.random() * aUnits.length);
-                    aUnits.splice(randomIndex, 1);
+                        const diff = bTotal - aTotal;
+                        roundLog.push(`\n  Result: ${armyBName} wins by ${diff}`);
+                        aLosses += 1;
+                    }
+                    // Remove routed units
+                    if (bLosses) {
+                        const idx = bUnits.indexOf(bSk);
+                        if (idx > -1) bUnits.splice(idx, 1);
+                    }
+                    if (aLosses) {
+                        const idx2 = aUnits.indexOf(aSk);
+                        if (idx2 > -1) aUnits.splice(idx2, 1);
+                    }
                 }
-                for (let i = 0; i < bLosses && bUnits.length > 0; i++) {
-                    const randomIndex = Math.floor(Math.random() * bUnits.length);
-                    bUnits.splice(randomIndex, 1);
-                }
-                
-                const totalALosses = aLosses + aRoutedThisRound.length;
-                const totalBLosses = bLosses + bRoutedThisRound.length;
-                roundLog.push(`  Skirmish results: ${armyAName} lost ${totalALosses} (${aLosses} destroyed, ${aRoutedThisRound.length} routed), ${armyBName} lost ${totalBLosses} (${bLosses} destroyed, ${bRoutedThisRound.length} routed).`);
             }            // PITCH PHASE
             roundLog.push('\n• Pitch phase begins');
             roundLog.push(`  Army compositions: ${armyAName} (${aUnits.length} units), ${armyBName} (${bUnits.length} units)`);
@@ -926,15 +1025,46 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
             }
             roundLog.push(`  ${armyBName} losses: ${bDestructionCount} brigades destroyed`);
             roundLog.push(`  End of Round: ${armyAName} has ${aUnits.length} brigades active (${aRoutedUnits.length} routed), ${armyBName} has ${bUnits.length} brigades active (${bRoutedUnits.length} routed).`);
-            updateBattleDisplay(roundLog.join('\n'), true);
-            
-            // Store round data for chart generation
-            window.battleData.rounds.push({
+            updateBattleDisplay(roundLog.join('\n'), true);            // Store round data for chart generation with all phase details
+            const roundData = {
                 round: round,
                 armyAUnits: aUnits.length,
-                armyBUnits: bUnits.length,                skirmishResult: `${aLosses || 0} vs ${bLosses || 0}`,
-                details: roundLog.join('\n')
-            });
+                armyBUnits: bUnits.length,
+                armyARouted: aRoutedUnits.length,
+                armyBRouted: bRoutedUnits.length,
+                skirmishResult: `${aLosses || 0} vs ${bLosses || 0}`,
+                details: roundLog.join('\n'),
+                phaseBreakdown: {
+                    skirmish: `${aLosses || 0} vs ${bLosses || 0} (destroyed)`,
+                    destruction: `${aDestructionCount || 0} vs ${bDestructionCount || 0} (destroyed)`
+                }
+            };
+            
+            // Add pitch and rally data if they were calculated
+            if (typeof aFinalPitch !== 'undefined' && typeof bFinalPitch !== 'undefined') {
+                roundData.pitchResults = {
+                    armyA: aFinalPitch,
+                    armyB: bFinalPitch
+                };
+                roundData.phaseBreakdown.pitch = `${aFinalPitch} vs ${bFinalPitch}`;
+            }
+            
+            if (typeof aRallyTotal !== 'undefined' && typeof bRallyTotal !== 'undefined') {
+                roundData.rallyResults = {
+                    armyA: aRallyTotal,
+                    armyB: bRallyTotal
+                };
+                roundData.phaseBreakdown.rally = `${aRallyTotal} vs ${bRallyTotal}`;
+            }
+            
+            if (typeof aDestructionCount !== 'undefined' && typeof bDestructionCount !== 'undefined') {
+                roundData.destructionResults = {
+                    armyA: aDestructionCount,
+                    armyB: bDestructionCount
+                };
+            }
+            
+            window.battleData.rounds.push(roundData);
             
             round++;
             console.log(`Round ${round - 1} completed, checking loop condition:`, {
@@ -1553,15 +1683,23 @@ function generateBattleReport() {
         ctx.fillText(`General Status: ${finalResult.armyB.generalStatus}`, rightCol, yPos);
         yPos += 20;
     }
-    
-    // Round-by-round chart
+      // Round-by-round chart
     if (window.battleData.rounds && window.battleData.rounds.length > 0) {
         drawRoundChart(ctx, window.battleData.rounds, 50, 370, width - 100, 220);
     }
+      // Phase details chart (new)
+    if (window.battleData.rounds && window.battleData.rounds.length > 0) {
+        drawPhaseDetailsChart(ctx, window.battleData.rounds, 50, 620, width - 100, 300);
+    }
     
-    // Unit composition chart
+    // Round-by-round summary text
+    if (window.battleData.rounds && window.battleData.rounds.length > 0) {
+        drawRoundSummaryText(ctx, window.battleData.rounds, 50, 950, width - 100, 200);
+    }
+
+    // Unit composition chart (moved down to accommodate new charts)
     if (armies.A && armies.B) {
-        drawUnitCompositionChart(ctx, armies.A, armies.B, 50, 620, width - 100, 180);
+        drawUnitCompositionChart(ctx, armies.A, armies.B, 50, 1180, width - 100, 180);
     }
     
     // Add timestamp
@@ -1677,8 +1815,7 @@ function drawRoundChart(ctx, rounds, x, y, width, height) {
         }
     });
     ctx.stroke();
-    
-    // Add data points
+      // Add data points with phase information
     rounds.forEach((round, index) => {
         const x_pos = chartX + index * stepX;
         
@@ -1695,6 +1832,36 @@ function drawRoundChart(ctx, rounds, x, y, width, height) {
         ctx.beginPath();
         ctx.arc(x_pos, y_posB, 4, 0, 2 * Math.PI);
         ctx.fill();
+        
+        // Add unit count labels on hover points
+        ctx.fillStyle = '#374151';
+        ctx.font = '9px Arial';
+        ctx.textAlign = 'center';
+        
+        // Army A unit count
+        if (round.armyAUnits > 0) {
+            ctx.fillStyle = '#7c3aed';
+            ctx.fillText(round.armyAUnits.toString(), x_pos, y_posA - 8);
+        }
+        
+        // Army B unit count  
+        if (round.armyBUnits > 0) {
+            ctx.fillStyle = '#dc2626';
+            ctx.fillText(round.armyBUnits.toString(), x_pos, y_posB + 15);
+        }
+        
+        // Add routed unit indicators if available
+        if (round.armyARouted > 0) {
+            ctx.fillStyle = '#a855f7';
+            ctx.font = '8px Arial';
+            ctx.fillText(`+${round.armyARouted}r`, x_pos + 12, y_posA - 8);
+        }
+        
+        if (round.armyBRouted > 0) {
+            ctx.fillStyle = '#f87171';
+            ctx.font = '8px Arial';
+            ctx.fillText(`+${round.armyBRouted}r`, x_pos + 12, y_posB + 15);
+        }
     });
     
     // Y-axis labels
@@ -1732,9 +1899,9 @@ function drawRoundChart(ctx, rounds, x, y, width, height) {
 }
 
 /**
- * Draw unit composition comparison chart
+ * Draw detailed phase analysis chart showing phase results for each round
  */
-function drawUnitCompositionChart(ctx, armyA, armyB, x, y, width, height) {
+function drawPhaseDetailsChart(ctx, rounds, x, y, width, height) {
     ctx.save();
     
     // Chart background
@@ -1748,121 +1915,289 @@ function drawUnitCompositionChart(ctx, armyA, armyB, x, y, width, height) {
     ctx.fillStyle = '#1f2937';
     ctx.font = 'bold 16px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Initial Army Composition', x + width / 2, y - 10);
+    ctx.fillText('Battle Phase Analysis by Round', x + width / 2, y - 10);
     
-    // Get unit counts for both armies
-    const unitTypes = ['cav', 'heavy', 'light', 'ranged', 'support'];
-    const unitNames = ['Cavalry', 'Heavy Inf.', 'Light Inf.', 'Ranged', 'Support'];
-    const colors = ['#8b5cf6', '#ef4444', '#22c55e', '#3b82f6', '#f59e0b'];
-    
-    const armyAUnits = {};
-    const armyBUnits = {};
-    
-    // Count units in Army A
-    if (armyA.units) {
-        armyA.units.forEach(unit => {
-            armyAUnits[unit.type] = (armyAUnits[unit.type] || 0) + 1;
-        });
-    }
-    
-    // Count units in Army B  
-    if (armyB.units) {
-        armyB.units.forEach(unit => {
-            armyBUnits[unit.type] = (armyBUnits[unit.type] || 0) + 1;
-        });
-    }
-    
-    // Calculate max for scaling
-    const maxCount = Math.max(
-        ...unitTypes.map(type => Math.max(armyAUnits[type] || 0, armyBUnits[type] || 0))
-    );
-    
-    if (maxCount === 0) {
+    if (rounds.length === 0) {
         ctx.fillStyle = '#6b7280';
         ctx.font = '14px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('No unit data available', x + width / 2, y + height / 2);
+        ctx.fillText('No phase data available', x + width / 2, y + height / 2);
         ctx.restore();
         return;
     }
     
-    // Chart dimensions
+    // Chart margins
     const margin = 40;
     const chartX = x + margin;
     const chartY = y + margin;
     const chartWidth = width - margin * 2;
     const chartHeight = height - margin * 2;
     
-    // Bar width and spacing
-    const barGroupWidth = chartWidth / unitTypes.length;
-    const barWidth = barGroupWidth * 0.35;
-    const barSpacing = barGroupWidth * 0.1;
+    // Calculate dimensions for phase sections
+    const headerHeight = 30;
+    const phaseHeight = (chartHeight - headerHeight) / 4; // 4 phases: Skirmish, Pitch, Rally, Destruction
+    const roundWidth = chartWidth / Math.max(rounds.length, 1);
     
-    // Draw bars
-    unitTypes.forEach((type, index) => {
-        const baseX = chartX + index * barGroupWidth;
+    // Phase labels
+    const phases = ['Skirmish', 'Pitch', 'Rally', 'Destruction'];
+    const phaseColors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b'];
+    
+    // Draw phase section headers
+    ctx.fillStyle = '#1f2937';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'left';
+    
+    phases.forEach((phase, index) => {
+        const phaseY = chartY + headerHeight + index * phaseHeight;
         
-        // Army A bar
-        const countA = armyAUnits[type] || 0;
-        const heightA = (countA / maxCount) * chartHeight;
-        const yA = chartY + chartHeight - heightA;
-        
-        ctx.fillStyle = colors[index];
-        ctx.globalAlpha = 0.8;
-        ctx.fillRect(baseX, yA, barWidth, heightA);
-        
-        // Army B bar
-        const countB = armyBUnits[type] || 0;
-        const heightB = (countB / maxCount) * chartHeight;
-        const yB = chartY + chartHeight - heightB;
-        
-        ctx.globalAlpha = 0.5;
-        ctx.fillRect(baseX + barWidth + barSpacing, yB, barWidth, heightB);
-        
+        // Phase background
+        ctx.fillStyle = phaseColors[index];
+        ctx.globalAlpha = 0.1;
+        ctx.fillRect(chartX, phaseY, chartWidth, phaseHeight);
         ctx.globalAlpha = 1;
         
-        // Labels
-        ctx.fillStyle = '#374151';
-        ctx.font = '12px Arial';
+        // Phase label
+        ctx.fillStyle = phaseColors[index];
+        ctx.font = 'bold 12px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(unitNames[index], baseX + barGroupWidth / 2, chartY + chartHeight + 20);
+        ctx.save();
+        ctx.translate(chartX - 20, phaseY + phaseHeight / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText(phase, 0, 0);
+        ctx.restore();
         
-        // Values on bars
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 10px Arial';
-        if (heightA > 15) {
-            ctx.fillText(countA.toString(), baseX + barWidth / 2, yA + heightA / 2 + 3);
-        }
-        if (heightB > 15) {
-            ctx.fillText(countB.toString(), baseX + barWidth + barSpacing + barWidth / 2, yB + heightB / 2 + 3);
+        // Separator lines
+        if (index > 0) {
+            ctx.strokeStyle = '#d1d5db';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(chartX, phaseY);
+            ctx.lineTo(chartX + chartWidth, phaseY);
+            ctx.stroke();
         }
     });
     
+    // Draw round separators
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.lineWidth = 1;
+    for (let i = 1; i < rounds.length; i++) {
+        const roundX = chartX + i * roundWidth;
+        ctx.beginPath();
+        ctx.moveTo(roundX, chartY + headerHeight);
+        ctx.lineTo(roundX, chartY + chartHeight);
+        ctx.stroke();
+    }
+    
+    // Draw round data
+    ctx.font = '10px Arial';
+    ctx.textAlign = 'center';
+    
+    rounds.forEach((round, roundIndex) => {
+        const roundX = chartX + roundIndex * roundWidth + roundWidth / 2;
+        
+        // Round header
+        ctx.fillStyle = '#1f2937';
+        ctx.font = 'bold 12px Arial';
+        ctx.fillText(`R${roundIndex + 1}`, roundX, chartY + 20);
+        
+        // Phase data
+        phases.forEach((phase, phaseIndex) => {
+            const phaseY = chartY + headerHeight + phaseIndex * phaseHeight + phaseHeight / 2;
+            
+            ctx.fillStyle = '#374151';
+            ctx.font = '9px Arial';
+            
+            let displayText = '';
+            let armyAValue = '';
+            let armyBValue = '';
+            
+            switch(phase) {
+                case 'Skirmish':
+                    if (round.phaseBreakdown && round.phaseBreakdown.skirmish) {
+                        displayText = round.phaseBreakdown.skirmish;
+                        const skirmishParts = displayText.split(' vs ');
+                        armyAValue = skirmishParts[0] || '0';
+                        armyBValue = (skirmishParts[1] || '0').replace(' (destroyed)', '');
+                    }
+                    break;
+                case 'Pitch':
+                    if (round.pitchResults) {
+                        armyAValue = round.pitchResults.armyA.toString();
+                        armyBValue = round.pitchResults.armyB.toString();
+                        displayText = `${armyAValue} vs ${armyBValue}`;
+                    } else if (round.phaseBreakdown && round.phaseBreakdown.pitch) {
+                        displayText = round.phaseBreakdown.pitch;
+                        const pitchParts = displayText.split(' vs ');
+                        armyAValue = pitchParts[0] || '0';
+                        armyBValue = pitchParts[1] || '0';
+                    }
+                    break;
+                case 'Rally':
+                    if (round.rallyResults) {
+                        armyAValue = round.rallyResults.armyA.toString();
+                        armyBValue = round.rallyResults.armyB.toString();
+                        displayText = `${armyAValue} vs ${armyBValue}`;
+                    } else if (round.phaseBreakdown && round.phaseBreakdown.rally) {
+                        displayText = round.phaseBreakdown.rally;
+                        const rallyParts = displayText.split(' vs ');
+                        armyAValue = rallyParts[0] || '0';
+                        armyBValue = rallyParts[1] || '0';
+                    }
+                    break;
+                case 'Destruction':
+                    if (round.destructionResults) {
+                        armyAValue = round.destructionResults.armyA.toString();
+                        armyBValue = round.destructionResults.armyB.toString();
+                        displayText = `${armyAValue} vs ${armyBValue}`;
+                    } else if (round.phaseBreakdown && round.phaseBreakdown.destruction) {
+                        displayText = round.phaseBreakdown.destruction;
+                        const destructParts = displayText.split(' vs ');
+                        armyAValue = destructParts[0] || '0';
+                        armyBValue = (destructParts[1] || '0').replace(' (destroyed)', '');
+                    }
+                    break;
+            }
+            
+            // Display Army A value (purple)
+            ctx.fillStyle = '#7c3aed';
+            ctx.fillText(armyAValue, roundX - 15, phaseY - 3);
+            
+            // Display vs
+            ctx.fillStyle = '#6b7280';
+            ctx.fillText('vs', roundX, phaseY - 3);
+            
+            // Display Army B value (red)
+            ctx.fillStyle = '#dc2626';
+            ctx.fillText(armyBValue, roundX + 15, phaseY - 3);
+            
+            // Show army status (active/routed units)
+            if (phase === 'Skirmish' && round.armyARouted !== undefined && round.armyBRouted !== undefined) {
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '8px Arial';
+                const routedText = `(${round.armyAUnits}+${round.armyARouted} vs ${round.armyBUnits}+${round.armyBRouted})`;
+                ctx.fillText(routedText, roundX, phaseY + 8);
+            }
+        });
+        
+        // Show round outcome summary
+        const summaryY = chartY + chartHeight - 15;
+        ctx.fillStyle = '#374151';
+        ctx.font = '9px Arial';
+        const armyAUnits = round.armyAUnits || 0;
+        const armyBUnits = round.armyBUnits || 0;
+        const survivor = armyAUnits > armyBUnits ? 'A' : armyBUnits > armyAUnits ? 'B' : 'Tie';
+        ctx.fillStyle = survivor === 'A' ? '#7c3aed' : survivor === 'B' ? '#dc2626' : '#6b7280';
+        ctx.fillText(`${armyAUnits}|${armyBUnits}`, roundX, summaryY);
+    });
+    
     // Legend
-    ctx.font = '14px Arial';
+    ctx.font = '12px Arial';
     ctx.textAlign = 'left';
     
     // Army A legend
-    ctx.fillStyle = '#374151';
-    ctx.globalAlpha = 0.8;
-    ctx.fillRect(chartX + chartWidth - 120, chartY + 10, 15, 15);
-    ctx.globalAlpha = 1;
-    ctx.fillText('Army A', chartX + chartWidth - 100, chartY + 22);
+    ctx.fillStyle = '#7c3aed';
+    ctx.fillRect(chartX + chartWidth - 200, chartY + 10, 15, 10);
+    ctx.fillText('Army A', chartX + chartWidth - 180, chartY + 20);
     
     // Army B legend
-    ctx.globalAlpha = 0.5;
-    ctx.fillRect(chartX + chartWidth - 120, chartY + 30, 15, 15);
-    ctx.globalAlpha = 1;
-    ctx.fillText('Army B', chartX + chartWidth - 100, chartY + 42);
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(chartX + chartWidth - 200, chartY + 25, 15, 10);
+    ctx.fillText('Army B', chartX + chartWidth - 180, chartY + 35);
+    
+    // Explanation
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '10px Arial';
+    ctx.fillText('Values show phase results, bottom shows surviving units', chartX + chartWidth - 200, chartY + 50);
+    ctx.fillText('Format: Army A vs Army B', chartX + chartWidth - 200, chartY + 62);
     
     ctx.restore();
 }
 
-// Make function available globally
-window.generateBattleReport = generateBattleReport;
-
-// Debug: Confirm all functions are loaded
-console.log('battle.js fully loaded. Available functions:', {
-    simulateBattle: typeof window.simulateBattle,
-    generateBattleReport: typeof window.generateBattleReport
-});
+/**
+ * Draw round-by-round text summary showing key phase results
+ */
+function drawRoundSummaryText(ctx, rounds, x, y, width, height) {
+    ctx.save();
+    
+    // Chart background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x, y, width, height);
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, width, height);
+    
+    // Chart title
+    ctx.fillStyle = '#1f2937';
+    ctx.font = 'bold 16px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Round-by-Round Phase Summary', x + width / 2, y - 10);
+    
+    if (rounds.length === 0) {
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '14px Arial';
+        ctx.fillText('No round data available', x + width / 2, y + height / 2);
+        ctx.restore();
+        return;
+    }
+    
+    // Calculate layout
+    const margin = 20;
+    const textX = x + margin;
+    const textY = y + margin;
+    const textWidth = width - margin * 2;
+    const textHeight = height - margin * 2;
+    
+    const lineHeight = 16;
+    const roundsPerColumn = Math.floor(textHeight / (lineHeight * 3)); // 3 lines per round
+    const columnWidth = textWidth / Math.ceil(rounds.length / roundsPerColumn);
+    
+    ctx.font = '11px Arial';
+    ctx.textAlign = 'left';
+    
+    rounds.forEach((round, index) => {
+        const column = Math.floor(index / roundsPerColumn);
+        const row = index % roundsPerColumn;
+        
+        const startX = textX + column * columnWidth;
+        const startY = textY + row * lineHeight * 3;
+        
+        // Round header
+        ctx.fillStyle = '#1f2937';
+        ctx.font = 'bold 12px Arial';
+        ctx.fillText(`Round ${round.round}:`, startX, startY);
+        
+        // Army status
+        ctx.fillStyle = '#374151';
+        ctx.font = '10px Arial';
+        const armyStatus = `Active: ${round.armyAUnits || 0} vs ${round.armyBUnits || 0}`;
+        const routedStatus = round.armyARouted !== undefined ? 
+            ` | Routed: ${round.armyARouted} vs ${round.armyBRouted}` : '';
+        ctx.fillText(armyStatus + routedStatus, startX + 5, startY + 12);
+        
+        // Phase results summary
+        let phaseText = '';
+        if (round.phaseBreakdown) {
+            const phases = [];
+            if (round.phaseBreakdown.skirmish) phases.push(`S:${round.phaseBreakdown.skirmish}`);
+            if (round.phaseBreakdown.pitch) phases.push(`P:${round.phaseBreakdown.pitch}`);
+            if (round.phaseBreakdown.rally) phases.push(`R:${round.phaseBreakdown.rally}`);
+            if (round.phaseBreakdown.destruction) phases.push(`D:${round.phaseBreakdown.destruction}`);
+            phaseText = phases.join(' | ');
+        }
+        
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '9px Arial';
+        // Truncate text if too long
+        if (phaseText.length > columnWidth / 4) {
+            phaseText = phaseText.substring(0, columnWidth / 4) + '...';
+        }
+        ctx.fillText(phaseText, startX + 5, startY + 24);
+    });
+    
+    // Legend
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '10px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('S=Skirmish, P=Pitch, R=Rally, D=Destruction | Format: Army A vs Army B', x + width / 2, y + height - 5);
+    
+    ctx.restore();
+}
