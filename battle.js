@@ -671,8 +671,7 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                 
                 // Initialize routed units tracking for this round
                 let aRoutedThisRound = [];
-                let bRoutedThisRound = [];
-                  // SKIRMISH PHASE
+                let bRoutedThisRound = [];                // SKIRMISH PHASE
             if (handlerA.skipSkirmish || handlerB.skipSkirmish) {
                 roundLog.push('• Skirmish phase skipped by cautious general.');
             } else {
@@ -694,7 +693,8 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                 const aSkirmishers = getSkirmishers(aUnits);
                 const bSkirmishers = getSkirmishers(bUnits);
                 
-                let totalCasualties = 0;
+                // Store all attacks to resolve simultaneously
+                const allAttacks = [];
                 
                 // ARMY A ATTACKS (up to 2 skirmishers attack random Army B units)
                 roundLog.push(`\n  === ${armyAName} Skirmish Attacks ===`);
@@ -740,16 +740,20 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                     roundLog.push(`    Attacker Roll: ${attackRoll} + ${attackerSkirmish} = ${attackTotal}`);
                     roundLog.push(`    Defender Roll: ${defenseRoll} + ${defenderDefense} = ${defenseTotal}`);
                     
+                    // Store attack result for simultaneous resolution
+                    allAttacks.push({
+                        attacker,
+                        defender,
+                        attackTotal,
+                        defenseTotal,
+                        success: attackTotal > defenseTotal,
+                        armyName: armyAName
+                    });
+                    
                     if (attackTotal > defenseTotal) {
-                        roundLog.push(`    Result: Attacker wins! ${defender.type} is routed.`);
-                        const defenderIndex = bUnits.indexOf(defender);
-                        if (defenderIndex > -1) {
-                            bUnits.splice(defenderIndex, 1);
-                            bRoutedUnits.push(defender);
-                            totalCasualties++;
-                        }
+                        roundLog.push(`    Result: Attack succeeds! ${defender.type} will be routed.`);
                     } else {
-                        roundLog.push(`    Result: Defender holds position.`);
+                        roundLog.push(`    Result: Defense holds.`);
                     }
                 }
                 
@@ -797,19 +801,56 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                     roundLog.push(`    Attacker Roll: ${attackRoll} + ${attackerSkirmish} = ${attackTotal}`);
                     roundLog.push(`    Defender Roll: ${defenseRoll} + ${defenderDefense} = ${defenseTotal}`);
                     
+                    // Store attack result for simultaneous resolution
+                    allAttacks.push({
+                        attacker,
+                        defender,
+                        attackTotal,
+                        defenseTotal,
+                        success: attackTotal > defenseTotal,
+                        armyName: armyBName
+                    });
+                    
                     if (attackTotal > defenseTotal) {
-                        roundLog.push(`    Result: Attacker wins! ${defender.type} is routed.`);
-                        const defenderIndex = aUnits.indexOf(defender);
-                        if (defenderIndex > -1) {
-                            aUnits.splice(defenderIndex, 1);
-                            aRoutedUnits.push(defender);
-                            totalCasualties++;
-                        }
+                        roundLog.push(`    Result: Attack succeeds! ${defender.type} will be routed.`);
                     } else {
-                        roundLog.push(`    Result: Defender holds position.`);
+                        roundLog.push(`    Result: Defense holds.`);
                     }
                 }
                 
+                // NOW RESOLVE ALL ATTACKS SIMULTANEOUSLY
+                roundLog.push(`\n  === Simultaneous Resolution ===`);
+                let totalCasualties = 0;
+                const routedUnits = [];
+                
+                for (const attack of allAttacks) {
+                    if (attack.success) {
+                        // Check if defender is still in their army (not already routed by another attack)
+                        const defenderInArmyA = aUnits.indexOf(attack.defender);
+                        const defenderInArmyB = bUnits.indexOf(attack.defender);
+                        
+                        if (defenderInArmyA > -1) {
+                            // Defender is in Army A, remove and route
+                            aUnits.splice(defenderInArmyA, 1);
+                            aRoutedUnits.push(attack.defender);
+                            routedUnits.push(`${attack.defender.type} (${attack.defender.enhancement || 'None'}) from Army A`);
+                            totalCasualties++;
+                        } else if (defenderInArmyB > -1) {
+                            // Defender is in Army B, remove and route
+                            bUnits.splice(defenderInArmyB, 1);
+                            bRoutedUnits.push(attack.defender);
+                            routedUnits.push(`${attack.defender.type} (${attack.defender.enhancement || 'None'}) from Army B`);
+                            totalCasualties++;
+                        }
+                        // If defender was already routed by a previous attack in this same phase, no additional effect
+                    }
+                }
+                
+                if (routedUnits.length > 0) {
+                    roundLog.push(`  Units routed: ${routedUnits.join(', ')}`);
+                } else {
+                    roundLog.push(`  No units routed.`);
+                }
                 roundLog.push(`\n  Skirmish phase complete. Total casualties: ${totalCasualties}`);
             }// PITCH PHASE
             roundLog.push('\n• Pitch phase begins');
@@ -1998,219 +2039,6 @@ function drawPhaseDetailsChart(ctx, rounds, x, y, width, height) {
     const phaseHeight = (chartHeight - headerHeight) / 4; // 4 phases: Skirmish, Pitch, Rally, Destruction
     const roundWidth = chartWidth / Math.max(rounds.length, 1);
     
-    // Phase labels
-    const phases = ['Skirmish', 'Pitch', 'Rally', 'Destruction'];
-    const phaseColors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b'];
-    
-    // Draw phase section headers
-    ctx.fillStyle = '#1f2937';
-    ctx.font = 'bold 14px Arial';
-    ctx.textAlign = 'left';
-    
-    phases.forEach((phase, index) => {
-        const phaseY = chartY + headerHeight + index * phaseHeight;
-        
-        // Phase background
-        ctx.fillStyle = phaseColors[index];
-        ctx.globalAlpha = 0.1;
-        ctx.fillRect(chartX, phaseY, chartWidth, phaseHeight);
-        ctx.globalAlpha = 1;
-        
-        // Phase label
-        ctx.fillStyle = phaseColors[index];
-        ctx.font = 'bold 12px Arial';
-        ctx.textAlign = 'center';
-        ctx.save();
-        ctx.translate(chartX - 20, phaseY + phaseHeight / 2);
-        ctx.rotate(-Math.PI / 2);
-        ctx.fillText(phase, 0, 0);
-        ctx.restore();
-        
-        // Separator lines
-        if (index > 0) {
-            ctx.strokeStyle = '#d1d5db';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(chartX, phaseY);
-            ctx.lineTo(chartX + chartWidth, phaseY);
-            ctx.stroke();
-        }
-    });
-    
-    // Draw round separators
-    ctx.strokeStyle = '#e5e7eb';
-    ctx.lineWidth = 1;
-    for (let i = 1; i < rounds.length; i++) {
-        const roundX = chartX + i * roundWidth;
-        ctx.beginPath();
-        ctx.moveTo(roundX, chartY + headerHeight);
-        ctx.lineTo(roundX, chartY + chartHeight);
-        ctx.stroke();
-    }
-    
-    // Draw round data
-    ctx.font = '10px Arial';
-    ctx.textAlign = 'center';
-    
-    rounds.forEach((round, roundIndex) => {
-        const roundX = chartX + roundIndex * roundWidth + roundWidth / 2;
-        
-        // Round header
-        ctx.fillStyle = '#1f2937';
-        ctx.font = 'bold 12px Arial';
-        ctx.fillText(`R${roundIndex + 1}`, roundX, chartY + 20);
-        
-        // Phase data
-        phases.forEach((phase, phaseIndex) => {
-            const phaseY = chartY + headerHeight + phaseIndex * phaseHeight + phaseHeight / 2;
-            
-            ctx.fillStyle = '#374151';
-            ctx.font = '9px Arial';
-            
-            let displayText = '';
-            let armyAValue = '';
-            let armyBValue = '';
-            
-            switch(phase) {
-                case 'Skirmish':
-                    if (round.phaseBreakdown && round.phaseBreakdown.skirmish) {
-                        displayText = round.phaseBreakdown.skirmish;
-                        const skirmishParts = displayText.split(' vs ');
-                        armyAValue = skirmishParts[0] || '0';
-                        armyBValue = (skirmishParts[1] || '0').replace(' (destroyed)', '');
-                    }
-                    break;
-                case 'Pitch':
-                    if (round.pitchResults) {
-                        armyAValue = round.pitchResults.armyA.toString();
-                        armyBValue = round.pitchResults.armyB.toString();
-                        displayText = `${armyAValue} vs ${armyBValue}`;
-                    } else if (round.phaseBreakdown && round.phaseBreakdown.pitch) {
-                        displayText = round.phaseBreakdown.pitch;
-                        const pitchParts = displayText.split(' vs ');
-                        armyAValue = pitchParts[0] || '0';
-                        armyBValue = pitchParts[1] || '0';
-                    }
-                    break;
-                case 'Rally':
-                    if (round.rallyResults) {
-                        armyAValue = round.rallyResults.armyA.toString();
-                        armyBValue = round.rallyResults.armyB.toString();
-                        displayText = `${armyAValue} vs ${armyBValue}`;
-                    } else if (round.phaseBreakdown && round.phaseBreakdown.rally) {
-                        displayText = round.phaseBreakdown.rally;
-                        const rallyParts = displayText.split(' vs ');
-                        armyAValue = rallyParts[0] || '0';
-                        armyBValue = rallyParts[1] || '0';
-                    }
-                    break;
-                case 'Destruction':
-                    if (round.destructionResults) {
-                        armyAValue = round.destructionResults.armyA.toString();
-                        armyBValue = round.destructionResults.armyB.toString();
-                        displayText = `${armyAValue} vs ${armyBValue}`;
-                    } else if (round.phaseBreakdown && round.phaseBreakdown.destruction) {
-                        displayText = round.phaseBreakdown.destruction;
-                        const destructParts = displayText.split(' vs ');
-                        armyAValue = destructParts[0] || '0';
-                        armyBValue = (destructParts[1] || '0').replace(' (destroyed)', '');
-                    }
-                    break;
-            }
-            
-            // Display Army A value (purple)
-            ctx.fillStyle = '#7c3aed';
-            ctx.fillText(armyAValue, roundX - 15, phaseY - 3);
-            
-            // Display vs
-            ctx.fillStyle = '#6b7280';
-            ctx.fillText('vs', roundX, phaseY - 3);
-            
-            // Display Army B value (red)
-            ctx.fillStyle = '#dc2626';
-            ctx.fillText(armyBValue, roundX + 15, phaseY - 3);
-            
-            // Show army status (active/routed units)
-            if (phase === 'Skirmish' && round.armyARouted !== undefined && round.armyBRouted !== undefined) {
-                ctx.fillStyle = '#6b7280';
-                ctx.font = '8px Arial';
-                const routedText = `(${round.armyAUnits}+${round.armyARouted} vs ${round.armyBUnits}+${round.armyBRouted})`;
-                ctx.fillText(routedText, roundX, phaseY + 8);
-            }
-        });
-        
-        // Show round outcome summary
-        const summaryY = chartY + chartHeight - 15;
-        ctx.fillStyle = '#374151';
-        ctx.font = '9px Arial';
-        const armyAUnits = round.armyAUnits || 0;
-        const armyBUnits = round.armyBUnits || 0;
-        const survivor = armyAUnits > armyBUnits ? 'A' : armyBUnits > armyAUnits ? 'B' : 'Tie';
-        ctx.fillStyle = survivor === 'A' ? '#7c3aed' : survivor === 'B' ? '#dc2626' : '#6b7280';
-        ctx.fillText(`${armyAUnits}|${armyBUnits}`, roundX, summaryY);
-    });
-    
-    // Legend
-    ctx.font = '12px Arial';
-    ctx.textAlign = 'left';
-    
-    // Army A legend
-    ctx.fillStyle = '#7c3aed';
-    ctx.fillRect(chartX + chartWidth - 200, chartY + 10, 15, 10);
-    ctx.fillText('Army A', chartX + chartWidth - 180, chartY + 20);
-    
-    // Army B legend
-    ctx.fillStyle = '#dc2626';
-    ctx.fillRect(chartX + chartWidth - 200, chartY + 25, 15, 10);
-    ctx.fillText('Army B', chartX + chartWidth - 180, chartY + 35);
-    
-    // Explanation
-    ctx.fillStyle = '#6b7280';
-    ctx.font = '10px Arial';
-    ctx.fillText('Values show phase results, bottom shows surviving units', chartX + chartWidth - 200, chartY + 50);
-    ctx.fillText('Format: Army A vs Army B', chartX + chartWidth - 200, chartY + 62);
-    
-    ctx.restore();
-}
-
-/**
- * Draw round-by-round text summary showing key phase results
- */
-function drawRoundSummaryText(ctx, rounds, x, y, width, height) {
-    ctx.save();
-    
-    // Chart background
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(x, y, width, height);
-    ctx.strokeStyle = '#e5e7eb';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x, y, width, height);
-    
-    // Chart title
-    ctx.fillStyle = '#1f2937';
-    ctx.font = 'bold 16px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Round-by-Round Phase Summary', x + width / 2, y - 10);
-    
-    if (rounds.length === 0) {
-        ctx.fillStyle = '#6b7280';
-        ctx.font = '14px Arial';
-        ctx.fillText('No round data available', x + width / 2, y + height / 2);
-        ctx.restore();
-        return;
-    }
-    
-    // Calculate layout
-    const margin = 20;
-    const textX = x + margin;
-    const textY = y + margin;
-    const textWidth = width - margin * 2;
-    const textHeight = height - margin * 2;
-    
-    const lineHeight = 16;
-    const roundsPerColumn = Math.floor(textHeight / (lineHeight * 3)); // 3 lines per round
-    const columnWidth = textWidth / Math.ceil(rounds.length / roundsPerColumn);
-    
     ctx.font = '11px Arial';
     ctx.textAlign = 'left';
     
@@ -2262,3 +2090,6 @@ function drawRoundSummaryText(ctx, rounds, x, y, width, height) {
     
     ctx.restore();
 }
+
+// Make the function globally available
+window.generateBattleReport = generateBattleReport;
