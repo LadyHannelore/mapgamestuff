@@ -515,40 +515,69 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                 // Reset loss counters for this skirmish phase
                 aLosses = 0;
                 bLosses = 0;
-                
-                for (let i = 0; i < maxSkirmishes; i++) {
+                  for (let i = 0; i < maxSkirmishes; i++) {
                     // Select random units for skirmish
                     const aSkirmisher = aUnits[Math.floor(Math.random() * aUnits.length)];
                     const bSkirmisher = bUnits[Math.floor(Math.random() * bUnits.length)];
                     
-                    let aSkirmishValue = getUnitStats(aSkirmisher).skirmish;
-                    let bSkirmishValue = getUnitStats(bSkirmisher).skirmish;
+                    // Get base stats and show breakdown
+                    const aBaseStats = getUnitStats(aSkirmisher);
+                    const bBaseStats = getUnitStats(bSkirmisher);
+                    
+                    let aSkirmishValue = aBaseStats.skirmish;
+                    let bSkirmishValue = bBaseStats.skirmish;
+                    
+                    roundLog.push(`\n  === Skirmish Matchup ${i + 1} ===`);
+                    roundLog.push(`  ${armyAName}'s ${aSkirmisher.type} (${aSkirmisher.enhancement || 'None'}) vs ${armyBName}'s ${bSkirmisher.type} (${bSkirmisher.enhancement || 'None'})`);
+                    
+                    // Show detailed stat breakdown for Army A skirmisher
+                    const aUnitBase = UNIT_STATS[aSkirmisher.type].skirmish || 0;
+                    const aEnhancement = aSkirmisher.enhancement && ENHANCEMENTS[aSkirmisher.enhancement] ? (ENHANCEMENTS[aSkirmisher.enhancement].skirmish || 0) : 0;
+                    roundLog.push(`  ${armyAName} Skirmish: Base(${aUnitBase}) + Enhancement(${aEnhancement}) = ${aSkirmishValue}`);
+                    
+                    // Show detailed stat breakdown for Army B skirmisher
+                    const bUnitBase = UNIT_STATS[bSkirmisher.type].skirmish || 0;
+                    const bEnhancement = bSkirmisher.enhancement && ENHANCEMENTS[bSkirmisher.enhancement] ? (ENHANCEMENTS[bSkirmisher.enhancement].skirmish || 0) : 0;
+                    roundLog.push(`  ${armyBName} Skirmish: Base(${bUnitBase}) + Enhancement(${bEnhancement}) = ${bSkirmishValue}`);
                     
                     // Apply Bold trait bonus to one skirmisher
                     if (handlerA.applySkirmishBonus && i === 0) {
                         const bonus = Math.ceil(genA.level / 2);
                         aSkirmishValue += bonus;
-                        roundLog.push(`  ${aSkirmisher.type} gets +${bonus} from Bold trait.`);
+                        roundLog.push(`  ${armyAName} Bold Trait Bonus: +${bonus} (General Level ${genA.level}/2 rounded up)`);
+                        roundLog.push(`  ${armyAName} Final Skirmish: ${aSkirmishValue - bonus} + ${bonus} = ${aSkirmishValue}`);
                     }
                     if (handlerB.applySkirmishBonus && i === 0) {
                         const bonus = Math.ceil(genB.level / 2);
                         bSkirmishValue += bonus;
-                        roundLog.push(`  ${bSkirmisher.type} gets +${bonus} from Bold trait.`);
+                        roundLog.push(`  ${armyBName} Bold Trait Bonus: +${bonus} (General Level ${genB.level}/2 rounded up)`);
+                        roundLog.push(`  ${armyBName} Final Skirmish: ${bSkirmishValue - bonus} + ${bonus} = ${bSkirmishValue}`);
                     }
                     
-                    roundLog.push(`  Matchup ${i + 1}: ${aSkirmisher.type} (${aSkirmishValue}) vs ${bSkirmisher.type} (${bSkirmishValue})`);                    if (aSkirmishValue > bSkirmishValue) {
-                        const difference = aSkirmishValue - bSkirmishValue;
+                    // Now roll dice for each skirmisher
+                    const aRoll = rollDie();
+                    const bRoll = rollDie();
+                    const aTotal = aRoll + aSkirmishValue;
+                    const bTotal = bRoll + bSkirmishValue;
+                    
+                    roundLog.push(`\n  Dice Rolls:`);
+                    roundLog.push(`  ${armyAName}: Roll(${aRoll}) + Skirmish(${aSkirmishValue}) = ${aTotal}`);
+                    roundLog.push(`  ${armyBName}: Roll(${bRoll}) + Skirmish(${bSkirmishValue}) = ${bTotal}`);                    if (aTotal > bTotal) {
+                        const difference = aTotal - bTotal;
+                        roundLog.push(`\n  Result: ${armyAName} wins by ${difference}`);
+                        
                         const isLancer = aSkirmisher.type === 'cav' && (aSkirmisher.enhancement === 'Lancers' || aSkirmisher.enhancement === 'Lancer');
                         
                         if (isLancer && difference >= 3) {
                             // Lancer forces a destruction roll instead of routing
+                            roundLog.push(`  Lancer Special: Difference ${difference} >= 3, forcing destruction roll`);
                             const destructionRoll = rollDie();
-                            roundLog.push(`    ${armyAName}'s ${aSkirmisher.type} wins by ${difference} - ${armyBName}'s ${bSkirmisher.type} must roll for destruction: ${destructionRoll}`);
+                            roundLog.push(`  ${armyBName}'s ${bSkirmisher.type} destruction roll: ${destructionRoll} (destroyed on 1-2)`);
                             if (destructionRoll <= 2) {
-                                roundLog.push(`      ${armyBName}'s ${bSkirmisher.type} DESTROYED by lancer charge!`);
+                                roundLog.push(`  ${armyBName}'s ${bSkirmisher.type} DESTROYED by lancer charge!`);
                                 bLosses++;
                             } else {
-                                roundLog.push(`      ${armyBName}'s ${bSkirmisher.type} survives but is routed.`);
+                                roundLog.push(`  ${armyBName}'s ${bSkirmisher.type} survives but is routed.`);
                                 // Route the unit
                                 const routedUnit = bUnits[Math.floor(Math.random() * bUnits.length)];
                                 bRoutedThisRound.push(routedUnit);
@@ -559,7 +588,7 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                                 }
                             }
                         } else {
-                            roundLog.push(`    ${armyAName}'s ${aSkirmisher.type} wins - ${armyBName}'s ${bSkirmisher.type} routed.`);
+                            roundLog.push(`  ${armyBName}'s ${bSkirmisher.type} is routed (will miss next pitch phase)`);
                             // Route the unit instead of destroying it
                             const routedUnit = bUnits[Math.floor(Math.random() * bUnits.length)];
                             bRoutedThisRound.push(routedUnit);
@@ -569,19 +598,22 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                                 bRoutedUnits.push(routedUnit);
                             }
                         }
-                    } else if (bSkirmishValue > aSkirmishValue) {
-                        const difference = bSkirmishValue - aSkirmishValue;
+                    } else if (bTotal > aTotal) {
+                        const difference = bTotal - aTotal;
+                        roundLog.push(`\n  Result: ${armyBName} wins by ${difference}`);
+                        
                         const isLancer = bSkirmisher.type === 'cav' && (bSkirmisher.enhancement === 'Lancers' || bSkirmisher.enhancement === 'Lancer');
                         
                         if (isLancer && difference >= 3) {
                             // Lancer forces a destruction roll instead of routing
+                            roundLog.push(`  Lancer Special: Difference ${difference} >= 3, forcing destruction roll`);
                             const destructionRoll = rollDie();
-                            roundLog.push(`    ${armyBName}'s ${bSkirmisher.type} wins by ${difference} - ${armyAName}'s ${aSkirmisher.type} must roll for destruction: ${destructionRoll}`);
+                            roundLog.push(`  ${armyAName}'s ${aSkirmisher.type} destruction roll: ${destructionRoll} (destroyed on 1-2)`);
                             if (destructionRoll <= 2) {
-                                roundLog.push(`      ${armyAName}'s ${aSkirmisher.type} DESTROYED by lancer charge!`);
+                                roundLog.push(`  ${armyAName}'s ${aSkirmisher.type} DESTROYED by lancer charge!`);
                                 aLosses++;
                             } else {
-                                roundLog.push(`      ${armyAName}'s ${aSkirmisher.type} survives but is routed.`);
+                                roundLog.push(`  ${armyAName}'s ${aSkirmisher.type} survives but is routed.`);
                                 // Route the unit
                                 const routedUnit = aUnits[Math.floor(Math.random() * aUnits.length)];
                                 aRoutedThisRound.push(routedUnit);
@@ -592,7 +624,7 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                                 }
                             }
                         } else {
-                            roundLog.push(`    ${armyBName}'s ${bSkirmisher.type} wins - ${armyAName}'s ${aSkirmisher.type} routed.`);
+                            roundLog.push(`  ${armyAName}'s ${aSkirmisher.type} is routed (will miss next pitch phase)`);
                             // Route the unit instead of destroying it
                             const routedUnit = aUnits[Math.floor(Math.random() * aUnits.length)];
                             aRoutedThisRound.push(routedUnit);
@@ -603,7 +635,7 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                             }
                         }
                     } else {
-                        roundLog.push(`    Tied skirmish - no casualties.`);
+                        roundLog.push(`\n  Result: Tied at ${aTotal} - no casualties`);
                     }}
                 
                 // Remove only the actually destroyed units (by lancers)
@@ -619,82 +651,280 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                 const totalALosses = aLosses + aRoutedThisRound.length;
                 const totalBLosses = bLosses + bRoutedThisRound.length;
                 roundLog.push(`  Skirmish results: ${armyAName} lost ${totalALosses} (${aLosses} destroyed, ${aRoutedThisRound.length} routed), ${armyBName} lost ${totalBLosses} (${bLosses} destroyed, ${bRoutedThisRound.length} routed).`);
-            }
-
-            // PITCH PHASE
-            roundLog.push('• Pitch phase begins');
-            const pitchRollA = aUnits.reduce((sum, u) => sum + getUnitStats(u).pitch, 0) + genA.level;
-            const pitchRollB = bUnits.reduce((sum, u) => sum + getUnitStats(u).pitch, 0) + genB.level;
-            // Brilliant: extra pitch
-            const finalPitchA = handlerA.adjustPitchTotal ? handlerA.adjustPitchTotal(pitchRollA, genA.level) : pitchRollA;
-            const finalPitchB = handlerB.adjustPitchTotal ? handlerB.adjustPitchTotal(pitchRollB, genB.level) : pitchRollB;
-            roundLog.push(`  ${armyAName} pitch: ${finalPitchA}`);
-            roundLog.push(`  ${armyBName} pitch: ${finalPitchB}`);            // RALLY PHASE
-            roundLog.push('• Rally phase begins');
-            const rallyRolls = (units, handler, level) => {
-              let total = units.reduce((sum, u) => sum + getUnitStats(u).rally, 0) + 1;
-              // Rally bonus
-              if (handler.rallyBonus) total += handler.rallyBonus;
-              // Inspiring: reroll lowest 1
-              if (handler.enableRallyReroll) total += 1;
-              return total;
-            };
-            const finalRallyA = rallyRolls(aUnits, handlerA, genA.level);
-            const finalRallyB = rallyRolls(bUnits, handlerB, genB.level);
-            roundLog.push(`  ${armyAName} rally: ${finalRallyA}`);
-            roundLog.push(`  ${armyBName} rally: ${finalRallyB}`);
+            }            // PITCH PHASE
+            roundLog.push('\n• Pitch phase begins');
+            roundLog.push(`  Army compositions: ${armyAName} (${aUnits.length} units), ${armyBName} (${bUnits.length} units)`);
             
-            // ROUTED UNIT RECOVERY
+            // Calculate detailed pitch breakdown for Army A
+            let aPitchBreakdown = [];
+            let aPitchTotal = 0;
+            
+            roundLog.push(`\n  === ${armyAName} Pitch Calculation ===`);
+            aUnits.forEach((unit, index) => {
+                const stats = getUnitStats(unit);
+                const basePitch = UNIT_STATS[unit.type].pitch || 0;
+                const enhancementPitch = unit.enhancement && ENHANCEMENTS[unit.enhancement] ? (ENHANCEMENTS[unit.enhancement].pitch || 0) : 0;
+                const roll = rollDie();
+                const unitTotal = roll + stats.pitch;
+                
+                aPitchBreakdown.push({
+                    unit: `${unit.type} (${unit.enhancement || 'None'})`,
+                    roll: roll,
+                    base: basePitch,
+                    enhancement: enhancementPitch,
+                    total: unitTotal
+                });
+                aPitchTotal += unitTotal;
+                
+                roundLog.push(`    ${unit.type} (${unit.enhancement || 'None'}): Roll(${roll}) + Base(${basePitch}) + Enhancement(${enhancementPitch}) = ${unitTotal}`);
+            });
+            
+            // Add general level bonus
+            const aGeneralBonus = genA.level;
+            aPitchTotal += aGeneralBonus;
+            roundLog.push(`    General ${generalAName} (Lvl ${genA.level}): +${aGeneralBonus}`);
+            
+            // Apply Brilliant trait (double general level)
+            let aFinalPitch = aPitchTotal;
+            if (handlerA.adjustPitchTotal) {
+                const brilliantBonus = genA.level; // Brilliant adds another general level
+                aFinalPitch = handlerA.adjustPitchTotal(aPitchTotal, genA.level);
+                roundLog.push(`    Brilliant Trait: +${brilliantBonus} (double general level)`);
+            }
+            roundLog.push(`  ${armyAName} Total Pitch: ${aFinalPitch}`);
+            
+            // Calculate detailed pitch breakdown for Army B
+            let bPitchBreakdown = [];
+            let bPitchTotal = 0;
+            
+            roundLog.push(`\n  === ${armyBName} Pitch Calculation ===`);
+            bUnits.forEach((unit, index) => {
+                const stats = getUnitStats(unit);
+                const basePitch = UNIT_STATS[unit.type].pitch || 0;
+                const enhancementPitch = unit.enhancement && ENHANCEMENTS[unit.enhancement] ? (ENHANCEMENTS[unit.enhancement].pitch || 0) : 0;
+                const roll = rollDie();
+                const unitTotal = roll + stats.pitch;
+                
+                bPitchBreakdown.push({
+                    unit: `${unit.type} (${unit.enhancement || 'None'})`,
+                    roll: roll,
+                    base: basePitch,
+                    enhancement: enhancementPitch,
+                    total: unitTotal
+                });
+                bPitchTotal += unitTotal;
+                
+                roundLog.push(`    ${unit.type} (${unit.enhancement || 'None'}): Roll(${roll}) + Base(${basePitch}) + Enhancement(${enhancementPitch}) = ${unitTotal}`);
+            });
+            
+            // Add general level bonus
+            const bGeneralBonus = genB.level;
+            bPitchTotal += bGeneralBonus;
+            roundLog.push(`    General ${generalBName} (Lvl ${genB.level}): +${bGeneralBonus}`);
+            
+            // Apply Brilliant trait (double general level)
+            let bFinalPitch = bPitchTotal;
+            if (handlerB.adjustPitchTotal) {
+                const brilliantBonus = genB.level;
+                bFinalPitch = handlerB.adjustPitchTotal(bPitchTotal, genB.level);
+                roundLog.push(`    Brilliant Trait: +${brilliantBonus} (double general level)`);
+            }
+            roundLog.push(`  ${armyBName} Total Pitch: ${bFinalPitch}`);
+            
+            // Show pitch comparison
+            const pitchDifference = aFinalPitch - bFinalPitch;
+            roundLog.push(`\n  Pitch Comparison: ${armyAName}(${aFinalPitch}) vs ${armyBName}(${bFinalPitch})`);
+            if (pitchDifference > 0) {
+                roundLog.push(`  ${armyAName} wins pitch phase by ${pitchDifference}`);
+            } else if (pitchDifference < 0) {
+                roundLog.push(`  ${armyBName} wins pitch phase by ${Math.abs(pitchDifference)}`);
+            } else {
+                roundLog.push(`  Pitch phase is tied at ${aFinalPitch}`);
+            }            // RALLY PHASE
+            roundLog.push('\n• Rally phase begins');
+            
+            // Calculate detailed rally for Army A
+            roundLog.push(`\n  === ${armyAName} Rally Calculation ===`);
+            let aRallyTotal = 0;
+            const aRallyBreakdown = [];
+            
+            aUnits.forEach((unit, index) => {
+                const stats = getUnitStats(unit);
+                const baseRally = UNIT_STATS[unit.type].rally || 0;
+                const enhancementRally = unit.enhancement && ENHANCEMENTS[unit.enhancement] ? (ENHANCEMENTS[unit.enhancement].rally || 0) : 0;
+                const garrisonBonus = unit.garrison ? 2 : 0;
+                let traitBonus = 0;
+                
+                // Apply general trait rally bonuses
+                if (handlerA.rallyBonus) {
+                    traitBonus = handlerA.rallyBonus;
+                }
+                
+                const roll = rollDie();
+                const unitTotal = roll + stats.rally + traitBonus;
+                
+                aRallyBreakdown.push({
+                    unit: `${unit.type} (${unit.enhancement || 'None'})`,
+                    roll: roll,
+                    base: baseRally,
+                    enhancement: enhancementRally,
+                    garrison: garrisonBonus,
+                    trait: traitBonus,
+                    total: unitTotal
+                });
+                aRallyTotal += unitTotal;
+                
+                roundLog.push(`    ${unit.type} (${unit.enhancement || 'None'}): Roll(${roll}) + Base(${baseRally}) + Enhancement(${enhancementRally}) + Garrison(${garrisonBonus}) + Trait(${traitBonus}) = ${unitTotal}`);
+            });
+            
+            // Apply Inspiring trait reroll (simplified)
+            if (handlerA.enableRallyReroll) {
+                const rerollBonus = 2; // Simplified bonus
+                aRallyTotal += rerollBonus;
+                roundLog.push(`    Inspiring Trait: +${rerollBonus} (rally reroll bonus)`);
+            }
+            
+            roundLog.push(`  ${armyAName} Total Rally: ${aRallyTotal}`);
+            
+            // Calculate detailed rally for Army B
+            roundLog.push(`\n  === ${armyBName} Rally Calculation ===`);
+            let bRallyTotal = 0;
+            const bRallyBreakdown = [];
+            
+            bUnits.forEach((unit, index) => {
+                const stats = getUnitStats(unit);
+                const baseRally = UNIT_STATS[unit.type].rally || 0;
+                const enhancementRally = unit.enhancement && ENHANCEMENTS[unit.enhancement] ? (ENHANCEMENTS[unit.enhancement].rally || 0) : 0;
+                const garrisonBonus = unit.garrison ? 2 : 0;
+                let traitBonus = 0;
+                
+                // Apply general trait rally bonuses
+                if (handlerB.rallyBonus) {
+                    traitBonus = handlerB.rallyBonus;
+                }
+                
+                const roll = rollDie();
+                const unitTotal = roll + stats.rally + traitBonus;
+                
+                bRallyBreakdown.push({
+                    unit: `${unit.type} (${unit.enhancement || 'None'})`,
+                    roll: roll,
+                    base: baseRally,
+                    enhancement: enhancementRally,
+                    garrison: garrisonBonus,
+                    trait: traitBonus,
+                    total: unitTotal
+                });
+                bRallyTotal += unitTotal;
+                
+                roundLog.push(`    ${unit.type} (${unit.enhancement || 'None'}): Roll(${roll}) + Base(${baseRally}) + Enhancement(${enhancementRally}) + Garrison(${garrisonBonus}) + Trait(${traitBonus}) = ${unitTotal}`);
+            });
+            
+            // Apply Inspiring trait reroll (simplified)
+            if (handlerB.enableRallyReroll) {
+                const rerollBonus = 2; // Simplified bonus
+                bRallyTotal += rerollBonus;
+                roundLog.push(`    Inspiring Trait: +${rerollBonus} (rally reroll bonus)`);
+            }
+            
+            roundLog.push(`  ${armyBName} Total Rally: ${bRallyTotal}`);
+            
+            // Show rally comparison
+            const rallyDifference = aRallyTotal - bRallyTotal;
+            roundLog.push(`\n  Rally Comparison: ${armyAName}(${aRallyTotal}) vs ${armyBName}(${bRallyTotal})`);
+            if (rallyDifference > 0) {
+                roundLog.push(`  ${armyAName} wins rally phase by ${rallyDifference}`);
+            } else if (rallyDifference < 0) {
+                roundLog.push(`  ${armyBName} wins rally phase by ${Math.abs(rallyDifference)}`);
+            } else {
+                roundLog.push(`  Rally phase is tied at ${aRallyTotal}`);
+            }
+              // ROUTED UNIT RECOVERY
             if (aRoutedUnits.length > 0 || bRoutedUnits.length > 0) {
-                roundLog.push('• Routed Unit Recovery');
+                roundLog.push('\n• Routed Unit Recovery Phase');
+                roundLog.push('  Units need to roll 4+ on a d6 to rally back into battle');
                 
                 // Army A routed unit recovery
                 if (aRoutedUnits.length > 0) {
-                    roundLog.push(`  ${armyAName} attempts to rally ${aRoutedUnits.length} routed unit(s):`);
+                    roundLog.push(`\n  === ${armyAName} Routed Unit Recovery ===`);
+                    roundLog.push(`  Attempting to rally ${aRoutedUnits.length} routed unit(s):`);
                     for (let i = aRoutedUnits.length - 1; i >= 0; i--) {
                         const routedUnit = aRoutedUnits[i];
                         const rallyRoll = rollDie();
-                        if (rallyRoll >= 4) { // Need 4+ to rally back
-                            roundLog.push(`    ${routedUnit.type} (${routedUnit.enhancement || 'None'}): Rolled ${rallyRoll} - Rallied back to battle!`);
+                        const rallied = rallyRoll >= 4;
+                        
+                        roundLog.push(`    ${routedUnit.type} (${routedUnit.enhancement || 'None'}): Rolled ${rallyRoll} ${rallied ? '✓ RALLIED' : '✗ Still routed'} (need 4+)`);
+                        
+                        if (rallied) {
                             aUnits.push(routedUnit);
                             aRoutedUnits.splice(i, 1);
-                        } else {
-                            roundLog.push(`    ${routedUnit.type} (${routedUnit.enhancement || 'None'}): Rolled ${rallyRoll} - Still routed.`);
                         }
                     }
+                    roundLog.push(`  ${armyAName} rally results: ${aUnits.length} active, ${aRoutedUnits.length} still routed`);
                 }
                 
                 // Army B routed unit recovery
                 if (bRoutedUnits.length > 0) {
-                    roundLog.push(`  ${armyBName} attempts to rally ${bRoutedUnits.length} routed unit(s):`);
+                    roundLog.push(`\n  === ${armyBName} Routed Unit Recovery ===`);
+                    roundLog.push(`  Attempting to rally ${bRoutedUnits.length} routed unit(s):`);
                     for (let i = bRoutedUnits.length - 1; i >= 0; i--) {
                         const routedUnit = bRoutedUnits[i];
                         const rallyRoll = rollDie();
-                        if (rallyRoll >= 4) { // Need 4+ to rally back
-                            roundLog.push(`    ${routedUnit.type} (${routedUnit.enhancement || 'None'}): Rolled ${rallyRoll} - Rallied back to battle!`);
+                        const rallied = rallyRoll >= 4;
+                        
+                        roundLog.push(`    ${routedUnit.type} (${routedUnit.enhancement || 'None'}): Rolled ${rallyRoll} ${rallied ? '✓ RALLIED' : '✗ Still routed'} (need 4+)`);
+                        
+                        if (rallied) {
                             bUnits.push(routedUnit);
                             bRoutedUnits.splice(i, 1);
-                        } else {
-                            roundLog.push(`    ${routedUnit.type} (${routedUnit.enhancement || 'None'}): Rolled ${rallyRoll} - Still routed.`);
                         }
                     }
+                    roundLog.push(`  ${armyBName} rally results: ${bUnits.length} active, ${bRoutedUnits.length} still routed`);
+                }
+            }            // ACTION REPORT (DESTRUCTION)
+            roundLog.push('\n• Action Report: Brigade Destruction Phase');
+            roundLog.push('  Each surviving brigade rolls d6 - destroyed on 1-2, survives on 3-6');
+            
+            // Show modifiers
+            if (handlerA.destructionOn1to3 || handlerB.destructionOn1to3) {
+                roundLog.push('  Merciless trait active: destroys on 1-3 instead of 1-2');
+            }
+            
+            // Army A destruction rolls
+            roundLog.push(`\n  === ${armyAName} Brigade Destruction Rolls ===`);
+            let aDestructionCount = 0;
+            for (let i = aUnits.length - 1; i >= 0; i--) {
+                const unit = aUnits[i];
+                const roll = rollDie();
+                const thresholdOpp = handlerB.destructionOn1to3 ? 3 : 2;
+                const destroyed = roll <= thresholdOpp;
+                
+                roundLog.push(`    ${unit.type} (${unit.enhancement || 'None'}): Rolled ${roll} ${destroyed ? '💀 DESTROYED' : '✓ Survives'} (destroyed on 1-${thresholdOpp})`);
+                
+                if (destroyed) {
+                    aUnits.splice(i, 1);
+                    aDestructionCount++;
                 }
             }
-
-            // ACTION REPORT (DESTRUCTION)
-            roundLog.push('• Action Report: Destruction');
-            const destroyedByA = destructionDice(aUnits, handlerA);
-            const destroyedByB = destructionDice(bUnits, handlerB);            roundLog.push(`  ${armyAName} destroys ${destroyedByA} of ${armyBName}'s brigades.`);
-            roundLog.push(`  ${armyBName} destroys ${destroyedByB} of ${armyAName}'s brigades.`);
+            roundLog.push(`  ${armyAName} losses: ${aDestructionCount} brigades destroyed`);
             
-            // Randomly remove units
-            for (let i = 0; i < destroyedByA && bUnits.length > 0; i++) {
-                const randomIndex = Math.floor(Math.random() * bUnits.length);
-                bUnits.splice(randomIndex, 1);
-            }            for (let i = 0; i < destroyedByB && aUnits.length > 0; i++) {
-                const randomIndex = Math.floor(Math.random() * aUnits.length);
-                aUnits.splice(randomIndex, 1);
+            // Army B destruction rolls
+            roundLog.push(`\n  === ${armyBName} Brigade Destruction Rolls ===`);
+            let bDestructionCount = 0;
+            for (let i = bUnits.length - 1; i >= 0; i--) {
+                const unit = bUnits[i];
+                const roll = rollDie();
+                const thresholdOpp = handlerA.destructionOn1to3 ? 3 : 2;
+                const destroyed = roll <= thresholdOpp;
+                
+                roundLog.push(`    ${unit.type} (${unit.enhancement || 'None'}): Rolled ${roll} ${destroyed ? '💀 DESTROYED' : '✓ Survives'} (destroyed on 1-${thresholdOpp})`);
+                
+                if (destroyed) {
+                    bUnits.splice(i, 1);
+                    bDestructionCount++;
+                }
             }
+            roundLog.push(`  ${armyBName} losses: ${bDestructionCount} brigades destroyed`);
             roundLog.push(`  End of Round: ${armyAName} has ${aUnits.length} brigades active (${aRoutedUnits.length} routed), ${armyBName} has ${bUnits.length} brigades active (${bRoutedUnits.length} routed).`);
             updateBattleDisplay(roundLog.join('\n'), true);
             
@@ -760,134 +990,151 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
         }
 
         updateBattleDisplay(finalLog.join('\n'), true);
-        await delay(3000);
-
-        // ACTION REPORT PHASE (Post-Battle)
-        const actionLog = ['\n--- Action Report Phase ---'];
-        actionLog.push('All surviving brigades and generals roll for casualties and promotions.');
+        await delay(3000);        // ACTION REPORT PHASE (Post-Battle)
+        const actionLog = ['\n=== POST-BATTLE ACTION REPORT ==='];
+        actionLog.push('All surviving brigades and generals roll for final casualties and promotions.');
+        actionLog.push('Brigade survival: Destroyed on 1-2, survives on 3-6');
+        actionLog.push('General fate: Captured on 1, promoted on 5-6, no effect on 2-4');
         
         // Brigade casualty rolls for Army A
-        actionLog.push(`\n${armyAName} Brigade Casualties:`);
+        actionLog.push(`\n--- ${armyAName} Final Brigade Casualty Rolls ---`);
         const aInitialCount = aUnits.length;
+        const aDestroyedBrigades = [];
+        
         for (let i = aUnits.length - 1; i >= 0; i--) {
             const roll = rollDie();
             const isDestroyed = roll <= 2;
             const unit = aUnits[i];
-            actionLog.push(`  ${unit.type} (${unit.enhancement || 'None'}): Rolled ${roll} - ${isDestroyed ? 'DESTROYED' : 'Survives'}`);
+            actionLog.push(`${unit.type} (${unit.enhancement || 'None'}): Rolled ${roll} ${isDestroyed ? '💀 DESTROYED' : '✓ SURVIVES'} (destroyed on 1-2)`);
             
             if (isDestroyed) {
+                aDestroyedBrigades.push(unit);
                 aUnits.splice(i, 1);
             }
         }
+        actionLog.push(`${armyAName} post-battle casualties: ${aDestroyedBrigades.length}/${aInitialCount} brigades destroyed`);
         
         // Victor rerolls for Army A
-        if (victor === 'A' && aInitialCount > aUnits.length) {
-            actionLog.push(`\n${armyAName} is victorious and may reroll destroyed brigades:`);
-            const destroyedCount = aInitialCount - aUnits.length;
-            // Simulate rerolls (simplified - would need actual user interaction)
+        if (victor === 'A' && aDestroyedBrigades.length > 0) {
+            actionLog.push(`\n--- ${armyAName} Victory Rerolls ---`);
+            actionLog.push(`As the victor, ${armyAName} may reroll destroyed brigades:`);
             let saved = 0;
-            for (let i = 0; i < destroyedCount; i++) {
+            
+            aDestroyedBrigades.forEach((unit, index) => {
                 const reroll = rollDie();
-                if (reroll > 2) {
+                const survives = reroll > 2;
+                actionLog.push(`  ${unit.type} (${unit.enhancement || 'None'}): Reroll ${reroll} ${survives ? '✓ SAVED' : '✗ Still destroyed'} (survives on 3+)`);
+                
+                if (survives) {
+                    aUnits.push(unit);
                     saved++;
-                    actionLog.push(`  Reroll ${i + 1}: Rolled ${reroll} - Brigade SAVED!`);
-                } else {
-                    actionLog.push(`  Reroll ${i + 1}: Rolled ${reroll} - Still destroyed.`);
                 }
-            }
-            // Add saved brigades back (simplified)
-            for (let i = 0; i < saved; i++) {
-                aUnits.push({ type: 'heavy', enhancement: 'None' }); // placeholder
-            }
+            });
+            actionLog.push(`Victory rerolls saved ${saved}/${aDestroyedBrigades.length} brigades`);
         }
 
         // Brigade casualty rolls for Army B
-        actionLog.push(`\n${armyBName} Brigade Casualties:`);
+        actionLog.push(`\n--- ${armyBName} Final Brigade Casualty Rolls ---`);
         const bInitialCount = bUnits.length;
+        const bDestroyedBrigades = [];
+        
         for (let i = bUnits.length - 1; i >= 0; i--) {
             const roll = rollDie();
             const isDestroyed = roll <= 2;
             const unit = bUnits[i];
-            actionLog.push(`  ${unit.type} (${unit.enhancement || 'None'}): Rolled ${roll} - ${isDestroyed ? 'DESTROYED' : 'Survives'}`);
+            actionLog.push(`${unit.type} (${unit.enhancement || 'None'}): Rolled ${roll} ${isDestroyed ? '💀 DESTROYED' : '✓ SURVIVES'} (destroyed on 1-2)`);
             
             if (isDestroyed) {
+                bDestroyedBrigades.push(unit);
                 bUnits.splice(i, 1);
             }
         }
+        actionLog.push(`${armyBName} post-battle casualties: ${bDestroyedBrigades.length}/${bInitialCount} brigades destroyed`);
 
         // Victor rerolls for Army B
-        if (victor === 'B' && bInitialCount > bUnits.length) {
-            actionLog.push(`\n${armyBName} is victorious and may reroll destroyed brigades:`);
-            const destroyedCount = bInitialCount - bUnits.length;
+        if (victor === 'B' && bDestroyedBrigades.length > 0) {
+            actionLog.push(`\n--- ${armyBName} Victory Rerolls ---`);
+            actionLog.push(`As the victor, ${armyBName} may reroll destroyed brigades:`);
             let saved = 0;
-            for (let i = 0; i < destroyedCount; i++) {
+            
+            bDestroyedBrigades.forEach((unit, index) => {
                 const reroll = rollDie();
-                if (reroll > 2) {
+                const survives = reroll > 2;
+                actionLog.push(`  ${unit.type} (${unit.enhancement || 'None'}): Reroll ${reroll} ${survives ? '✓ SAVED' : '✗ Still destroyed'} (survives on 3+)`);
+                
+                if (survives) {
+                    bUnits.push(unit);
                     saved++;
-                    actionLog.push(`  Reroll ${i + 1}: Rolled ${reroll} - Brigade SAVED!`);
-                } else {
-                    actionLog.push(`  Reroll ${i + 1}: Rolled ${reroll} - Still destroyed.`);
                 }
-            }
-            for (let i = 0; i < saved; i++) {
-                bUnits.push({ type: 'heavy', enhancement: 'None' });
-            }
+            });
+            actionLog.push(`Victory rerolls saved ${saved}/${bDestroyedBrigades.length} brigades`);
         }
 
         // General casualty/promotion rolls
-        actionLog.push(`\n--- General Rolls ---`);
+        actionLog.push(`\n--- General Fate Rolls ---`);
         
         // General A roll
         const genARoll = rollDie();
+        let genAFate = 'No effect';
         if (genARoll === 1) {
-            actionLog.push(`${generalAName}: Rolled ${genARoll} - CAPTURED!`);
+            genAFate = 'CAPTURED';
         } else if (genARoll >= 5) {
-            actionLog.push(`${generalAName}: Rolled ${genARoll} - PROMOTED! (Level ${genA.level} → ${genA.level + 1})`);
+            genAFate = 'PROMOTED';
             genA.level++;
-        } else {
-            actionLog.push(`${generalAName}: Rolled ${genARoll} - No effect.`);
+        }
+        actionLog.push(`${generalAName} (${genA.trait}, Lvl ${genA.level - (genAFate === 'PROMOTED' ? 1 : 0)}): Rolled ${genARoll} → ${genAFate}`);
+        if (genAFate === 'PROMOTED') {
+            actionLog.push(`  ${generalAName} is now Level ${genA.level}`);
         }
 
         // General B roll
         const genBRoll = rollDie();
+        let genBFate = 'No effect';
         if (genBRoll === 1) {
-            actionLog.push(`${generalBName}: Rolled ${genBRoll} - CAPTURED!`);
+            genBFate = 'CAPTURED';
         } else if (genBRoll >= 5) {
-            actionLog.push(`${generalBName}: Rolled ${genBRoll} - PROMOTED! (Level ${genB.level} → ${genB.level + 1})`);
+            genBFate = 'PROMOTED';
             genB.level++;
-        } else {
-            actionLog.push(`${generalBName}: Rolled ${genBRoll} - No effect.`);
+        }
+        actionLog.push(`${generalBName} (${genB.trait}, Lvl ${genB.level - (genBFate === 'PROMOTED' ? 1 : 0)}): Rolled ${genBRoll} → ${genBFate}`);
+        if (genBFate === 'PROMOTED') {
+            actionLog.push(`  ${generalBName} is now Level ${genB.level}`);
         }
 
         // Victor general reroll
-        if (victor === 'A' && (genARoll === 1 || genARoll < 5)) {
+        if (victor === 'A' && genAFate !== 'PROMOTED') {
             const reroll = rollDie();
-            actionLog.push(`${generalAName} (Victor) rerolls: ${reroll}`);
-            if (reroll >= 5) {
-                actionLog.push(`  PROMOTED on reroll! (Level ${genA.level} → ${genA.level + 1})`);
+            let rerollFate = 'No effect';
+            if (reroll === 1) {
+                rerollFate = 'CAPTURED';
+            } else if (reroll >= 5) {
+                rerollFate = 'PROMOTED';
                 genA.level++;
-            } else if (reroll === 1) {
-                actionLog.push(`  Still captured on reroll.`);
-            } else {
-                actionLog.push(`  No effect on reroll.`);
+            }
+            actionLog.push(`${generalAName} (Victor) rerolls: ${reroll} → ${rerollFate}`);
+            if (rerollFate === 'PROMOTED') {
+                actionLog.push(`  ${generalAName} is now Level ${genA.level}`);
             }
         }
 
-        if (victor === 'B' && (genBRoll === 1 || genBRoll < 5)) {
+        if (victor === 'B' && genBFate !== 'PROMOTED') {
             const reroll = rollDie();
-            actionLog.push(`${generalBName} (Victor) rerolls: ${reroll}`);
-            if (reroll >= 5) {
-                actionLog.push(`  PROMOTED on reroll! (Level ${genB.level} → ${genB.level + 1})`);
+            let rerollFate = 'No effect';
+            if (reroll === 1) {
+                rerollFate = 'CAPTURED';
+            } else if (reroll >= 5) {
+                rerollFate = 'PROMOTED';
                 genB.level++;
-            } else if (reroll === 1) {
-                actionLog.push(`  Still captured on reroll.`);
-            } else {
-                actionLog.push(`  No effect on reroll.`);
+            }
+            actionLog.push(`${generalBName} (Victor) rerolls: ${reroll} → ${rerollFate}`);
+            if (rerollFate === 'PROMOTED') {
+                actionLog.push(`  ${generalBName} is now Level ${genB.level}`);
             }
         }
 
         // Final summary
-        actionLog.push(`\n--- Final Action Report Summary ---`);
+        actionLog.push(`\n--- FINAL BATTLE SUMMARY ---`);
+        actionLog.push(`Victor: ${victor === 'A' ? armyAName : victor === 'B' ? armyBName : 'DRAW'}`);
         actionLog.push(`${armyAName}: ${aUnits.length} brigades remaining`);
         actionLog.push(`${armyBName}: ${bUnits.length} brigades remaining`);
         actionLog.push(`${generalAName}: Level ${genA.level}`);
