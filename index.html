@@ -1269,7 +1269,427 @@
 </head>
 <body class="bg-gray-50 text-gray-900">    <div id="app" class="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-8">        <h1 class="text-4xl font-bold mb-6 text-center">
             🏰 Mock Battle Simulator 🏰
-        </h1>        <!-- Battle Setup Section -->
+        </h1>
+
+        <!-- Tutorial Section -->
+        <div class="tutorial-section bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-lg mb-6 border-2 border-blue-200">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold text-blue-800">📚 How to Play - Interactive Tutorial</h2>
+                <button id="toggleTutorial" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+                    Hide Tutorial
+                </button>
+            </div>
+            
+            <div id="tutorialContent" class="space-y-6">
+                <!-- Battle Flow Overview -->                <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-100">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                        Battle Flow Overview
+                    </h3>
+                      <!-- Battle Flow Flowchart -->
+                    <div class="flex justify-center mb-4">
+                        <img src="images/battle flow.png" alt="Battle Flow Chart" class="max-w-full h-auto rounded-lg border shadow-sm">
+                    </div>
+                    
+                    <p class="text-gray-700 text-sm">
+                        Every battle follows this 4-stage process. The army with more surviving units after the destruction phase wins!
+                    </p>
+                </div>
+
+                <!-- Unit Types Guide -->                <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-100">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                        Unit Types & Stats
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">                        <!-- Cavalry -->
+                        <div class="text-center bg-yellow-50 p-3 rounded border">
+                            <img src="images/cav.jpg" alt="Cavalry" class="w-16 h-16 mx-auto mb-2 rounded border" style="width: 64px; height: 64px; object-fit: cover;">
+                            <h4 class="font-semibold text-yellow-800">Cavalry</h4>                            <div class="text-xs text-gray-600 flex flex-wrap gap-x-2 gap-y-1 justify-center">
+                                <div>Skirmish: +1</div>
+                                <div>Pitch: +1</div>
+                                <div>Defense: 0</div>
+                                <div class="text-yellow-700 font-medium w-full text-center">Fast & Versatile</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Heavy Infantry -->
+                        <div class="text-center bg-gray-50 p-3 rounded border">
+                            <img src="images/heavy.jpg" alt="Heavy Infantry" class="w-16 h-16 mx-auto mb-2 rounded border" style="width: 64px; height: 64px; object-fit: cover;">
+                            <h4 class="font-semibold text-gray-800">Heavy Infantry</h4>                            <div class="text-xs text-gray-600 flex flex-wrap gap-x-2 gap-y-1 justify-center">
+                                <div>Skirmish: 0</div>
+                                <div>Pitch: +1</div>
+                                <div>Defense: +2</div>
+                                <div class="text-gray-700 font-medium w-full text-center">Tough Defenders</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Light Infantry -->
+                        <div class="text-center bg-green-50 p-3 rounded border">
+                            <img src="images/light.jpg" alt="Light Infantry" class="w-16 h-16 mx-auto mb-2 rounded border" style="width: 64px; height: 64px; object-fit: cover;">
+                            <h4 class="font-semibold text-green-800">Light Infantry</h4>                            <div class="text-xs text-gray-600 flex flex-wrap gap-x-2 gap-y-1 justify-center">
+                                <div>Skirmish: +2</div>
+                                <div>Pitch: 0</div>
+                                <div>Defense: 0</div>
+                                <div class="text-green-700 font-medium w-full text-center">Best Skirmishers</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Ranged -->
+                        <div class="text-center bg-red-50 p-3 rounded border">
+                            <img src="images/ranged.jpg" alt="Ranged" class="w-16 h-16 mx-auto mb-2 rounded border" style="width: 64px; height: 64px; object-fit: cover;">
+                            <h4 class="font-semibold text-red-800">Ranged</h4>                            <div class="text-xs text-gray-600 flex flex-wrap gap-x-2 gap-y-1 justify-center">
+                                <div>Skirmish: 0</div>
+                                <div>Pitch: +1</div>
+                                <div>Defense: +2</div>
+                                <div class="text-red-700 font-medium w-full text-center">Defensive Fire</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Support -->
+                        <div class="text-center bg-blue-50 p-3 rounded border">
+                            <img src="images/support.png" alt="Support" class="w-16 h-16 mx-auto mb-2 rounded border" style="width: 64px; height: 64px; object-fit: cover;">
+                            <h4 class="font-semibold text-blue-800">Support</h4>                            <div class="text-xs text-gray-600 flex flex-wrap gap-x-2 gap-y-1 justify-center">
+                                <div>Skirmish: 0</div>
+                                <div>Pitch: 0</div>
+                                <div>Defense: +2</div>
+                                <div class="text-blue-700 font-medium w-full text-center">Army Support</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step-by-Step Guide -->                <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-100">                    <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                        Quick Start Guide
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <!-- Step Process Visualization -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                                <div class="flex items-center mb-2">
+                                    <span class="bg-purple-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-2">1</span>
+                                    <h4 class="font-semibold text-purple-800">Build Your Army</h4>
+                                </div>                                <ul class="text-sm text-gray-700 flex flex-wrap gap-x-4 gap-y-1">
+                                    <li>• Choose unit types from dropdown</li>
+                                    <li>• Add enhancements for bonuses</li>
+                                    <li>• Set quantities for each unit</li>
+                                    <li>• Use Remove buttons to modify</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                                <div class="flex items-center mb-2">
+                                    <span class="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-2">2</span>
+                                    <h4 class="font-semibold text-green-800">Configure Battle</h4>
+                                </div>                                <ul class="text-sm text-gray-700 flex flex-wrap gap-x-4 gap-y-1">
+                                    <li>• Set general levels (1-10)</li>
+                                    <li>• Choose general traits</li>
+                                    <li>• Select battle type</li>
+                                    <li>• Name your armies & location</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                                <div class="flex items-center mb-2">
+                                    <span class="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-2">3</span>
+                                    <h4 class="font-semibold text-red-800">Fight & Report</h4>
+                                </div>                                <ul class="text-sm text-gray-700 flex flex-wrap gap-x-4 gap-y-1">
+                                    <li>• Click "Simulate Battle"</li>
+                                    <li>• Watch the action unfold</li>
+                                    <li>• Generate detailed reports</li>
+                                    <li>• Run multiple battles</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>                <!-- General Traits Chart -->                <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-100">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                        All General Traits
+                    </h3>
+                      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                        <!-- Column 1 -->
+                        <div class="space-y-3">
+                            <div class="bg-yellow-50 p-3 rounded border">
+                                <h5 class="font-semibold text-yellow-800">Ambitious</h5>
+                                <p class="text-xs text-gray-600">-1 to promotion threshold (promotes on 4+ instead of 5+)</p>
+                            </div>
+                            
+                            <div class="bg-orange-50 p-3 rounded border">
+                                <h5 class="font-semibold text-orange-800">Bold</h5>
+                                <p class="text-xs text-gray-600">Adds half general level (rounded up) to one skirmisher</p>
+                            </div>
+                            
+                            <div class="bg-purple-50 p-3 rounded border">
+                                <h5 class="font-semibold text-purple-800">Brilliant</h5>
+                                <p class="text-xs text-gray-600">Doubles general level during pitch phase</p>
+                            </div>
+                            
+                            <div class="bg-red-50 p-3 rounded border">
+                                <h5 class="font-semibold text-red-800">Brutal</h5>
+                                <p class="text-xs text-gray-600">Pillage succeeds on 5-6, raze counts as sack</p>
+                            </div>
+                            
+                            <div class="bg-gray-50 p-3 rounded border">
+                                <h5 class="font-semibold text-gray-800">Cautious</h5>
+                                <p class="text-xs text-gray-600">Skips entire skirmish phase</p>
+                            </div>
+                            
+                            <div class="bg-blue-50 p-3 rounded border">
+                                <h5 class="font-semibold text-blue-800">Chivalrous</h5>
+                                <p class="text-xs text-gray-600">Can offer rerolls to failed enemy attacks in siege</p>
+                            </div>
+                            
+                            <div class="bg-green-50 p-3 rounded border">
+                                <h5 class="font-semibold text-green-800">Confident</h5>
+                                <p class="text-xs text-gray-600">+2 defense bonus, +1 rally bonus</p>
+                            </div>
+                            
+                            <div class="bg-red-50 p-3 rounded border">
+                                <h5 class="font-semibold text-red-800">Defiant</h5>
+                                <p class="text-xs text-gray-600">+2 rally bonus for entire army</p>
+                            </div>
+                            
+                            <div class="bg-indigo-50 p-3 rounded border">
+                                <h5 class="font-semibold text-indigo-800">Disciplined</h5>
+                                <p class="text-xs text-gray-600">+1 pitch bonus, +1 rally bonus</p>
+                            </div>
+                            
+                            <div class="bg-amber-50 p-3 rounded border">
+                                <h5 class="font-semibold text-amber-800">Dogged</h5>
+                                <p class="text-xs text-gray-600">When losing, choose 2 brigades as reinforcements</p>
+                            </div>
+                            
+                            <div class="bg-yellow-50 p-3 rounded border">
+                                <h5 class="font-semibold text-yellow-800">Heroic</h5>
+                                <p class="text-xs text-gray-600">+1 rally; can sacrifice general to save one brigade</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Column 2 -->
+                        <div class="space-y-3">
+                            <div class="bg-green-50 p-3 rounded border">
+                                <h5 class="font-semibold text-green-800">Inspiring</h5>
+                                <p class="text-xs text-gray-600">Can reroll rally dice, +2 celebration bonus</p>
+                            </div>
+                            
+                            <div class="bg-purple-50 p-3 rounded border">
+                                <h5 class="font-semibold text-purple-800">Lucky</h5>
+                                <p class="text-xs text-gray-600">Can reroll promotion rolls</p>
+                            </div>
+                            
+                            <div class="bg-cyan-50 p-3 rounded border">
+                                <h5 class="font-semibold text-cyan-800">Mariner</h5>
+                                <p class="text-xs text-gray-600">+1 sea movement, enables sea sieges</p>
+                            </div>
+                            
+                            <div class="bg-red-50 p-3 rounded border">
+                                <h5 class="font-semibold text-red-800">Merciless</h5>
+                                <p class="text-xs text-gray-600">Enemy units destroyed on 1-3 instead of 1-2</p>
+                            </div>
+                            
+                            <div class="bg-pink-50 p-3 rounded border">
+                                <h5 class="font-semibold text-pink-800">Prodigious</h5>
+                                <p class="text-xs text-gray-600">Starts with +2 extra levels</p>
+                            </div>
+                            
+                            <div class="bg-orange-50 p-3 rounded border">
+                                <h5 class="font-semibold text-orange-800">Relentless</h5>
+                                <p class="text-xs text-gray-600">+1 land movement, enables pursuit</p>
+                            </div>
+                            
+                            <div class="bg-blue-50 p-3 rounded border">
+                                <h5 class="font-semibold text-blue-800">Resolute</h5>
+                                <p class="text-xs text-gray-600">+3 defense bonus for entire army</p>
+                            </div>
+                            
+                            <div class="bg-gray-50 p-3 rounded border">
+                                <h5 class="font-semibold text-gray-800">Wary</h5>
+                                <p class="text-xs text-gray-600">Extended sight range, reveals enemy generals</p>
+                            </div>
+                            
+                            <div class="bg-yellow-50 p-3 rounded border">
+                                <h5 class="font-semibold text-yellow-800">Zealous</h5>
+                                <p class="text-xs text-gray-600">+1 rally; +2 rally & +1 pitch in holy wars</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unit Enhancements -->
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-100">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                        All Unit Enhancements
+                    </h3>
+                      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                        <!-- Column 1 -->
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-yellow-500 pl-3">
+                                <h4 class="font-semibold text-yellow-700 mb-2">🐎 Cavalry Enhancements</h4>
+                                <div class="space-y-2">
+                                    <div class="bg-yellow-50 p-2 rounded text-sm">
+                                        <strong>Dragoons:</strong> +1 to skirmish and rally
+                                    </div>
+                                    <div class="bg-yellow-50 p-2 rounded text-sm">
+                                        <strong>Lancers:</strong> +2 to pitch phase
+                                    </div>
+                                    <div class="bg-yellow-50 p-2 rounded text-sm">
+                                        <strong>Life Guard:</strong> +1 to all phases
+                                    </div>
+                                    <div class="bg-yellow-50 p-2 rounded text-sm">
+                                        <strong>Marines:</strong> Can attack from sea
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-l-4 border-gray-500 pl-3">
+                                <h4 class="font-semibold text-gray-700 mb-2">🛡️ Heavy Infantry Enhancements</h4>
+                                <div class="space-y-2">
+                                    <div class="bg-gray-50 p-2 rounded text-sm">
+                                        <strong>Artillery Team:</strong> +2 to skirmish
+                                    </div>
+                                    <div class="bg-gray-50 p-2 rounded text-sm">
+                                        <strong>Grenadiers:</strong> +1 to skirmish and pitch
+                                    </div>
+                                    <div class="bg-gray-50 p-2 rounded text-sm">
+                                        <strong>Stormtroopers:</strong> +2 to rally
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-l-4 border-green-500 pl-3">
+                                <h4 class="font-semibold text-green-700 mb-2">🏃 Light Infantry Enhancements</h4>
+                                <div class="space-y-2">
+                                    <div class="bg-green-50 p-2 rounded text-sm">
+                                        <strong>Assault Team:</strong> +2 to skirmish
+                                    </div>
+                                    <div class="bg-green-50 p-2 rounded text-sm">
+                                        <strong>Commando:</strong> +1 to skirmish and rally
+                                    </div>
+                                    <div class="bg-green-50 p-2 rounded text-sm">
+                                        <strong>Rangers:</strong> +1 to all phases
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Column 2 -->
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-red-500 pl-3">
+                                <h4 class="font-semibold text-red-700 mb-2">🏹 Ranged Enhancements</h4>
+                                <div class="space-y-2">
+                                    <div class="bg-red-50 p-2 rounded text-sm">
+                                        <strong>Mobile Platforms:</strong> +1 to skirmish and pitch
+                                    </div>
+                                    <div class="bg-red-50 p-2 rounded text-sm">
+                                        <strong>Mortar Team:</strong> +2 to pitch
+                                    </div>
+                                    <div class="bg-red-50 p-2 rounded text-sm">
+                                        <strong>Sharpshooters:</strong> +2 to skirmish
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-l-4 border-blue-500 pl-3">
+                                <h4 class="font-semibold text-blue-700 mb-2">⚕️ Support Enhancements</h4>
+                                <div class="space-y-2">
+                                    <div class="bg-blue-50 p-2 rounded text-sm">
+                                        <strong>Combat Engineers:</strong> +1 to pitch and rally
+                                    </div>
+                                    <div class="bg-blue-50 p-2 rounded text-sm">
+                                        <strong>Field Hospital:</strong> +2 to rally
+                                    </div>
+                                    <div class="bg-blue-50 p-2 rounded text-sm">
+                                        <strong>Officer Corps:</strong> +1 to all phases
+                                    </div>
+                                    <div class="bg-blue-50 p-2 rounded text-sm">
+                                        <strong>Sentry Team:</strong> +1 to skirmish and pitch
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-l-4 border-purple-500 pl-3">
+                                <h4 class="font-semibold text-purple-700 mb-2">📋 Enhancement Notes</h4>
+                                <div class="space-y-2">
+                                    <div class="bg-purple-50 p-2 rounded text-sm">
+                                        <strong>Stacking:</strong> Enhancements stack with base unit stats
+                                    </div>
+                                    <div class="bg-purple-50 p-2 rounded text-sm">
+                                        <strong>Phases:</strong> Skirmish → Pitch → Rally → Destruction
+                                    </div>
+                                    <div class="bg-purple-50 p-2 rounded text-sm">
+                                        <strong>Strategy:</strong> Mix enhancements for balanced armies
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Battle Statistics --><div class="bg-white p-4 rounded-lg shadow-sm border border-blue-100">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                        Success Tips & Strategy
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-3">
+                            <h4 class="font-semibold text-gray-800">⚖️ Balanced Army Composition</h4>
+                            <div class="bg-gray-50 p-3 rounded">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm">Light Infantry (Skirmish)</span>
+                                    <div class="w-20 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 60%"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm">Heavy Infantry (Tank)</span>
+                                    <div class="w-20 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 40%"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm">Cavalry (Versatile)</span>
+                                    <div class="w-20 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 50%"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm">Ranged/Support</span>
+                                    <div class="w-20 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-purple-500 h-2 rounded-full" style="width: 30%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <h4 class="font-semibold text-gray-800">🎯 Pro Tips</h4>                            <div class="text-sm text-gray-700 flex flex-wrap gap-x-6 gap-y-2">
+                                <div class="flex items-start">
+                                    <span class="text-green-500 mr-2">✓</span>
+                                    Light Infantry excel in skirmish phase
+                                </div>
+                                <div class="flex items-start">
+                                    <span class="text-green-500 mr-2">✓</span>
+                                    Heavy Infantry and Ranged provide strong defense
+                                </div>
+                                <div class="flex items-start">
+                                    <span class="text-green-500 mr-2">✓</span>
+                                    High-level generals make significant impact
+                                </div>
+                                <div class="flex items-start">
+                                    <span class="text-green-500 mr-2">✓</span>
+                                    Enhancements can change battle outcomes
+                                </div>
+                                <div class="flex items-start">
+                                    <span class="text-green-500 mr-2">✓</span>
+                                    Support units provide crucial army buffs
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battle Setup Section -->
         <div class="battle-setup p-6 rounded-lg mb-6 relative z-10">
             <h2 class="text-2xl font-semibold mb-4 text-center">⚔️ Battle Setup ⚔️</h2>
             
@@ -2110,13 +2530,28 @@
             }
         });
     }
-    
-    // Debug: Check if battle.js functions are loaded
+      // Debug: Check if battle.js functions are loaded
     window.addEventListener('load', function() {
         console.log('Page fully loaded');
         console.log('simulateBattle function available:', typeof window.simulateBattle === 'function');
         if (typeof window.simulateBattle !== 'function') {
             console.error('Battle.js not loaded properly');
+        }
+        
+        // Tutorial toggle functionality
+        const toggleTutorialBtn = document.getElementById('toggleTutorial');
+        const tutorialContent = document.getElementById('tutorialContent');
+        
+        if (toggleTutorialBtn && tutorialContent) {
+            toggleTutorialBtn.addEventListener('click', function() {
+                if (tutorialContent.style.display === 'none') {
+                    tutorialContent.style.display = 'block';
+                    this.textContent = 'Hide Tutorial';
+                } else {
+                    tutorialContent.style.display = 'none';
+                    this.textContent = 'Show Tutorial';
+                }
+            });
         }
     });
     </script>
