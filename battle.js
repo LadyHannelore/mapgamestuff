@@ -2121,9 +2121,9 @@ function drawPhaseDetailsChart(ctx, rounds, x, y, width, height) {
 }
 
 /**
- * Draw unit composition chart
+ * Draw detailed round-by-round summary text
  */
-function drawUnitCompositionChart(ctx, armyA, armyB, x, y, width, height) {
+function drawRoundSummaryText(ctx, rounds, x, y, width, height) {
     ctx.save();
     
     // Background
@@ -2137,15 +2137,137 @@ function drawUnitCompositionChart(ctx, armyA, armyB, x, y, width, height) {
     ctx.fillStyle = '#1f2937';
     ctx.font = 'bold 16px Arial';
     ctx.textAlign = 'center';
+    ctx.fillText('Round-by-Round Battle Summary', x + width / 2, y + 20);
+    
+    if (!rounds || rounds.length === 0) {
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '14px Arial';
+        ctx.fillText('No round data available', x + width / 2, y + height / 2);
+        ctx.restore();
+        return;
+    }
+    
+    // Content area
+    const contentX = x + 20;
+    const contentY = y + 40;
+    const contentWidth = width - 40;
+    const contentHeight = height - 60;
+    
+    // Scrollable content (show first few rounds that fit)
+    ctx.font = '12px Arial';
+    ctx.textAlign = 'left';
+    let currentY = contentY;
+    const lineHeight = 16;
+    const roundSpacing = 8;
+    
+    for (let i = 0; i < rounds.length && currentY < y + height - 30; i++) {
+        const round = rounds[i];
+        
+        // Round header
+        ctx.fillStyle = '#374151';
+        ctx.font = 'bold 14px Arial';
+        ctx.fillText(`Round ${i + 1}:`, contentX, currentY);
+        currentY += lineHeight + 4;
+        
+        // Army status
+        ctx.font = '12px Arial';
+        if (round.armyAUnits !== undefined && round.armyBUnits !== undefined) {
+            ctx.fillStyle = '#7c3aed';
+            ctx.fillText(`Army A: ${round.armyAUnits} units remaining`, contentX + 20, currentY);
+            currentY += lineHeight;
+            
+            ctx.fillStyle = '#dc2626';
+            ctx.fillText(`Army B: ${round.armyBUnits} units remaining`, contentX + 20, currentY);
+            currentY += lineHeight;
+        }
+        
+        // Phase details if available
+        if (round.phases && round.phases.length > 0) {
+            ctx.fillStyle = '#6b7280';
+            const phaseInfo = round.phases.map(phase => {
+                if (phase.name === 'Ranged Combat' && phase.casualties) {
+                    return `Ranged: ${phase.casualties.A || 0}/${phase.casualties.B || 0} casualties`;
+                } else if (phase.name === 'Melee Combat' && phase.casualties) {
+                    return `Melee: ${phase.casualties.A || 0}/${phase.casualties.B || 0} casualties`;
+                } else if (phase.name === 'Morale Check' && phase.details) {
+                    const routedA = phase.details.routedA || 0;
+                    const routedB = phase.details.routedB || 0;
+                    if (routedA > 0 || routedB > 0) {
+                        return `Morale: ${routedA}/${routedB} units routed`;
+                    }
+                }
+                return null;
+            }).filter(info => info !== null);
+            
+            phaseInfo.forEach(info => {
+                ctx.fillText(`  • ${info}`, contentX + 20, currentY);
+                currentY += lineHeight;
+            });
+        }
+        
+        // Round outcome summary
+        if (round.casualties) {
+            ctx.fillStyle = '#ef4444';
+            const totalCasualtiesA = round.casualties.A || 0;
+            const totalCasualtiesB = round.casualties.B || 0;
+            ctx.fillText(`  Total casualties: Army A: ${totalCasualtiesA}, Army B: ${totalCasualtiesB}`, contentX + 20, currentY);
+            currentY += lineHeight;
+        }
+        
+        // Special events
+        if (round.specialEvents && round.specialEvents.length > 0) {
+            ctx.fillStyle = '#f59e0b';
+            round.specialEvents.forEach(event => {
+                const eventText = event.length > 60 ? event.substring(0, 57) + '...' : event;
+                ctx.fillText(`  ⚡ ${eventText}`, contentX + 20, currentY);
+                currentY += lineHeight;
+            });
+        }
+        
+        currentY += roundSpacing;
+        
+        // Check if we're running out of space
+        if (currentY > y + height - 40) {
+            const remainingRounds = rounds.length - i - 1;
+            if (remainingRounds > 0) {
+                ctx.fillStyle = '#6b7280';
+                ctx.font = 'italic 12px Arial';
+                ctx.fillText(`... and ${remainingRounds} more rounds`, contentX, currentY);
+            }
+            break;
+        }
+    }
+    
+    ctx.restore();
+}
+
+/**
+ * Draw unit composition chart showing army compositions side by side
+ */
+function drawUnitCompositionChart(ctx, armyA, armyB, x, y, width, height) {
+    ctx.save();
+    
+    // Chart background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x, y, width, height);
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, width, height);
+    
+    // Chart title
+    ctx.fillStyle = '#1f2937';
+    ctx.font = 'bold 16px Arial';
+    ctx.textAlign = 'center';
     ctx.fillText('Initial Army Composition', x + width / 2, y - 10);
     
+    // Chart margins
     const margin = 20;
     const chartX = x + margin;
     const chartY = y + margin;
     const chartWidth = width - margin * 2;
     const chartHeight = height - margin * 2;
     
-    // Count unit types for each army
+    // Helper function to count unit types
     function countUnitTypes(army) {
         const counts = {};
         if (army && army.units) {
