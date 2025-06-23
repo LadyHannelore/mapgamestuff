@@ -1686,36 +1686,56 @@ function showModal(message, choices, requiredSelections = 1) {
  * Creates charts showing round-by-round data and final battle results
  */
 function generateBattleReport() {
-    const canvas = document.getElementById('battleCanvas');
-    if (!canvas || !window.battleData || !window.battleData.finalResult) {
-        console.error('Cannot generate report: missing canvas or battle data');
-        return;
-    }
-    
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, width, height);
-    
-    // Set background gradient
-    const gradient = ctx.createLinearGradient(0, 0, 0, height);
-    gradient.addColorStop(0, '#f8fafc');
-    gradient.addColorStop(1, '#e2e8f0');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
-    
-    // Add border
-    ctx.strokeStyle = '#64748b';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(10, 10, width - 20, height - 20);
-    
-    // Title
-    ctx.fillStyle = '#1e293b';
-    ctx.font = 'bold 36px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('BATTLE REPORT', width / 2, 60);
+    try {
+        console.log('Starting battle report generation...');
+        
+        const canvas = document.getElementById('battleCanvas');
+        if (!canvas) {
+            console.error('Canvas element not found');
+            alert('Error: Canvas element not found. Please refresh the page.');
+            return;
+        }
+        
+        if (!window.battleData) {
+            console.error('No battle data available');
+            alert('Error: No battle data available. Please run a battle simulation first.');
+            return;
+        }
+        
+        if (!window.battleData.finalResult) {
+            console.error('No final result in battle data');
+            alert('Error: Battle data incomplete. Please run a complete battle simulation.');
+            return;
+        }
+        
+        console.log('Battle data found:', window.battleData);
+        
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+        
+        // Set background gradient
+        const gradient = ctx.createLinearGradient(0, 0, 0, height);
+        gradient.addColorStop(0, '#f8fafc');
+        gradient.addColorStop(1, '#e2e8f0');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+        
+        // Add border
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(10, 10, width - 20, height - 20);
+        
+        // Title
+        ctx.fillStyle = '#1e293b';
+        ctx.font = 'bold 36px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('BATTLE REPORT', width / 2, 60);
+        
+        console.log('Basic drawing complete, adding battle info...');
       // Battle info
     const finalResult = window.battleData.finalResult;
     const armies = window.battleData.armies;
@@ -1809,12 +1829,18 @@ function generateBattleReport() {
     ctx.fillStyle = '#6b7280';
     ctx.textAlign = 'right';
     ctx.fillText(`Generated: ${new Date().toLocaleString()}`, width - 30, height - 20);
-    
-    // Convert to downloadable image
+      // Convert to downloadable image
     const link = document.createElement('a');
     link.download = `battle_report_${Date.now()}.png`;
     link.href = canvas.toDataURL();
     link.click();
+    
+    console.log('Battle report generated successfully!');
+    
+    } catch (error) {
+        console.error('Error generating battle report:', error);
+        alert(`Error generating battle report: ${error.message}`);
+    }
 }
 
 /**
@@ -2039,47 +2065,51 @@ function drawPhaseDetailsChart(ctx, rounds, x, y, width, height) {
     const phaseHeight = (chartHeight - headerHeight) / 4; // 4 phases: Skirmish, Pitch, Rally, Destruction
     const roundWidth = chartWidth / Math.max(rounds.length, 1);
     
-    ctx.font = '11px Arial';
-    ctx.textAlign = 'left';
-    
-    rounds.forEach((round, index) => {
-        const column = Math.floor(index / roundsPerColumn);
-        const row = index % roundsPerColumn;
-        
-        const startX = textX + column * columnWidth;
-        const startY = textY + row * lineHeight * 3;
-        
-        // Round header
+    // Draw phase section headers
+    const phases = ['Skirmish', 'Pitch', 'Rally', 'Destruction'];
+    const phaseColors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b'];
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'center';
+    phases.forEach((phase, index) => {
+        const phaseY = chartY + headerHeight + index * phaseHeight;
+        ctx.fillStyle = phaseColors[index];
+        ctx.globalAlpha = 0.1;
+        ctx.fillRect(chartX, phaseY, chartWidth, phaseHeight);
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = phaseColors[index];
+        ctx.save();
+        ctx.translate(chartX - 20, phaseY + phaseHeight / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText(phase, 0, 0);
+        ctx.restore();
+        if (index > 0) {
+            ctx.strokeStyle = '#d1d5db';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(chartX, phaseY);
+            ctx.lineTo(chartX + chartWidth, phaseY);
+            ctx.stroke();
+        }
+    });
+    // Draw round data
+    ctx.font = '10px Arial';
+    ctx.textAlign = 'center';
+    rounds.forEach((round, roundIndex) => {
+        const roundX = chartX + roundIndex * roundWidth + roundWidth / 2;
+        phases.forEach((phase, phaseIdx) => {
+            let value = '';
+            if (round.phaseBreakdown) {
+                if (phase.toLowerCase() in round.phaseBreakdown) {
+                    value = round.phaseBreakdown[phase.toLowerCase()];
+                }
+            }
+            ctx.fillStyle = phaseColors[phaseIdx];
+            ctx.fillText(value, roundX, chartY + headerHeight + phaseIdx * phaseHeight + phaseHeight / 2);
+        });
+        // Draw round number at the top
         ctx.fillStyle = '#1f2937';
-        ctx.font = 'bold 12px Arial';
-        ctx.fillText(`Round ${round.round}:`, startX, startY);
-        
-        // Army status
-        ctx.fillStyle = '#374151';
-        ctx.font = '10px Arial';
-        const armyStatus = `Active: ${round.armyAUnits || 0} vs ${round.armyBUnits || 0}`;
-        const routedStatus = round.armyARouted !== undefined ? 
-            ` | Routed: ${round.armyARouted} vs ${round.armyBRouted}` : '';
-        ctx.fillText(armyStatus + routedStatus, startX + 5, startY + 12);
-        
-        // Phase results summary
-        let phaseText = '';
-        if (round.phaseBreakdown) {
-            const phases = [];
-            if (round.phaseBreakdown.skirmish) phases.push(`S:${round.phaseBreakdown.skirmish}`);
-            if (round.phaseBreakdown.pitch) phases.push(`P:${round.phaseBreakdown.pitch}`);
-            if (round.phaseBreakdown.rally) phases.push(`R:${round.phaseBreakdown.rally}`);
-            if (round.phaseBreakdown.destruction) phases.push(`D:${round.phaseBreakdown.destruction}`);
-            phaseText = phases.join(' | ');
-        }
-        
-        ctx.fillStyle = '#6b7280';
-        ctx.font = '9px Arial';
-        // Truncate text if too long
-        if (phaseText.length > columnWidth / 4) {
-            phaseText = phaseText.substring(0, columnWidth / 4) + '...';
-        }
-        ctx.fillText(phaseText, startX + 5, startY + 24);
+        ctx.font = 'bold 10px Arial';
+        ctx.fillText(`R${round.round}`, roundX, chartY + 12);
     });
     
     // Legend
@@ -2087,9 +2117,80 @@ function drawPhaseDetailsChart(ctx, rounds, x, y, width, height) {
     ctx.font = '10px Arial';
     ctx.textAlign = 'center';
     ctx.fillText('S=Skirmish, P=Pitch, R=Rally, D=Destruction | Format: Army A vs Army B', x + width / 2, y + height - 5);
-    
     ctx.restore();
 }
 
-// Make the function globally available
-window.generateBattleReport = generateBattleReport;
+/**
+ * Draw unit composition chart
+ */
+function drawUnitCompositionChart(ctx, armyA, armyB, x, y, width, height) {
+    ctx.save();
+    
+    // Background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x, y, width, height);
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, width, height);
+    
+    // Title
+    ctx.fillStyle = '#1f2937';
+    ctx.font = 'bold 16px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Initial Army Composition', x + width / 2, y - 10);
+    
+    const margin = 20;
+    const chartX = x + margin;
+    const chartY = y + margin;
+    const chartWidth = width - margin * 2;
+    const chartHeight = height - margin * 2;
+    
+    // Count unit types for each army
+    function countUnitTypes(army) {
+        const counts = {};
+        if (army && army.units) {
+            army.units.forEach(unit => {
+                const type = unit.type;
+                counts[type] = (counts[type] || 0) + 1;
+            });
+        }
+        return counts;
+    }
+    
+    const armyACounts = countUnitTypes(armyA);
+    const armyBCounts = countUnitTypes(armyB);
+    
+    // Draw army compositions side by side
+    const armyWidth = chartWidth / 2 - 10;
+    
+    // Army A composition
+    ctx.fillStyle = '#7c3aed';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(armyA.name || 'Army A', chartX + armyWidth / 2, chartY);
+    
+    ctx.font = '12px Arial';
+    ctx.textAlign = 'left';
+    let yPos = chartY + 25;
+    Object.entries(armyACounts).forEach(([type, count]) => {
+        ctx.fillText(`${type}: ${count}`, chartX + 10, yPos);
+        yPos += 18;
+    });
+    
+    // Army B composition
+    const armyBX = chartX + armyWidth + 20;
+    ctx.fillStyle = '#dc2626';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(armyB.name || 'Army B', armyBX + armyWidth / 2, chartY);
+    
+    ctx.font = '12px Arial';
+    ctx.textAlign = 'left';
+    yPos = chartY + 25;
+    Object.entries(armyBCounts).forEach(([type, count]) => {
+        ctx.fillText(`${type}: ${count}`, armyBX + 10, yPos);
+        yPos += 18;
+    });
+    
+    ctx.restore();
+}
