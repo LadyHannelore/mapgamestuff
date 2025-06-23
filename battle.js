@@ -672,85 +672,146 @@ window.simulateBattle = async function(army1, army2, genA, genB, battleType, cit
                 // Initialize routed units tracking for this round
                 let aRoutedThisRound = [];
                 let bRoutedThisRound = [];
-                
-                // SKIRMISH PHASE
+                  // SKIRMISH PHASE
             if (handlerA.skipSkirmish || handlerB.skipSkirmish) {
                 roundLog.push('• Skirmish phase skipped by cautious general.');
             } else {
                 roundLog.push('• Skirmish phase begins');
-                // Determine manual skirmishers if selected
-                const aSelected = aUnits.filter(u => u.isSkirmisher);
-                const bSelected = bUnits.filter(u => u.isSkirmisher);
-                const fallbackCount = 2;
-                // Fallback: top skirmish values
-                function topSkirmishers(units, count) {
+                
+                // Get selected skirmishers or fallback to top 2
+                function getSkirmishers(units) {
+                    const selected = units.filter(u => u.isSkirmisher);
+                    if (selected.length > 0) return selected.slice(0, 2);
+                    
+                    // Fallback: top 2 by skirmish value
                     return [...units].sort((u1, u2) => {
                         const s1 = (UNIT_STATS[u1.type].skirmish || 0) + ((ENHANCEMENTS[u1.enhancement]||{}).skirmish||0);
                         const s2 = (UNIT_STATS[u2.type].skirmish || 0) + ((ENHANCEMENTS[u2.enhancement]||{}).skirmish||0);
                         return s2 - s1;
-                    }).slice(0, count);
+                    }).slice(0, 2);
                 }
-                const aSkirmishers = aSelected.length > 0 ? aSelected : topSkirmishers(aUnits, fallbackCount);
-                const bSkirmishers = bSelected.length > 0 ? bSelected : topSkirmishers(bUnits, fallbackCount);
-                const maxSkirmishes = Math.min(aSkirmishers.length, bSkirmishers.length, fallbackCount);
-                roundLog.push(`  ${maxSkirmishes} skirmish matchup(s) will occur.`);
-                for (let i = 0; i < maxSkirmishes; i++) {
-                    const aSk = aSkirmishers[i];
-                    let bSk = bSkirmishers[i];
-                    // Handle Assault Team target override
-                    if (aSk.enhancement === 'Assault Team' && aSk.target != null && bUnits[aSk.target]) {
-                        bSk = bUnits[aSk.target];
-                    }
-                    // Log pairing
-                    roundLog.push(`\n  === Skirmish Matchup ${i + 1} ===`);
-                    roundLog.push(`  ${armyAName}'s ${aSk.type} (${aSk.enhancement || 'None'}) vs ${armyBName}'s ${bSk.type} (${bSk.enhancement || 'None'})`);
-                    // Compute base and enhancement
-                    const aBase = UNIT_STATS[aSk.type].skirmish || 0;
-                    const aEnh = (ENHANCEMENTS[aSk.enhancement]||{}).skirmish||0;
-                    roundLog.push(`  ${armyAName} Skirmish: Base(${aBase}) + Enhancement(${aEnh}) = ${aBase + aEnh}`);
-                    const bBase = UNIT_STATS[bSk.type].skirmish || 0;
-                    const bEnh = (ENHANCEMENTS[bSk.enhancement]||{}).skirmish||0;
-                    roundLog.push(`  ${armyBName} Skirmish: Base(${bBase}) + Enhancement(${bEnh}) = ${bBase + bEnh}`);
-                    // Apply Bold trait bonus if applicable
-                    if (handlerA.applySkirmishBonus && i === 0) {
-                        const bonus = Math.ceil(genA.level/2);
-                        roundLog.push(`  ${armyAName} Bold Trait Bonus: +${bonus} (General Level ${genA.level}/2 rounded up)`);
-                        roundLog.push(`  ${armyAName} Final Skirmish: ${aBase + aEnh} + ${bonus} = ${aBase + aEnh + bonus}`);
-                    }
-                    if (handlerB.applySkirmishBonus && i === 0) {
-                        const bonus = Math.ceil(genB.level/2);
-                        roundLog.push(`  ${armyBName} Bold Trait Bonus: +${bonus} (General Level ${genB.level}/2 rounded up)`);
-                        roundLog.push(`  ${armyBName} Final Skirmish: ${bBase + bEnh} + ${bonus} = ${bBase + bEnh + bonus}`);
-                    }
-                    // Rolls
-                    const aRoll = rollDie();
-                    const bRoll = rollDie();
-                    const aTotal = aRoll + aBase + aEnh + ((handlerA.applySkirmishBonus && i===0)?Math.ceil(genA.level/2):0);
-                    const bTotal = bRoll + bBase + bEnh + ((handlerB.applySkirmishBonus && i===0)?Math.ceil(genB.level/2):0);
-                    roundLog.push(`\n  Dice Rolls:`);
-                    roundLog.push(`  ${armyAName}: Roll(${aRoll}) + Skirmish(${aTotal - aRoll}) = ${aTotal}`);
-                    roundLog.push(`  ${armyBName}: Roll(${bRoll}) + Skirmish(${bTotal - bRoll}) = ${bTotal}`);
-                    // Determine result
-                    if (aTotal > bTotal) {
-                        const diff = aTotal - bTotal;
-                        roundLog.push(`\n  Result: ${armyAName} wins by ${diff}`);
-                        bLosses += 1;
+                
+                const aSkirmishers = getSkirmishers(aUnits);
+                const bSkirmishers = getSkirmishers(bUnits);
+                
+                let totalCasualties = 0;
+                
+                // ARMY A ATTACKS (up to 2 skirmishers attack random Army B units)
+                roundLog.push(`\n  === ${armyAName} Skirmish Attacks ===`);
+                for (let i = 0; i < Math.min(aSkirmishers.length, 2); i++) {
+                    const attacker = aSkirmishers[i];
+                    
+                    // Select target - Assault Team can choose, otherwise random
+                    let defender;
+                    if (attacker.enhancement === 'Assault Team' && attacker.target != null && bUnits[attacker.target]) {
+                        defender = bUnits[attacker.target];
+                        roundLog.push(`  Attack ${i + 1}: ${attacker.type} (${attacker.enhancement}) targets chosen ${defender.type} (${defender.enhancement || 'None'})`);
                     } else {
-                        const diff = bTotal - aTotal;
-                        roundLog.push(`\n  Result: ${armyBName} wins by ${diff}`);
-                        aLosses += 1;
+                        defender = bUnits[Math.floor(Math.random() * bUnits.length)];
+                        roundLog.push(`  Attack ${i + 1}: ${attacker.type} (${attacker.enhancement || 'None'}) attacks random ${defender.type} (${defender.enhancement || 'None'})`);
                     }
-                    // Remove routed units
-                    if (bLosses) {
-                        const idx = bUnits.indexOf(bSk);
-                        if (idx > -1) bUnits.splice(idx, 1);
+                    
+                    // Calculate attacker's skirmish value
+                    const attackerBase = UNIT_STATS[attacker.type].skirmish || 0;
+                    const attackerEnh = (ENHANCEMENTS[attacker.enhancement]||{}).skirmish || 0;
+                    let attackerSkirmish = attackerBase + attackerEnh;
+                    
+                    // Apply Bold trait bonus to first attacker
+                    if (handlerA.applySkirmishBonus && i === 0) {
+                        const bonus = Math.ceil(genA.level / 2);
+                        attackerSkirmish += bonus;
+                        roundLog.push(`    Attacker Skirmish: Base(${attackerBase}) + Enhancement(${attackerEnh}) + Bold Trait(${bonus}) = ${attackerSkirmish}`);
+                    } else {
+                        roundLog.push(`    Attacker Skirmish: Base(${attackerBase}) + Enhancement(${attackerEnh}) = ${attackerSkirmish}`);
                     }
-                    if (aLosses) {
-                        const idx2 = aUnits.indexOf(aSk);
-                        if (idx2 > -1) aUnits.splice(idx2, 1);
+                    
+                    // Calculate defender's defense value
+                    const defenderBase = UNIT_STATS[defender.type].defense || 0;
+                    const defenderEnh = (ENHANCEMENTS[defender.enhancement]||{}).defense || 0;
+                    const defenderDefense = defenderBase + defenderEnh;
+                    roundLog.push(`    Defender Defense: Base(${defenderBase}) + Enhancement(${defenderEnh}) = ${defenderDefense}`);
+                    
+                    // Roll dice
+                    const attackRoll = rollDie();
+                    const defenseRoll = rollDie();
+                    const attackTotal = attackRoll + attackerSkirmish;
+                    const defenseTotal = defenseRoll + defenderDefense;
+                    
+                    roundLog.push(`    Attacker Roll: ${attackRoll} + ${attackerSkirmish} = ${attackTotal}`);
+                    roundLog.push(`    Defender Roll: ${defenseRoll} + ${defenderDefense} = ${defenseTotal}`);
+                    
+                    if (attackTotal > defenseTotal) {
+                        roundLog.push(`    Result: Attacker wins! ${defender.type} is routed.`);
+                        const defenderIndex = bUnits.indexOf(defender);
+                        if (defenderIndex > -1) {
+                            bUnits.splice(defenderIndex, 1);
+                            bRoutedUnits.push(defender);
+                            totalCasualties++;
+                        }
+                    } else {
+                        roundLog.push(`    Result: Defender holds position.`);
                     }
                 }
-            }            // PITCH PHASE
+                
+                // ARMY B ATTACKS (up to 2 skirmishers attack random Army A units)
+                roundLog.push(`\n  === ${armyBName} Skirmish Attacks ===`);
+                for (let i = 0; i < Math.min(bSkirmishers.length, 2); i++) {
+                    const attacker = bSkirmishers[i];
+                    
+                    // Select target - Assault Team can choose, otherwise random
+                    let defender;
+                    if (attacker.enhancement === 'Assault Team' && attacker.target != null && aUnits[attacker.target]) {
+                        defender = aUnits[attacker.target];
+                        roundLog.push(`  Attack ${i + 1}: ${attacker.type} (${attacker.enhancement}) targets chosen ${defender.type} (${defender.enhancement || 'None'})`);
+                    } else {
+                        defender = aUnits[Math.floor(Math.random() * aUnits.length)];
+                        roundLog.push(`  Attack ${i + 1}: ${attacker.type} (${attacker.enhancement || 'None'}) attacks random ${defender.type} (${defender.enhancement || 'None'})`);
+                    }
+                    
+                    // Calculate attacker's skirmish value
+                    const attackerBase = UNIT_STATS[attacker.type].skirmish || 0;
+                    const attackerEnh = (ENHANCEMENTS[attacker.enhancement]||{}).skirmish || 0;
+                    let attackerSkirmish = attackerBase + attackerEnh;
+                    
+                    // Apply Bold trait bonus to first attacker
+                    if (handlerB.applySkirmishBonus && i === 0) {
+                        const bonus = Math.ceil(genB.level / 2);
+                        attackerSkirmish += bonus;
+                        roundLog.push(`    Attacker Skirmish: Base(${attackerBase}) + Enhancement(${attackerEnh}) + Bold Trait(${bonus}) = ${attackerSkirmish}`);
+                    } else {
+                        roundLog.push(`    Attacker Skirmish: Base(${attackerBase}) + Enhancement(${attackerEnh}) = ${attackerSkirmish}`);
+                    }
+                    
+                    // Calculate defender's defense value
+                    const defenderBase = UNIT_STATS[defender.type].defense || 0;
+                    const defenderEnh = (ENHANCEMENTS[defender.enhancement]||{}).defense || 0;
+                    const defenderDefense = defenderBase + defenderEnh;
+                    roundLog.push(`    Defender Defense: Base(${defenderBase}) + Enhancement(${defenderEnh}) = ${defenderDefense}`);
+                    
+                    // Roll dice
+                    const attackRoll = rollDie();
+                    const defenseRoll = rollDie();
+                    const attackTotal = attackRoll + attackerSkirmish;
+                    const defenseTotal = defenseRoll + defenderDefense;
+                    
+                    roundLog.push(`    Attacker Roll: ${attackRoll} + ${attackerSkirmish} = ${attackTotal}`);
+                    roundLog.push(`    Defender Roll: ${defenseRoll} + ${defenderDefense} = ${defenseTotal}`);
+                    
+                    if (attackTotal > defenseTotal) {
+                        roundLog.push(`    Result: Attacker wins! ${defender.type} is routed.`);
+                        const defenderIndex = aUnits.indexOf(defender);
+                        if (defenderIndex > -1) {
+                            aUnits.splice(defenderIndex, 1);
+                            aRoutedUnits.push(defender);
+                            totalCasualties++;
+                        }
+                    } else {
+                        roundLog.push(`    Result: Defender holds position.`);
+                    }
+                }
+                
+                roundLog.push(`\n  Skirmish phase complete. Total casualties: ${totalCasualties}`);
+            }// PITCH PHASE
             roundLog.push('\n• Pitch phase begins');
             roundLog.push(`  Army compositions: ${armyAName} (${aUnits.length} units), ${armyBName} (${bUnits.length} units)`);
             
