@@ -107,45 +107,115 @@
         </div>
 
         <!-- Generals Section -->
-        <div id="generals" class="card fade-in mb-8">
+        <div id="generals" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
             <h2 class="text-3xl font-bold mb-4 border-b pb-2">Generals</h2>
-            <p class="mb-4">Generals lead your armies, providing powerful bonuses and abilities. They are recruited at the War College and gain experience from battles.</p>
-            <p class="mb-4">Generals have a chance to gain a new trait upon leveling up. These traits provide unique advantages in combat.</p>
-            <div class="space-y-4">
-                <div>
-                    <h4 class="text-xl font-bold">Trait Categories:</h4>
-                    <ul class="list-disc list-inside space-y-1">
-                        <li><strong>Offensive:</strong> Increase damage or effectiveness in battle.</li>
-                        <li><strong>Defensive:</strong> Enhance survivability and reduce damage taken.</li>
-                        <li><strong>Support:</strong> Provide bonuses to allied brigades or generals.</li>
-                        <li><strong>Logistical:</strong> Improve movement, supply, and strategic options.</li>
+            <ul class="list-disc list-inside space-y-2 mb-4">
+                <li>Generals are your commanders, and their job is to run an army. Every General has a randomly assigned trait, which grants bonuses or special abilities to their army.</li>
+                <li>Generals are assumed universally at every city when not leading an army, but they must be attached to a brigade at a city to form an army. They may then go around collecting other units until they reach the 8 brigade cap.</li>
+                <li>Generals have a level, which is scaled from 1–10. When a General reaches Level 10, he may be retired, and increase your war college level by 1. If your war college is already max level, you would instead receive 300 silver.
+                    <ul class="list-disc list-inside ml-6">
+                        <li>Your General Level is a direct bonus to your pitch value in battle. You add the general level number as a base increase per round, making Generals extremely impactful to the outcome of a battle.</li>
                     </ul>
+                </li>
+                <li>Generals themselves have a cap, determined by your war college level. Your cap starts at 1. Generals cost 100 silver for every general you already have, so if you have no generals you will get one for free, or if you have 2 generals your next one costs 200 silver.</li>
+                <li>General Traits are rolled randomly when the general is created, or rerolled when using 3 gems to do so. The traits are listed below:</li>
+            </ul>
+            <h3 class="text-2xl font-semibold mb-2">General Traits</h3>
+            <ul class="list-disc list-inside space-y-1 ml-4">
+                <li><strong>1 Ambitious:</strong> -1 to the number needed to promote after a battle.</li>
+                <li><strong>2 Bold:</strong> One of your skirmishers get a bonus equal to half the general's level, rounded up.</li>
+                <li><strong>3 Brilliant:</strong> This General gets double his general level during the Pitch.</li>
+                <li><strong>4 Brutal:</strong> Pillaging resources succeeds on a 5-6. Razing a city also counts as sacking it.</li>
+                <li><strong>5 Cautious:</strong> You may declare the skirmishing stage to be skipped this battle.</li>
+                <li><strong>6 Chivalrous:</strong> During the Action Report, you may choose to allow your enemy to have an extra reroll on their Destruction dice, in order to get -1 siege timer on your next city siege with this army.</li>
+                <li><strong>7 Confident:</strong> +2 to Defense and +1 to Rally for all brigades.</li>
+                <li><strong>8 Defiant:</strong> +2 to rally for all brigades.</li>
+                <li><strong>9 Disciplined:</strong> +1 to pitch and rally for all brigades.</li>
+                <li><strong>10 Dogged:</strong> This General may choose 2 brigades to assist any battle occurring on an adjacent tile. These brigades return after the battle.</li>
+                <li><strong>11 Heroic:</strong> +1 to Rally for all brigades. If the battle would be lost, this general may sacrifice himself to return all brigades to a new pitch, granting his general level as a pitch bonus to all brigades for the remainder of the battle.</li>
+                <li><strong>12 Inspiring:</strong> All brigades get a free reroll on their rally rolls, once per rally stage. Celebrating with this army gives +2 rally instead of +1.</li>
+                <li><strong>13 Lucky:</strong> This General, when a 1 is rolled on the promotion die, may reroll the promotion die once per battle.</li>
+                <li><strong>14 Mariner:</strong> +1 to army movement while embarked. This General may siege cities from a landing, and this army may immediately move after embarking.</li>
+                <li><strong>15 Merciless:</strong> During the action report, enemy brigades are destroyed on a 1-3.</li>
+                <li><strong>16 Prodigious:</strong> This General gets an additional 2 levels. These levels are lost if this trait is rerolled.</li>
+                <li><strong>17 Relentless:</strong> +1 to army movement on land. This General may choose to pursue an enemy army that retreats, instead of continuing their original move.</li>
+                <li><strong>18 Resolute:</strong> +3 to defense for all brigades.</li>
+                <li><strong>19 Wary:</strong> You are alerted when an enemy can see this army. Your Army can see one tile further away (stacks with sentry team). Any enemy Generals within this army's sight have their trait revealed.</li>
+                <li><strong>20 Zealous:</strong> +1 Rally for all brigades. When in a holy war, this number goes to +2 rally and +1 pitch for all brigades.</li>
+            </ul>
+        </div>
+
+        <!-- War College Section -->
+        <div id="war-college" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">War College</h2>
+            <p class="mb-4">Your War College is your nations propensity for warfare. War colleges have levels similar to Generals, 1-10, but they only go up when you win a war, or retire a general.</p>
+            <p class="mb-4">Your War College Level carries additional benefits as you level it up. Everyone starts at Level 1.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <h4 class="font-bold text-blue-700">Level 1:</h4>
+                    <p class="text-sm">Your General Cap is 1. Your General Level Floor is 1.</p>
                 </div>
-                <div>
-                    <h4 class="text-xl font-bold">Example Traits:</h4>
-                    <ul class="list-disc list-inside space-y-1">
-                        <li><strong>Strategist:</strong> +1 to all tactical rolls.</li>
-                        <li><strong>Shield Bearer:</strong> +2 Defense to self and adjacent brigades.</li>
-                        <li><strong>Warrior's Spirit:</strong> +1 Skirmish and +1 Pitch.</li>
-                        <li><strong>Logistics Expert:</strong> +1 Movement and -1 supply cost.</li>
-                    </ul>
+                <div class="p-4 bg-green-50 rounded-lg">
+                    <h4 class="font-bold text-green-700">Level 2:</h4>
+                    <p class="text-sm">You may roll for general traits twice, choosing either result.</p>
+                </div>
+                <div class="p-4 bg-purple-50 rounded-lg">
+                    <h4 class="font-bold text-purple-700">Level 3:</h4>
+                    <p class="text-sm">Your General Level Floor is 2.</p>
+                </div>
+                <div class="p-4 bg-red-50 rounded-lg">
+                    <h4 class="font-bold text-red-700">Level 4:</h4>
+                    <p class="text-sm">Your general Cap is 2.</p>
+                </div>
+                <div class="p-4 bg-yellow-50 rounded-lg">
+                    <h4 class="font-bold text-yellow-700">Level 5:</h4>
+                    <p class="text-sm">Your Pillaging die result is at +1. Sacking a city is worth double.</p>
+                </div>
+                <div class="p-4 bg-indigo-50 rounded-lg">
+                    <h4 class="font-bold text-indigo-700">Level 6:</h4>
+                    <p class="text-sm">Your General Level Floor is 3.</p>
+                </div>
+                <div class="p-4 bg-pink-50 rounded-lg">
+                    <h4 class="font-bold text-pink-700">Level 7:</h4>
+                    <p class="text-sm">Your General Cap is 3.</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h4 class="font-bold text-gray-700">Level 8:</h4>
+                    <p class="text-sm">You get +1 to Skirmish and Defense Rolls.</p>
+                </div>
+                <div class="p-4 bg-teal-50 rounded-lg">
+                    <h4 class="font-bold text-teal-700">Level 9:</h4>
+                    <p class="text-sm">Your General Level floor is 4.</p>
+                </div>
+                <div class="p-4 bg-orange-50 rounded-lg">
+                    <h4 class="font-bold text-orange-700">Level 10:</h4>
+                    <p class="text-sm">Your General Cap is 4.</p>
                 </div>
             </div>
         </div>
 
-        <!-- War College Section -->
-        <div id="war-college" class="card fade-in">
-            <h2 class="text-3xl font-bold mb-4 border-b pb-2">War College</h2>
-            <p class="mb-4">The War College is essential for your military operations. It allows you to recruit and manage your generals, and it levels up as your nation gains military experience.</p>
-            <p class="mb-4">Retiring a general at level 10 provides a significant experience boost to the War College.</p>
-            <h3 class="text-2xl font-semibold mt-4 mb-2">War College Benefits</h3>
-            <ul class="list-disc list-inside space-y-2">
-                <li><strong>Increased General Cap:</strong> Allows you to recruit more generals.</li>
-                <li><strong>New Brigade Enhancements:</strong> Unlocks powerful upgrades for your brigades.</li>
-                <li><strong>Improved General Traits:</strong> Higher chance of gaining beneficial traits.</li>
-            </ul>
+        <!-- Temporary Structures Section -->
+        <div id="temporary-structures" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Temporary Structures</h2>
+            <p class="mb-4">Temporary Structures are short term buildings that last from the day they're built until the next map update.</p>
+            <p class="mb-4">Temporary Buildings may be built anywhere in your territory, on organization days. Towers and Forts can be used by your opponent, so be careful with where you place them.</p>
+            <h3 class="text-2xl font-semibold mb-2">Available Structures</h3>
+            <p class="mb-4">There are 3 Temporary Buildings available, each costing stone to construct:</p>
+            <div class="space-y-4">
+                <div class="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50">
+                    <h4 class="font-bold text-blue-700">Trenches (1 Stone):</h4>
+                    <p>Enemy brigades moving through a tile with trenches must use an additional tile of movement to do so.</p>
+                </div>
+                <div class="border-l-4 border-green-500 pl-4 py-2 bg-green-50">
+                    <h4 class="font-bold text-green-700">Watchtowers (2 Stone):</h4>
+                    <p>Brigades on Watchtowers that have not moved this cycle have their sight extended by 1 tile.</p>
+                </div>
+                <div class="border-l-4 border-red-500 pl-4 py-2 bg-red-50">
+                    <h4 class="font-bold text-red-700">Forts (3 Stone):</h4>
+                    <p>Brigades on Fort tiles that have not moved this action cycle become Garrisoned for as long as they remain on the tile.</p>
+                </div>
+            </div>
         </div>
-
     </div>
 
     <script>

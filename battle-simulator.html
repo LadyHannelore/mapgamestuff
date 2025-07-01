@@ -1266,37 +1266,108 @@
         .strength-fill.army-b {
             background: linear-gradient(90deg, #ef4444, #f87171);
         }
+        
+        /* Mobile-specific improvements */
+        @media (max-width: 640px) {
+            body {
+                padding: 0.5rem;
+            }
+            
+            #app {
+                margin-top: 0.5rem;
+            }
+            
+            /* Make tables more mobile-friendly */
+            table {
+                font-size: 0.75rem;
+            }
+            
+            table img {
+                width: 60px !important;
+                height: 60px !important;
+            }
+            
+            /* Stack form elements vertically on very small screens */
+            .flex-wrap > * {
+                min-width: 100%;
+            }
+            
+            /* Smaller buttons on mobile */
+            button {
+                font-size: 0.8rem;
+                padding: 0.5rem 1rem;
+            }
+            
+            /* Adjust input field sizes */
+            input, select {
+                font-size: 0.875rem;
+                padding: 0.5rem;
+            }
+        }
+        
+        /* Tablet-specific improvements */
+        @media (min-width: 641px) and (max-width: 1024px) {
+            table img {
+                width: 80px !important;
+                height: 80px !important;
+            }
+        }
+        
+        /* Desktop improvements - Full width utilization */
+        @media (min-width: 1025px) {
+            #app {
+                max-width: 100%;
+                margin-left: 1rem;
+                margin-right: 1rem;
+            }
+            
+            table img {
+                width: 100px !important;
+                height: 100px !important;
+            }
+        }
+        
+        /* Ultra-wide screen improvements */
+        @media (min-width: 1400px) {
+            #app {
+                padding: 2rem;
+            }
+            
+            .grid {
+                gap: 2rem;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100">
     <div id="nav-placeholder"></div>
 
-    <div id="app" class="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-8 fade-in">
-        <h1 class="text-4xl font-bold mb-6 text-center">
+    <div id="app" class="w-full max-w-none mx-auto p-2 sm:p-4 lg:p-6 xl:p-8 bg-white rounded-lg shadow-lg mt-2 sm:mt-4 lg:mt-8 fade-in">
+        <h1 class="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold mb-3 sm:mb-4 lg:mb-6 text-center">
             🏰 Mock Battle Simulator 🏰
         </h1>
 
         <!-- Battle Setup -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 xl:gap-8 mb-4 sm:mb-6 lg:mb-8">
             <!-- Army A -->
-            <div class="army-section p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-4 text-purple-700">🛡️ Army A Setup 🛡️</h2>
+            <div class="army-section p-3 sm:p-4 lg:p-6 rounded-lg shadow-md">
+                <h2 class="text-lg sm:text-xl lg:text-2xl font-semibold mb-2 sm:mb-3 lg:mb-4 text-purple-700">🛡️ Army A Setup 🛡️</h2>
                 
                 <!-- Army A Name -->
-                <div class="mb-6">
+                <div class="mb-3 sm:mb-4 lg:mb-6">
                     <label for="armyAName" class="block text-sm font-medium mb-2">Army A Name:</label>
-                    <input id="armyAName" type="text" placeholder="Enter army name" class="w-full border p-3 rounded" />
+                    <input id="armyAName" type="text" placeholder="Enter army name" class="w-full border p-2 lg:p-3 rounded text-sm lg:text-base" />
                 </div>
                 
                 <!-- General A Setup -->
-                <div class="mb-6 p-4 bg-white rounded-lg border border-purple-200">
-                    <h4 class="font-semibold mb-3 text-purple-600">General A</h4>
+                <div class="mb-3 sm:mb-4 lg:mb-6 p-2 sm:p-3 lg:p-4 bg-white rounded-lg border border-purple-200">
+                    <h4 class="font-semibold mb-2 lg:mb-3 text-purple-600">General A</h4>
                     <label for="generalAName" class="block text-sm font-medium mb-2">General A Name:</label>
-                    <input id="generalAName" type="text" placeholder="Enter general name" class="w-full border p-2 rounded mb-3" />
+                    <input id="generalAName" type="text" placeholder="Enter general name" class="w-full border p-2 rounded mb-3 text-sm lg:text-base" />
                     
-                    <div class="flex items-start gap-4">
-                        <img id="generalImageA" src="images/general1.png" alt="General A" class="w-20 h-20 max-w-[300px] max-h-[300px] rounded-full border-3 border-purple-500 object-cover shadow-lg flex-shrink-0">
-                        <div class="flex-1 min-w-0">
+                    <div class="flex flex-col sm:flex-row items-start gap-4">
+                        <img id="generalImageA" src="images/general1.png" alt="General A" class="w-16 h-16 lg:w-20 lg:h-20 max-w-[300px] max-h-[300px] rounded-full border-3 border-purple-500 object-cover shadow-lg flex-shrink-0 mx-auto sm:mx-0">
+                        <div class="flex-1 min-w-0 w-full">
                             <label for="generalImageSelectA" class="block text-xs font-medium mb-2">General A Image:</label>
                             <select id="generalImageSelectA" class="border p-2 rounded w-full text-sm mb-2">
                                 <option value="images/general1.png">General A (Default)</option>
@@ -1343,17 +1414,17 @@
                 </div>
                 
                 <!-- Army A Unit Controls -->
-                <div class="border-t-2 border-purple-200 pt-4 bg-white rounded-lg p-4">
-                    <h4 class="font-semibold mb-3 text-purple-600">Add Units to Army A:</h4>
-                    <div class="flex items-center gap-3 mb-3 flex-wrap">
-                        <select id="unitTypeA" class="border p-2 rounded text-sm">
+                <div class="border-t-2 border-purple-200 pt-2 sm:pt-3 lg:pt-4 bg-white rounded-lg p-2 sm:p-3 lg:p-4">
+                    <h4 class="font-semibold mb-2 lg:mb-3 text-purple-600">Add Units to Army A:</h4>
+                    <div class="flex flex-col sm:flex-row items-center gap-2 lg:gap-3 mb-3 flex-wrap">
+                        <select id="unitTypeA" class="border p-2 rounded text-sm w-full sm:w-auto">
                             <option value="cav">Cavalry</option>
                             <option value="heavy">Heavy Infantry</option>
                             <option value="light">Light Infantry</option>
                             <option value="ranged">Ranged</option>
                             <option value="support">Support</option>
                         </select>
-                        <select id="enhancementA" class="border p-2 rounded text-sm">
+                        <select id="enhancementA" class="border p-2 rounded text-sm w-full sm:w-auto min-w-0 sm:min-w-[120px]">
                             <option value="">No Enhancement</option>
                             <optgroup label="Cavalry">
                                 <option value="Life Guard">Life Guard</option>
@@ -1385,31 +1456,31 @@
                                 <option value="Marines">Marines</option>
                             </optgroup>
                         </select>
-                        <input id="unitCountA" type="number" min="1" max="50" value="1" class="border p-2 rounded w-20 text-sm" />
-                        <button id="addUnitA" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm font-medium">Add Units</button>
+                        <input id="unitCountA" type="number" min="1" max="50" value="1" class="border p-2 rounded w-16 lg:w-20 text-sm" />
+                        <button id="addUnitA" class="px-3 lg:px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm font-medium w-full sm:w-auto">Add Units</button>
                     </div>
                 </div>
             </div>
 
             <!-- Army B -->
-            <div class="army-section p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-4 text-red-700">⚔️ Army B Setup ⚔️</h2>
+            <div class="army-section p-3 sm:p-4 lg:p-6 rounded-lg shadow-md">
+                <h2 class="text-lg sm:text-xl lg:text-2xl font-semibold mb-2 sm:mb-3 lg:mb-4 text-red-700">⚔️ Army B Setup ⚔️</h2>
                 
                 <!-- Army B Name -->
-                <div class="mb-6">
+                <div class="mb-3 sm:mb-4 lg:mb-6">
                     <label for="armyBName" class="block text-sm font-medium mb-2">Army B Name:</label>
-                    <input id="armyBName" type="text" placeholder="Enter army name" class="w-full border p-3 rounded" />
+                    <input id="armyBName" type="text" placeholder="Enter army name" class="w-full border p-2 lg:p-3 rounded text-sm lg:text-base" />
                 </div>
                 
                 <!-- General B Setup -->
-                <div class="mb-6 p-4 bg-white rounded-lg border border-red-200">
-                    <h4 class="font-semibold mb-3 text-red-600">General B</h4>
+                <div class="mb-3 sm:mb-4 lg:mb-6 p-2 sm:p-3 lg:p-4 bg-white rounded-lg border border-red-200">
+                    <h4 class="font-semibold mb-2 lg:mb-3 text-red-600">General B</h4>
                     <label for="generalBName" class="block text-sm font-medium mb-2">General B Name:</label>
-                    <input id="generalBName" type="text" placeholder="Enter general name" class="w-full border p-2 rounded mb-3" />
+                    <input id="generalBName" type="text" placeholder="Enter general name" class="w-full border p-2 rounded mb-3 text-sm lg:text-base" />
                     
-                    <div class="flex items-start gap-4">
-                        <img id="generalImageB" src="images/general2.png" alt="General B" class="w-20 h-20 max-w-[300px] max-h-[300px] rounded-full border-3 border-red-500 object-cover shadow-lg flex-shrink-0">
-                        <div class="flex-1 min-w-0">
+                    <div class="flex flex-col sm:flex-row items-start gap-4">
+                        <img id="generalImageB" src="images/general2.png" alt="General B" class="w-16 h-16 lg:w-20 lg:h-20 max-w-[300px] max-h-[300px] rounded-full border-3 border-red-500 object-cover shadow-lg flex-shrink-0 mx-auto sm:mx-0">
+                        <div class="flex-1 min-w-0 w-full">
                             <label for="generalImageSelectB" class="block text-xs font-medium mb-2">General B Image:</label>
                             <select id="generalImageSelectB" class="border p-2 rounded w-full text-sm mb-2">
                                 <option value="images/general1.png">General A</option>
@@ -1456,17 +1527,17 @@
                 </div>
                 
                 <!-- Army B Unit Controls -->
-                <div class="border-t-2 border-red-200 pt-4 bg-white rounded-lg p-4">
-                    <h4 class="font-semibold mb-3 text-red-600">Add Units to Army B:</h4>
-                    <div class="flex items-center gap-3 mb-3 flex-wrap">
-                        <select id="unitTypeB" class="border p-2 rounded text-sm">
+                <div class="border-t-2 border-red-200 pt-2 sm:pt-3 lg:pt-4 bg-white rounded-lg p-2 sm:p-3 lg:p-4">
+                    <h4 class="font-semibold mb-2 lg:mb-3 text-red-600">Add Units to Army B:</h4>
+                    <div class="flex flex-col sm:flex-row items-center gap-2 lg:gap-3 mb-3 flex-wrap">
+                        <select id="unitTypeB" class="border p-2 rounded text-sm w-full sm:w-auto">
                             <option value="cav">Cavalry</option>
                             <option value="heavy">Heavy Infantry</option>
                             <option value="light">Light Infantry</option>
                             <option value="ranged">Ranged</option>
                             <option value="support">Support</option>
                         </select>
-                        <select id="enhancementB" class="border p-2 rounded text-sm">
+                        <select id="enhancementB" class="border p-2 rounded text-sm w-full sm:w-auto min-w-0 sm:min-w-[120px]">
                             <option value="">No Enhancement</option>
                             <optgroup label="Cavalry">
                                 <option value="Life Guard">Life Guard</option>
@@ -1498,25 +1569,25 @@
                                 <option value="Marines">Marines</option>
                             </optgroup>
                         </select>
-                        <input id="unitCountB" type="number" min="1" max="50" value="1" class="border p-2 rounded w-20 text-sm" />
-                        <button id="addUnitB" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm font-medium">Add Units</button>
+                        <input id="unitCountB" type="number" min="1" max="50" value="1" class="border p-2 rounded w-16 lg:w-20 text-sm" />
+                        <button id="addUnitB" class="px-3 lg:px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm font-medium w-full sm:w-auto">Add Units</button>
                     </div>
                 </div>
             </div>
         </div>        <!-- Army Display Tables -->
-        <div class="flex flex-col lg:flex-row gap-8 mb-8 mt-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 xl:gap-8 mb-4 sm:mb-6 lg:mb-8 mt-4 sm:mt-6 lg:mt-8">
             <!-- Army A Display (Left Side) -->
-            <div class="flex-1 w-full lg:w-1/2">
-                <div id="armyA" class="army-section p-6 rounded shadow-lg border-2 border-purple-300 bg-purple-50">
-                    <h2 class="text-2xl font-semibold mb-6 text-purple-700">🛡️ Army A Units (Left) 🛡️</h2>
-                    <div class="bg-white rounded-lg p-4">
-                        <table class="table-auto w-full border-collapse bg-white">
+            <div class="w-full">
+                <div id="armyA" class="army-section p-3 sm:p-4 lg:p-6 rounded shadow-lg border-2 border-purple-300 bg-purple-50">
+                    <h2 class="text-lg sm:text-xl lg:text-2xl font-semibold mb-3 sm:mb-4 lg:mb-6 text-purple-700">🛡️ Army A Units (Left) 🛡️</h2>
+                    <div class="bg-white rounded-lg p-2 lg:p-4 overflow-x-auto">
+                        <table class="table-auto w-full border-collapse bg-white min-w-[300px] sm:min-w-[400px]">
                             <thead>
                                 <tr class="bg-purple-200 text-purple-800">
-                                    <th class="p-3 text-left">Unit Type</th>
-                                    <th class="p-3 text-left">Enhancement</th>
-                                    <th class="p-3 text-left">Skirmisher</th>
-                                    <th class="p-3 text-left">Actions</th>
+                                    <th class="p-2 lg:p-3 text-left text-xs sm:text-sm lg:text-base">Unit Type</th>
+                                    <th class="p-2 lg:p-3 text-left text-xs sm:text-sm lg:text-base">Enhancement</th>
+                                    <th class="p-2 lg:p-3 text-left text-xs sm:text-sm lg:text-base">Skirmisher</th>
+                                    <th class="p-2 lg:p-3 text-left text-xs sm:text-sm lg:text-base">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="armyAList"></tbody>
@@ -1526,17 +1597,17 @@
             </div>
 
             <!-- Army B Display (Right Side) -->
-            <div class="flex-1 w-full lg:w-1/2">
-                <div id="armyB" class="army-section p-6 rounded shadow-lg border-2 border-red-300 bg-red-50">
-                    <h2 class="text-2xl font-semibold mb-6 text-red-700">⚔️ Army B Units (Right) ⚔️</h2>
-                    <div class="bg-white rounded-lg p-4">
-                        <table class="table-auto w-full border-collapse bg-white">
+            <div class="w-full">
+                <div id="armyB" class="army-section p-3 sm:p-4 lg:p-6 rounded shadow-lg border-2 border-red-300 bg-red-50">
+                    <h2 class="text-lg sm:text-xl lg:text-2xl font-semibold mb-3 sm:mb-4 lg:mb-6 text-red-700">⚔️ Army B Units (Right) ⚔️</h2>
+                    <div class="bg-white rounded-lg p-2 lg:p-4 overflow-x-auto">
+                        <table class="table-auto w-full border-collapse bg-white min-w-[300px] sm:min-w-[400px]">
                             <thead>
                                 <tr class="bg-red-200 text-red-800">
-                                    <th class="p-3 text-left">Unit Type</th>
-                                    <th class="p-3 text-left">Enhancement</th>
-                                    <th class="p-3 text-left">Skirmisher</th>
-                                    <th class="p-3 text-left">Actions</th>
+                                    <th class="p-2 lg:p-3 text-left text-xs sm:text-sm lg:text-base">Unit Type</th>
+                                    <th class="p-2 lg:p-3 text-left text-xs sm:text-sm lg:text-base">Enhancement</th>
+                                    <th class="p-2 lg:p-3 text-left text-xs sm:text-sm lg:text-base">Skirmisher</th>
+                                    <th class="p-2 lg:p-3 text-left text-xs sm:text-sm lg:text-base">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="armyBList"></tbody>
@@ -1547,46 +1618,54 @@
         </div>
 
         <!-- Battle Controls Section -->
-        <div class="text-center mb-6 p-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg text-white">
-            <label for="battleTypeDisplay" class="mr-3 font-semibold">⚔️ Battle Type:</label>
-            <select id="battleTypeDisplay" class="border-2 border-white p-2 rounded-lg text-gray-800 font-medium">
+        <div class="text-center mb-3 sm:mb-4 lg:mb-6 p-2 sm:p-3 lg:p-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg text-white">
+            <label for="battleTypeDisplay" class="block sm:inline mr-3 font-semibold text-sm lg:text-base mb-2 sm:mb-0">⚔️ Battle Type:</label>
+            <select id="battleTypeDisplay" class="border-2 border-white p-2 rounded-lg text-gray-800 font-medium text-sm lg:text-base w-full sm:w-auto">
                 <option value="open">🌄 Open Battle</option>
                 <option value="siege">🏰 Siege</option>
             </select>
         </div>
         
+        <!-- Battle Location Input -->
+        <div class="text-center mb-3 sm:mb-4 lg:mb-6 p-2 sm:p-3 lg:p-4 bg-gradient-to-r from-blue-400 to-green-400 rounded-lg text-white">
+            <label for="battleLocation" class="block sm:inline mr-3 font-semibold text-sm lg:text-base mb-2 sm:mb-0">📍 Battle Location:</label>
+            <input id="battleLocation" type="text" placeholder="Enter battle location (optional)" class="border-2 border-white p-2 rounded-lg text-gray-800 font-medium w-full sm:w-64 text-sm lg:text-base" />
+        </div>
+        
         <!-- Siege options: city tier selection -->
-        <div id="siegeOptions" class="text-center mb-6 p-4 bg-gradient-to-r from-orange-400 to-red-400 rounded-lg text-white hidden">
-            <label for="cityTierDisplay" class="mr-3 font-semibold">🏰 City Tier:</label>
-            <select id="cityTierDisplay" class="border-2 border-white p-2 rounded-lg text-gray-800 font-medium">
+        <div id="siegeOptions" class="text-center mb-3 sm:mb-4 lg:mb-6 p-2 sm:p-3 lg:p-4 bg-gradient-to-r from-orange-400 to-red-400 rounded-lg text-white hidden">
+            <label for="cityTierDisplay" class="block sm:inline mr-3 font-semibold text-sm lg:text-base mb-2 sm:mb-0">🏰 City Tier:</label>
+            <select id="cityTierDisplay" class="border-2 border-white p-2 rounded-lg text-gray-800 font-medium text-sm lg:text-base w-full sm:w-auto">
                 <option value="1">🏘️ Tier 1</option>
                 <option value="2">🏙️ Tier 2</option>
                 <option value="3">🏛️ Tier 3</option>
             </select>
         </div>
 
-        <div class="text-center mb-6">
-            <button id="simulateBattle" class="px-8 py-4 rounded-lg mr-4 text-lg font-bold shadow-lg">
-                ⚔️ Simulate Battle ⚔️
-            </button>
-            <button id="newBattle" class="px-8 py-4 rounded-lg text-lg font-bold shadow-lg">
-                🆕 New Battle 🆕
-            </button>
+        <div class="text-center mb-3 sm:mb-4 lg:mb-6">
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4 justify-center">
+                <button id="simulateBattle" class="px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-lg text-sm sm:text-base lg:text-lg font-bold shadow-lg w-full sm:w-auto">
+                    ⚔️ Simulate Battle ⚔️
+                </button>
+                <button id="newBattle" class="px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-lg text-sm sm:text-base lg:text-lg font-bold shadow-lg w-full sm:w-auto">
+                    🆕 New Battle 🆕
+                </button>
+            </div>
         </div>
-        <div id="battleResult" class="text-center text-xl font-medium mb-4 p-4 bg-gray-100 rounded min-h-[100px] max-h-[500px] overflow-y-auto">
+        <div id="battleResult" class="text-center text-base sm:text-lg lg:text-xl font-medium mb-3 sm:mb-4 p-2 sm:p-3 lg:p-4 bg-gray-100 rounded min-h-[80px] sm:min-h-[100px] max-h-[300px] sm:max-h-[400px] lg:max-h-[500px] overflow-y-auto text-xs sm:text-sm lg:text-base">
             <p class="text-gray-500">Set up your armies and click "Simulate Battle" to begin...</p>
         </div>
 
         <!-- Battle Report Generation -->
-        <div class="text-center mb-6">
-            <button id="generateReport" class="px-6 py-3 bg-green-500 text-white rounded-lg font-bold shadow-lg hover:bg-green-600 transition-colors hidden">
+        <div class="text-center mb-3 sm:mb-4 lg:mb-6">
+            <button id="generateReport" class="px-3 sm:px-4 lg:px-6 py-2 lg:py-3 bg-green-500 text-white rounded-lg font-bold shadow-lg hover:bg-green-600 transition-colors hidden text-xs sm:text-sm lg:text-base w-full sm:w-auto">
                 📊 Generate Battle Report Image 📊
             </button>
         </div>        <!-- Hidden canvas for image generation -->
         <canvas id="battleCanvas" width="1400" height="1400" style="display: none;"></canvas>
 
         <audio id="bgMusic" src="background-music.mp3" loop></audio>
-        <button id="toggleMusic" class="fixed bottom-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg w-14 h-14 flex items-center justify-center">
+        <button id="toggleMusic" class="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 bg-gray-800 text-white p-2 lg:p-3 rounded-full shadow-lg w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 flex items-center justify-center text-xs sm:text-sm lg:text-base z-50">
             <i class="fas fa-play"></i>
         </button>
     </div>    <script src="battle.js"></script>
@@ -1813,9 +1892,24 @@
      */
     function setupBattleSimulation() {        // Setup generate battle report button
         const generateReportBtn = document.getElementById('generateReport');
-        if ( generateReportBtn) {
+        if (generateReportBtn) {
             generateReportBtn.addEventListener('click', function() {
+                console.log('Generate report button clicked');
+                console.log('window.generateBattleReport available:', typeof window.generateBattleReport === 'function');
+                console.log('window.battleData available:', !!window.battleData);
+                
                 if (window.generateBattleReport && typeof window.generateBattleReport === 'function') {
+                    // Check if battle data exists
+                    if (!window.battleData) {
+                        alert('No battle data found. Please run a battle simulation first.');
+                        return;
+                    }
+                    
+                    if (!window.battleData.finalResult) {
+                        alert('Battle data incomplete. Please run a complete battle simulation first.');
+                        return;
+                    }
+                    
                     // Show loading state
                     const originalText = this.textContent;
                     this.textContent = '📊 Generating Report... 📊';
@@ -1833,6 +1927,7 @@
                         } catch (error) {
                             console.error('Error generating report:', error);
                             this.textContent = '❌ Report Error 📊';
+                            alert(`Error generating battle report: ${error.message}`);
                             setTimeout(() => {
                                 this.textContent = originalText;
                                 this.disabled = false;
@@ -1841,7 +1936,8 @@
                     }, 100);
                 } else {
                     console.error('generateBattleReport function not available');
-                    alert('Battle report generation is not available. Please ensure battle.js is loaded.');
+                    console.log('Available window functions:', Object.keys(window).filter(k => typeof window[k] === 'function' && k.includes('battle')));
+                    alert('Battle report generation is not available. Please ensure battle.js is loaded properly.');
                 }
             });
         }
@@ -1865,38 +1961,171 @@
     }
 
     /**
+     * Add units to an army
+     * @param {Array} army - The army array to add to
+     * @param {HTMLElement} listElement - The table body element to update
+     * @param {string} unitType - Type of unit to add
+     * @param {number} count - Number of units to add
+     * @param {string} enhancement - Enhancement for the units
+     */
+    function addUnits(army, listElement, unitType, count, enhancement) {
+        for (let i = 0; i < count; i++) {
+            army.push({
+                type: unitType,
+                enhancement: enhancement === 'None' ? '' : enhancement
+            });
+        }
+        renderArmy(listElement, army);
+    }
+
+    /**
+     * Render army units in the table
+     * @param {HTMLElement} listElement - The table body element
+     * @param {Array} army - The army array to render
+     */
+    function renderArmy(listElement, army) {
+        if (!listElement) return;
+        
+        listElement.innerHTML = '';
+        army.forEach((unit, index) => {
+            const row = document.createElement('tr');
+            const enhancementText = unit.enhancement || 'None';
+            const armyLetter = listElement.id === 'armyAList' ? 'A' : 'B';
+            
+            row.innerHTML = `
+                <td class="border px-2 py-1">
+                    <div class="flex items-center gap-2">
+                        <img src="images/${unit.type}.jpg" alt="${unit.type}" class="w-8 h-8 object-cover rounded">
+                        <span class="capitalize">${unit.type}</span>
+                    </div>
+                </td>
+                <td class="border px-2 py-1">${enhancementText}</td>
+                <td class="border px-2 py-1">
+                    <input type="checkbox" ${unit.isSkirmisher ? 'checked' : ''} 
+                           onchange="toggleSkirmisher(${index}, this.checked, '${armyLetter}')">
+                </td>
+                <td class="border px-2 py-1">
+                    <button onclick="removeUnit(${index}, '${armyLetter}')" 
+                            class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm">
+                        Remove
+                    </button>
+                </td>
+            `;
+            listElement.appendChild(row);
+        });
+    }
+
+    /**
+     * Remove a unit from an army
+     * @param {number} index - Index of unit to remove
+     * @param {string} army - Which army ('A' or 'B')
+     */
+    function removeUnit(index, army) {
+        if (army === 'A') {
+            window.armyA.splice(index, 1);
+            renderArmy(document.getElementById('armyAList'), window.armyA);
+        } else {
+            window.armyB.splice(index, 1);
+            renderArmy(document.getElementById('armyBList'), window.armyB);
+        }
+    }
+
+    /**
+     * Toggle skirmisher status for a unit
+     * @param {number} index - Index of unit
+     * @param {boolean} isChecked - New skirmisher status
+     * @param {string} army - Which army ('A' or 'B')
+     */
+    function toggleSkirmisher(index, isChecked, army) {
+        if (army === 'A') {
+            window.armyA[index].isSkirmisher = isChecked;
+        } else {
+            window.armyB[index].isSkirmisher = isChecked;
+        }
+    }
+
+    // Make functions globally available
+    window.addUnits = addUnits;
+    window.renderArmy = renderArmy;
+    window.removeUnit = removeUnit;
+    window.toggleSkirmisher = toggleSkirmisher;
+
+    /**
      * Populate enhancement options based on selected unit type
      * @param {HTMLElement} unitTypeEl - Unit type select element
      * @param {HTMLElement} enhancementEl - Enhancement select element
      */
     function populateEnhancements(unitTypeEl, enhancementEl) {
+        if (!unitTypeEl || !enhancementEl) return;
+        
         const selectedType = unitTypeEl.value;
         const enhancementOptions = APP_CONFIG.enhancementOptions;
         
+        // Clear existing options
+        enhancementEl.innerHTML = '<option value="">No Enhancement</option>';
+        
         if (!enhancementOptions[selectedType]) {
-            enhancementEl.style.display = 'none';
-            enhancementEl.innerHTML = '';
             return;
         }
         
-        const options = [...enhancementOptions[selectedType], ...enhancementOptions.universal];
-               enhancementEl.innerHTML = options.map(e => `<option value="${e}">${e}</option>`).join('');
-        enhancementEl.style.display = '';
+        // Add unit-specific enhancements
+        enhancementOptions[selectedType].slice(1).forEach(enhancement => {
+            const option = document.createElement('option');
+            option.value = enhancement;
+            option.textContent = enhancement;
+            enhancementEl.appendChild(option);
+        });
+        
+        // Add universal enhancements
+        enhancementOptions.universal.forEach(enhancement => {
+            const option = document.createElement('option');
+            option.value = enhancement;
+            option.textContent = enhancement;
+            enhancementEl.appendChild(option);
+        });
     }
 
     /**
      * Setup army controllers for adding/removing units
      */
     function setupArmyControllers() {
-        unitTypeA.addEventListener('change', () => populateEnhancements(unitTypeA, enhancementA));
-        unitTypeB.addEventListener('change', () => populateEnhancements(unitTypeB, enhancementB));
+        // Get DOM elements
+        const unitTypeA = document.getElementById('unitTypeA');
+        const unitCountA = document.getElementById('unitCountA');
+        const addUnitA = document.getElementById('addUnitA');
+        const armyAList = document.getElementById('armyAList');
+        const enhancementA = document.getElementById('enhancementA');
 
-        // Toggle siege options visibility
-        const battleTypeEl = document.getElementById('battleType');
+        const unitTypeB = document.getElementById('unitTypeB');
+        const unitCountB = document.getElementById('unitCountB');
+        const addUnitB = document.getElementById('addUnitB');
+        const armyBList = document.getElementById('armyBList');
+        const enhancementB = document.getElementById('enhancementB');
+
+        // Set up event listeners for adding units
+        if (addUnitA) {
+            addUnitA.addEventListener('click', () => {
+                const count = parseInt(unitCountA.value) || 1;
+                const enhancement = enhancementA.value || 'None';
+                addUnits(window.armyA, armyAList, unitTypeA.value, count, enhancement);
+            });
+        }
+        if (addUnitB) {
+            addUnitB.addEventListener('click', () => {
+                const count = parseInt(unitCountB.value) || 1;
+                const enhancement = enhancementB.value || 'None';
+                addUnits(window.armyB, armyBList, unitTypeB.value, count, enhancement);
+            });
+        }
+
+        // Toggle siege options visibility - Fix element ID
+        const battleTypeEl = document.getElementById('battleTypeDisplay');
         const siegeOpts = document.getElementById('siegeOptions');
-        battleTypeEl.addEventListener('change', () => {
-            siegeOpts.classList.toggle('hidden', battleTypeEl.value !== 'siege');
-        });
+        if (battleTypeEl && siegeOpts) {
+            battleTypeEl.addEventListener('change', () => {
+                siegeOpts.classList.toggle('hidden', battleTypeEl.value !== 'siege');
+            });
+        }
 
         // Music toggle
         const music = document.getElementById('bgMusic');
@@ -1921,7 +2150,22 @@
         const newBattleBtn = document.getElementById('newBattle');
         if (newBattleBtn && battleResultDiv) {
             newBattleBtn.addEventListener('click', () => {
+                // Clear armies
+                window.armyA.length = 0;
+                window.armyB.length = 0;
+                
+                // Update displays
+                renderArmy(document.getElementById('armyAList'), window.armyA);
+                renderArmy(document.getElementById('armyBList'), window.armyB);
+                
+                // Reset battle result
                 battleResultDiv.innerHTML = '<p class="text-gray-500">Set up your armies and click "Simulate Battle" to begin...</p>';
+                
+                // Hide generate report button
+                const generateReportBtn = document.getElementById('generateReport');
+                if (generateReportBtn) {
+                    generateReportBtn.classList.add('hidden');
+                }
             });
         }        // Simulate Battle button
         const simulateBattleBtn = document.getElementById('simulateBattle');
@@ -1929,7 +2173,8 @@
             simulateBattleBtn.addEventListener('click', async () => {
                 console.log('Simulate battle button clicked');
                 
-                if (!window.armyA?.length || (!window.armyB?.length && document.getElementById('battleType').value === 'open')) {
+                const selectedBattleType = document.getElementById('battleTypeDisplay').value;
+                if (!window.armyA?.length || (!window.armyB?.length && selectedBattleType === 'open')) {
                     battleResultDiv.textContent = 'Both armies must have at least one unit.';
                     return;
                 }
@@ -1951,12 +2196,12 @@
                 const generalANameInput = document.getElementById('generalAName').value.trim();
                 const generalBNameInput = document.getElementById('generalBName').value.trim();
                 
-                const genLevelA = parseInt(document.getElementById('generalLevelA').value);
-                const genTraitA = document.getElementById('generalTraitA').value;
-                const genLevelB = parseInt(document.getElementById('generalLevelB').value);
-                const genTraitB = document.getElementById('generalTraitB').value;
-                const battleType = document.getElementById('battleType').value;
-                const cityTier = battleType === 'siege' ? parseInt(document.getElementById('cityTier').value) : null;
+                const genLevelA = parseInt(document.getElementById('generalLevelA').value) || 1;
+                const genTraitA = document.getElementById('generalTraitA').value || 'None';
+                const genLevelB = parseInt(document.getElementById('generalLevelB').value) || 1;
+                const genTraitB = document.getElementById('generalTraitB').value || 'None';
+                const battleType = document.getElementById('battleTypeDisplay').value;
+                const cityTier = battleType === 'siege' ? parseInt(document.getElementById('cityTierDisplay').value) : null;
                 
                 try {
                     const result = await window.simulateBattle(
@@ -1964,7 +2209,7 @@
                         { level: genLevelA, trait: genTraitA, name: generalANameInput || 'General A' },
                         { level: genLevelB, trait: genTraitB, name: generalBNameInput || 'General B' },
                         battleType, cityTier,
-                                               {
+                        {
                             battleLocation: battleLocationInput,
                             armyAName: armyANameInput,
                             armyBName: armyBNameInput,
@@ -1972,13 +2217,22 @@
                             generalBName: generalBNameInput
                         }
                     );
+                    
+                    // Show generate report button after successful battle
+                    const generateReportBtn = document.getElementById('generateReport');
+                    if (generateReportBtn) {
+                        generateReportBtn.classList.remove('hidden');
+                    }
+                    
                     // Result is already displayed progressively, so we don't need to set innerHTML again
                 } catch (error) {
-                    battleResultDiv.innerHTML = `<pre class="text-left whitespace-pre-wrap">Error: ${error.message}</pre>`;
+                    console.error('Battle simulation error:', error);
+                    battleResultDiv.innerHTML = `<pre class="text-left whitespace-pre-wrap text-red-500">❌ Error: ${error.message}</pre>`;
                 } finally {
                     // Re-enable button
                     simulateBattleBtn.disabled = false;
-                    simulateBattleBtn.textContent = 'Simulate Battle';                }
+                    simulateBattleBtn.textContent = '⚔️ Simulate Battle ⚔️';
+                }
             });        }
         
         // Synchronize battle type selectors
@@ -2081,8 +2335,14 @@
     window.addEventListener('load', function() {
         console.log('Page fully loaded');
         console.log('simulateBattle function available:', typeof window.simulateBattle === 'function');
+        console.log('generateBattleReport function available:', typeof window.generateBattleReport === 'function');
+        console.log('Canvas element available:', !!document.getElementById('battleCanvas'));
+        
         if (typeof window.simulateBattle !== 'function') {
-            console.error('Battle.js not loaded properly');
+            console.error('Battle.js not loaded properly - simulateBattle missing');
+        }
+        if (typeof window.generateBattleReport !== 'function') {
+            console.error('Battle.js not loaded properly - generateBattleReport missing');
         }
         
     });
@@ -2106,6 +2366,7 @@
             document.getElementById('nav-placeholder').innerHTML = text;
             var script = document.createElement('script');
             script.innerHTML = `
+
                 document.getElementById('mobile-menu-button').addEventListener('click', function() {
                     var menu = document.getElementById('mobile-menu');
                     menu.classList.toggle('hidden');

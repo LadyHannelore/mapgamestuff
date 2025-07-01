@@ -1696,6 +1696,8 @@ function generateBattleReport() {
             return;
         }
         
+        console.log('Canvas found:', canvas.width, 'x', canvas.height);
+        
         if (!window.battleData) {
             console.error('No battle data available');
             alert('Error: No battle data available. Please run a battle simulation first.');
@@ -1709,10 +1711,18 @@ function generateBattleReport() {
         }
         
         console.log('Battle data found:', window.battleData);
+        console.log('Final result:', window.battleData.finalResult);
         
         const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            console.error('Cannot get canvas context');
+            alert('Error: Cannot get canvas context. Your browser may not support canvas.');
+            return;
+        }
+        
         const width = canvas.width;
         const height = canvas.height;
+        console.log('Starting canvas drawing...');
         
         // Clear canvas
         ctx.clearRect(0, 0, width, height);
@@ -1830,12 +1840,24 @@ function generateBattleReport() {
     ctx.textAlign = 'right';
     ctx.fillText(`Generated: ${new Date().toLocaleString()}`, width - 30, height - 20);
       // Convert to downloadable image
-    const link = document.createElement('a');
-    link.download = `battle_report_${Date.now()}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
-    
-    console.log('Battle report generated successfully!');
+    try {
+        const dataURL = canvas.toDataURL('image/png');
+        console.log('Canvas data URL generated, length:', dataURL.length);
+        
+        const link = document.createElement('a');
+        link.download = `battle_report_${Date.now()}.png`;
+        link.href = dataURL;
+        
+        // Add to document temporarily for Firefox compatibility
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        console.log('Battle report download initiated successfully!');
+    } catch (downloadError) {
+        console.error('Error creating download:', downloadError);
+        throw new Error(`Failed to create downloadable image: ${downloadError.message}`);
+    }
     
     } catch (error) {
         console.error('Error generating battle report:', error);
@@ -2316,3 +2338,9 @@ function drawUnitCompositionChart(ctx, armyA, armyB, x, y, width, height) {
     
     ctx.restore();
 }
+
+// Export functions to global scope for HTML access
+window.simulateBattle = simulateBattle;
+window.generateBattleReport = generateBattleReport;
+
+console.log('Battle.js loaded successfully with all functions exported');
