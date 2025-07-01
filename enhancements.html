@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhancements - Map Game Mechanics</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100">
+    <div id="nav-placeholder"></div>
+
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-4 text-center">Enhancements to Your Nation/Leader</h1>
+        <p class="text-lg text-center mb-8">In this game, you can customize and strengthen your nation or leader through Religions, Leader Titles, and Subcultures. These enhancements affect gameplay, diplomacy, warfare, and RP opportunities.</p>
+
+        <!-- Religions Section -->
+        <div id="religions" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Religions</h2>
+            <p class="mb-4">When you spawn in, you may choose a religion for your nation. Each religion offers special abilities and gameplay mechanics. It costs 300 silver to convert religion, and you must have an adjacency with someone of the religion you're trying to convert to or you lose a defensive religious war.</p>
+            <p class="mb-4"><strong>Available Religions:</strong> See Religion Quick Reference (Link to be added)</p>
+            
+            <h3 class="text-2xl font-semibold mb-2">Schism</h3>
+            <p class="mb-4">A schism event occurs when a religion reaches a certain number of followers (starting at 10, and increasing by 10 for each subsequent schism). A schism will break the religion into 3 smaller religions, keeping their original bonus but getting a new one as well. New religion abilities will be created as the Schisms occur.</p>
+
+            <p>If you choose Atheism you opt out of the religion system.</p>
+        </div>
+
+        <!-- Leader Titles Section -->
+        <div id="leader-titles" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Leader Titles</h2>
+            <p class="mb-4">Your Leader can earn a customised Title to enhance roleplay flavor and earn a single personalized bonus. To gain a title you must first have a factbook and at least one roleplay post concerning your leader.</p>
+            <p class="mb-4">Once you meet these requirements you may request a leader title by outlining what the title you desire is and how it relates to your nation.</p>
+            <p class="mb-4">Titles are then earned through <strong>Missions</strong>. Missions are roleplay challenges and map objectives, inspired by your nation’s culture and history (e.g. A French player could earn the title "L'Empereur" by completing Napoleon-themed roleplay and owning all of France).</p>
+            <p class="mb-4">You may reduce the amount of missions required to obtain a leader title by winning an event or completing a quest.</p>
+            <p>Titles are tied to the leader, not to the land. If you lose your homeland but survive in exile, you keep your title. You can also lose your title if you change your government or lose all meaningful power.</p>
+        </div>
+
+        <!-- Cultures Section -->
+        <div id="cultures" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Cultures</h2>
+            <p class="mb-4">Cultures are a vital part of your national identity, as they are what makes you stand out from your neighbors. In Hegemony, forming a culture grants you special buffs and a new city icon on the map.</p>
+
+            <h3 class="text-2xl font-semibold mb-2">Formation</h3>
+            <p class="mb-4">In order to form a culture, you must have at least two T1 cities, or one T2/T3 city. Once you have completed this, you may request a culture formation.</p>
+
+            <h3 class="text-2xl font-semibold mb-2">Culture Sizes</h3>
+            <div class="grid md:grid-cols-3 gap-4 mb-4">
+                <div class="border p-4 rounded">
+                    <h4 class="font-bold text-xl">Local</h4>
+                    <p>The smallest in size. These cultures are things such as Swiss, Pommeranian, and Frisian. They are the local region's identity.</p>
+                </div>
+                <div class="border p-4 rounded">
+                    <h4 class="font-bold text-xl">Regional</h4>
+                    <p>Follow the general ethno-linguistic lines of a region. Some land in Local cultures are not required for Regionals.</p>
+                </div>
+                <div class="border p-4 rounded">
+                    <h4 class="font-bold text-xl">National</h4>
+                    <p>The general group Regionals belong to. Nationals can come in different sizes. Larger Nationals will receive slightly "easier" Culture Challenges.</p>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-semibold mb-2">Culture Challenges</h3>
+            <p class="mb-4">During formations, you will be given challenges. The requirement for completion will be different for each culture type.</p>
+            <ul class="list-disc list-inside mb-4">
+                <li class="mb-2"><strong>Cities:</strong> Cities have a "Population Density" that you must achieve. It is essentially a point system (T1 City = 1, T2 = 2, T3 = 3).
+                    <ul class="list-disc list-inside ml-6">
+                        <li>Local Requirement: 5</li>
+                        <li>Regional Requirement: 10</li>
+                        <li>National Requirement: 20</li>
+                    </ul>
+                </li>
+                <li class="mb-2"><strong>Land:</strong> Land sizes will correspond with your culture's history.</li>
+                <li class="mb-2"><strong>Prompts:</strong> All will receive 6 prompts.
+                    <ul class="list-disc list-inside ml-6">
+                        <li>Local: Complete 1 prompt</li>
+                        <li>Regional: Complete 3 prompts</li>
+                        <li>National: Complete all 6 prompts</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3 class="text-2xl font-semibold mb-2">Abilities</h3>
+            <p class="mb-4">Abilities will also correspond to your culture type and background.</p>
+            <ul class="list-disc list-inside mb-4">
+                <li class="mb-2"><strong>Initial Slots:</strong>
+                    <ul class="list-disc list-inside ml-6">
+                        <li>Local: 2 Abilities</li>
+                        <li>Regional: 3 Abilities</li>
+                        <li>National: 4 Abilities</li>
+                    </ul>
+                </li>
+                <li class="mb-2"><strong>Unlocking Abilities:</strong>
+                     <ul class="list-disc list-inside ml-6">
+                        <li><strong>Local:</strong> Completing 3 total prompts adds 1 slot. Completing all adds another.</li>
+                        <li><strong>Regional:</strong> Completing all prompts unlocks one slot.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3 class="text-2xl font-semibold mb-2">Group Formations</h3>
+            <p>Regionals and Nationals have the ability to be formed in groups. It is recommended to talk to players before a group formation. Groups have a change in requirements to try to share the goal amongst players. Prompts and city requirements will be split among players.</p>
+        </div>
+    </div>
+
+    <script>
+        fetch('nav.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('nav-placeholder').innerHTML = data;
+                // Mobile menu toggle
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const mobileMenu = document.getElementById('mobile-menu');
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            });
+        const faders = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in-visible');
+                }
+            });
+        });
+        faders.forEach(fader => {
+            observer.observe(fader);
+        });
+    </script>
+</body>
+</html>

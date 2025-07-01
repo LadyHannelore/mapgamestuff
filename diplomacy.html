@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diplomacy - Map Game Mechanics</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100">
+    <div id="nav-placeholder"></div>
+
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-4 text-center">Diplomacy</h1>
+
+        <!-- Alliances Section -->
+        <div id="alliances" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Alliances</h2>
+            <p class="mb-4">Alliances are formal agreements between two or more nations. They can be defensive, offensive, or based on shared culture or religion.</p>
+            <ul class="list-disc list-inside mb-4 space-y-2">
+                <li><strong>Defensive Pacts:</strong> Nations agree to defend each other if one is attacked.</li>
+                <li><strong>Offensive Pacts:</strong> Nations agree to join each other in offensive wars.</li>
+                <li><strong>Non-Aggression Pacts (NAPs):</strong> Nations agree not to attack each other for a set period of time.</li>
+                <li><strong>Trade Pacts:</strong> Nations agree to favorable trade terms.</li>
+            </ul>
+        </div>
+
+        <!-- Wars Section -->
+        <div id="wars" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Wars</h2>
+            <p class="mb-4">Wars are declared through a formal process. A Casus Belli (reason for war) is required.</p>
+            <ul class="list-disc list-inside mb-4 space-y-2">
+                <li><strong>Declaration of War:</strong> Must be announced publicly with a clear Casus Belli.</li>
+                <li><strong>War Goals:</strong> The objectives of the war must be stated.</li>
+                <li><strong>Peace Treaties:</strong> Wars end with a peace treaty, negotiated between the warring parties.</li>
+            </ul>
+        </div>
+
+        <!-- Treaties Section -->
+        <div id="treaties" class="glassmorphism card fade-in p-6 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Treaties</h2>
+            <p class="mb-4">Treaties are formal agreements that can end wars, establish trade relations, or define borders.</p>
+            <p>All treaties must be made public.</p>
+        </div>
+    </div>
+
+    <script>
+        fetch('nav.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('nav-placeholder').innerHTML = data;
+                // Mobile menu toggle
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const mobileMenu = document.getElementById('mobile-menu');
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            });
+        const faders = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in-visible');
+                }
+            });
+        });
+        faders.forEach(fader => {
+            observer.observe(fader);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional battle simulator for strategic warfare gaming">
+    <meta name="keywords" content="battle simulator, warfare, strategy, gaming">
+    <meta name="author" content="Mock Battle Simulator Team">
+    <title>Battle Simulator - Map Game Mechanics</title>
+
+    <!-- External CSS Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* Professional CSS following BEM methodology */
+        
+        /* Base styles */
+        body {
+            /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        
+        /* Component: Main container */
+        #app {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Button animations and styling */
+        button {
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        button:hover:before {
+            left: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        /* Specific button colors */
+        #simulateBattle {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            border: none;
+        }
+        
+        #simulateBattle:hover {
+            background: linear-gradient(135deg, #ee5a24, #ff6b6b);
+        }
+        
+        #newBattle {
+            background: linear-gradient(135deg, #4ecdff, #44bd32);
+            border: none;
+        }
+        
+        #newBattle:hover {
+            background: linear-gradient(135deg, #44bd32, #4ecdff);
+        }
+        
+        /* Generate report button styling */
+        #generateReport {
+            background: linear-gradient(135deg, #10b981, #047857);
+            border: none;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        #generateReport:hover {
+            background: linear-gradient(135deg, #047857, #10b981);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        #generateReport:active {
+            transform: translateY(-1px);
+        }
+        input[type="text"], input[type="number"], select {
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+        }
+        
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.02);
+        }
+        
+        /* Battle setup section */
+        .battle-setup {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .battle-setup:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: 50px 50px;
+            animation: float 20s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translateX(0px) translateY(0px); }
+            100% { transform: translateX(-50px) translateY(-50px); }
+        }
+        
+        .battle-setup label {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+        
+        /* Army sections */
+        .army-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .army-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+        
+        .army-section h2 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+          /* Table styling */
+        table {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        table thead tr {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        table tbody tr:hover {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            transform: scale(1.02);
+        }
+        
+        table tbody tr:nth-child(even) {
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+        
+        /* Remove button styling */
+        table button {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            margin: 0 0.125rem;
+            border-radius: 0.25rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+        
+        table button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Force all table images to 100x100px with styling */
+        table img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+        
+        table img:hover {
+            transform: scale(1.1) rotate(5deg);
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+        }
+        
+        /* Battle result area */
+        #battleResult {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #ecf0f1;
+            border-radius: 15px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #battleResult:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            animation: aurora 10s ease-in-out infinite alternate;
+        }
+        
+        @keyframes aurora {
+            0% { opacity: 0.5; transform: scale(1); }
+            100% { opacity: 0.8; transform: scale(1.1); }
+        }
+        
+        #battleResult pre {
+            position: relative;
+            z-index: 1;
+            line-height: 1.6;
+        }
+        
+        /* Scrollbar styling */
+        #battleResult::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #battleResult::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        #battleResult::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 4px;
+        }
+        
+        #battleResult::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+        
+        /* Music button styling */
+        #toggleMusic {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        #toggleMusic:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            transform: scale(1.1) rotate(10deg);
+        }
+        
+        /* Select dropdown styling */
+        select {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+        }
+        
+        select:hover {
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        /* Label animations */
+        label {
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        /* HR separator styling */
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 1px;
+            margin: 2rem 0;
+            position: relative;
+        }
+        
+        hr:after {
+            content: '⚔️';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2c3e50;
+            padding: 0 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* Loading animation for disabled button */
+        button:disabled {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d) !important;
+            cursor: not-allowed;
+            position: relative;
+        }
+        
+        button:disabled:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Title styling */
+        h1 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        h1:after {
+            content: '⚔️🛡️⚔️';
+            position: absolute;
+            top: -10px;
+            right: -40px;
+            font-size: 0.6em;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Enhanced Battle Display Styling */
+        .battle-content {
+            position: relative;
+            z-index: 2;
+            animation: slideInFromRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .battle-separator {
+            margin: 20px 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, #764ba2, #667eea, transparent);
+            border-radius: 2px;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        .battle-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: 10px 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .battle-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .army-names {
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+        
+        .vs {
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .generals-info {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            backdrop-filter: blur(5px);
+        }
+        
+        .general-a {
+            color: #a855f7;
+            font-weight: bold;
+        }
+        
+        .general-b {
+            color: #ef4444;
+            font-weight: bold;
+        }
+        
+        .trait {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        
+        .army-sizes {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px;
+            border-radius: 6px;
+            margin: 8px 0;
+        }
+        
+        .army-a-size {
+            color: #a855f7;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .army-b-size {
+            color: #ef4444;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .round-header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+        }
+        
+        .round-number {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .phase-header {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+            text-align: center;
+            border-left: 4px solid;
+        }
+        
+        .phase-header.skirmish {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.1));
+            border-left-color: #ef4444;
+            color: #dc2626;
+        }
+        
+        .phase-header.pitch {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
+            border-left-color: #3b82f6;
+            color: #2563eb;
+        }
+        
+        .phase-header.rally {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+            border-left-color: #10b981;
+            color: #059669;
+        }
+        
+        .phase-header.recovery {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1));
+            border-left-color: #f59e0b;
+            color: #d97706;
+        }
+        
+        .phase-header.destruction {
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.2), rgba(120, 53, 15, 0.1));
+            border-left-color: #8b4513;
+            color: #78350f;
+        }
+        
+        .phase-name {
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .skirmish-matchup {
+            background: rgba(239, 68, 68, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-left: 3px solid #ef4444;
+            margin: 8px 0;
+            font-weight: bold;
+            color: #dc2626;
+        }
+        
+        .matchup-title {
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .army-calculation {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid;
+        }
+        
+        .army-calculation.Skirmish {
+            border-left-color: #ef4444;
+        }
+        
+        .army-calculation.Pitch {
+            border-left-color: #3b82f6;
+        }
+        
+        .army-calculation.Rally {
+            border-left-color: #10b981;
+        }
+        
+        .army-calculation.Routed {
+            border-left-color: #f59e0b;
+        }
+        
+        .army-name {
+            font-weight: bold;
+            color: #fbbf24;
+        }
+        
+        .calc-type {
+            color: #cbd5e1;
+            font-style: italic;
+        }
+        
+        .unit-roll {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 6px 12px;
+            margin: 4px 0;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            border-left: 2px solid #64748b;
+            display: inline-block;
+            animation: diceRoll 0.6s ease-out;
+        }
+        
+        @keyframes diceRoll {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(1); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        .unit-type {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .enhancement {
+            color: #94a3b8;
+            font-style: italic;
+        }
+        
+        .dice-roll {
+            color: #22c55e;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(34, 197, 94, 0.3);
+        }
+        
+        .modifiers {
+            color: #60a5fa;
+        }
+        
+        .total {
+            color: #f97316;
+            font-weight: bold;
+            background: rgba(249, 115, 22, 0.2);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        
+        .battle-result {
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .battle-result.win {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(22, 163, 74, 0.2));
+            border: 2px solid #22c55e;
+            color: #16a34a;
+        }
+        
+        .battle-result.tie {
+            background: linear-gradient(135deg, rgba(107, 114, 128, 0.3), rgba(75, 85, 99, 0.2));
+            border: 2px solid #6b7280;
+            color: #4b5563;
+        }
+        
+        .winner {
+            color: #15803d;
+            text-shadow: 0 0 5px rgba(21, 128, 61, 0.3);
+        }
+        
+        .margin {
+            background: rgba(34, 197, 94, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .tie-score {
+            background: rgba(107, 114, 128, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .unit-status {
+            padding: 6px 12px;
+            margin: 3px 0;
+            border-radius: 6px;
+            border-left: 3px solid;
+        }
+        
+        .unit-status.rallied {
+            background: rgba(34, 197, 94, 0.15);
+            border-left-color: #22c55e;
+            color: #16a34a;
+        }
+        
+        .unit-status.routed {
+            background: rgba(239, 68, 68, 0.15);
+            border-left-color: #ef4444;
+            color: #dc2626;
+        }
+        
+        .unit-status.survived {
+            background: rgba(34, 197, 94, 0.15);
+            border-left-color: #22c55e;
+            color: #16a34a;
+        }
+        
+        .unit-status.destroyed {
+            background: rgba(120, 53, 15, 0.15);
+            border-left-color: #78350f;
+            color: #92400e;
+        }
+        
+        .unit {
+            font-weight: bold;
+        }
+        
+        .roll {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .status {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .battle-end-header {
+            background: linear-gradient(135deg, #7c3aed, #6366f1);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+        
+        .end-title {
+            font-size: 1.2em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .final-survivors {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(99, 102, 241, 0.1));
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+            border: 2px solid #7c3aed;
+        }
+        
+        .survivors-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #fbbf24;
+        }
+        
+        .army-a {
+            color: #a855f7;
+        }
+        
+        .army-b {
+            color: #ef4444;
+        }
+        
+        .count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .victory-announcement {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #92400e;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.4em;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            border: 3px solid #f59e0b;
+            animation: victoryPulse 2s ease-in-out infinite alternate, slideInScale 0.8s ease-out;
+        }
+        
+        @keyframes victoryPulse {
+            0% { transform: scale(1); box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4); }
+            100% { transform: scale(1.02); box-shadow: 0 12px 35px rgba(255, 215, 0, 0.6); }
+        }
+        
+        @keyframes slideInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .winner-name {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .wins-text {
+            color: #dc2626;
+            text-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+        }
+        
+        .action-report-header {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(31, 41, 55, 0.3);
+        }
+        
+        .report-title {
+            font-size: 1.2em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .casualty-section, .reroll-section, .general-fate-section, .final-summary-header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #6366f1;
+        }
+        
+        .section-title, .summary-title {
+            font-weight: bold;
+            color: #fbbf24;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .content-section {
+            margin: 8px 0;
+        }
+        
+        .general-bonus {
+            background: rgba(251, 191, 36, 0.15);
+            padding: 6px 12px;
+            margin: 3px 0;
+            border-radius: 6px;
+            border-left: 3px solid #fbbf24;
+        }
+        
+        .general-name {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .bonus {
+            color: #22c55e;
+            font-weight: bold;
+            background: rgba(34, 197, 94, 0.2);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        
+        .trait-bonus {
+            background: rgba(168, 85, 247, 0.15);
+            padding: 6px 12px;
+            margin: 3px 0;
+            border-radius: 6px;
+            border-left: 3px solid #a855f7;
+        }
+        
+        .trait-name {
+            color: #a855f7;
+            font-weight: bold;
+        }
+        
+        .trait-desc {
+            color: #cbd5e1;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+          .army-total {
+            background: rgba(59, 130, 246, 0.15);
+            padding: 8px 15px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+            font-weight: bold;
+        }
+        
+        .army-total.skirmish-total {
+            background: rgba(239, 68, 68, 0.15);
+            border-left-color: #ef4444;
+        }
+        
+        .army-total.Pitch-total {
+            background: rgba(59, 130, 246, 0.15);
+            border-left-color: #3b82f6;
+        }
+        
+        .army-total.Rally-total {
+            background: rgba(16, 185, 129, 0.15);
+            border-left-color: #10b981;
+        }
+        
+        .total-value {
+            color: #f97316;
+            font-size: 1.1em;
+            background: rgba(249, 115, 22, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .phase-comparison {
+            background: rgba(16, 185, 129, 0.15);
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+            text-align: center;
+        }
+        
+        .phase-winner {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.1));
+            padding: 8px 15px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border: 2px solid #22c55e;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .phase {
+            color: #16a34a;
+            text-transform: capitalize;
+        }
+        
+        .special-ability {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+            font-weight: bold;
+        }
+        
+        .special-ability.lancer {
+            background: rgba(245, 158, 11, 0.15);
+            border-left-color: #f59e0b;
+            color: #d97706;
+        }
+        
+        .ability-name {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+        
+        .ability-desc {
+            color: #92400e;
+        }
+        
+        .destruction-roll {
+            background: rgba(120, 53, 15, 0.15);
+            padding: 6px 12px;
+            margin: 3px 0;
+            border-radius: 6px;
+            border-left: 3px solid #78350f;
+        }
+        
+        .threshold {
+            color: #6b7280;
+            font-style: italic;
+        }
+        
+        .army-status {
+            background: rgba(59, 130, 246, 0.15);
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .active {
+            color: #22c55e;
+            font-weight: bold;
+        }
+        
+        .routed {
+            color: #ef4444;
+            font-weight: bold;
+        }
+        
+        .army-losses {
+            background: rgba(120, 53, 15, 0.15);
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 6px;
+            border-left: 3px solid #78350f;
+        }
+        
+        .loss-count {
+            color: #dc2626;
+            font-weight: bold;
+            background: rgba(220, 38, 38, 0.2);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        
+        .round-summary {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(79, 70, 229, 0.1));
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 2px solid #6366f1;
+            text-align: center;
+        }
+        
+        .summary-title {
+            font-weight: bold;
+            color: #fbbf24;
+            font-size: 1.1em;
+        }
+        
+        .draw-announcement {
+            background: linear-gradient(135deg, #6b7280, #9ca3af);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.4em;
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
+            border: 3px solid #4b5563;
+        }
+        
+        .draw-text {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+          .content-break {
+            margin: 15px 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+        
+        .general-level {
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+        
+        .skirmish-result {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.1));
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 2px solid #ef4444;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .result-title {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        
+        .vs-divider {
+            color: #ffd700;
+            font-weight: bold;
+            margin: 0 10px;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+        
+        .casualty-result {
+            background: rgba(120, 53, 15, 0.15);
+            padding: 6px 12px;
+            margin: 3px 0;
+            border-radius: 6px;
+            border-left: 3px solid #78350f;
+            color: #92400e;
+        }
+        
+        .casualty-count {
+            color: #dc2626;
+            font-weight: bold;
+            background: rgba(220, 38, 38, 0.2);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        
+        .rout-count {
+            background: rgba(245, 158, 11, 0.15);
+            padding: 6px 12px;
+            margin: 3px 0;
+            border-radius: 6px;
+            border-left: 3px solid #f59e0b;
+            color: #d97706;
+        }
+        
+        .routed-number {
+            color: #ef4444;
+            font-weight: bold;
+            background: rgba(239, 68, 68, 0.2);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        
+        /* Animation for new battle content */
+        .battle-content {
+            animation: slideInFromRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Hover effects for interactive elements */
+        .unit-roll:hover,
+        .unit-status:hover,
+        .army-total:hover,
+        .phase-comparison:hover {
+            transform: translateX(5px);
+            transition: transform 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Enhanced separator with gradient animation */
+        .battle-separator {
+            margin: 20px 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, #764ba2, #667eea, transparent);
+            border-radius: 2px;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        /* Pulse effect for victory announcements */
+        .victory-announcement {
+            animation: victoryPulse 2s ease-in-out infinite alternate, slideInScale 0.8s ease-out;
+        }
+        
+        @keyframes slideInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Enhanced dice roll animation */
+        .dice-roll {
+            display: inline-block;
+            animation: diceRoll 0.6s ease-out;
+        }
+        
+        @keyframes diceRoll {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(1); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        /* Collapsible sections for better organization */
+        .collapsible-section {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .collapsible-header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.3s ease;
+        }
+        
+        .collapsible-header:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .collapsible-content {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Status indicators with better visual feedback */
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-indicator.active {
+            background: #22c55e;
+            box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+        }
+        
+        .status-indicator.routed {
+            background: #ef4444;
+            box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+        }
+        
+        .status-indicator.destroyed {
+            background: #78350f;
+            box-shadow: 0 0 6px rgba(120, 53, 15, 0.5);
+        }
+        
+        /* Enhanced typography with better hierarchy */
+        .battle-content h3 {
+            color: #fbbf24;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .battle-content .highlight {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        /* Progress bars for army strength */
+        .strength-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease-out;
+        }
+        
+        .strength-fill.army-a {
+            background: linear-gradient(90deg, #a855f7, #c084fc);
+        }
+        
+        .strength-fill.army-b {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="nav-placeholder"></div>
+
+    <div id="app" class="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-8 fade-in">
+        <h1 class="text-4xl font-bold mb-6 text-center">
+            🏰 Mock Battle Simulator 🏰
+        </h1>
+
+        <!-- Battle Setup -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- Army A -->
+            <div class="army-section p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4 text-purple-700">🛡️ Army A Setup 🛡️</h2>
+                
+                <!-- Army A Name -->
+                <div class="mb-6">
+                    <label for="armyAName" class="block text-sm font-medium mb-2">Army A Name:</label>
+                    <input id="armyAName" type="text" placeholder="Enter army name" class="w-full border p-3 rounded" />
+                </div>
+                
+                <!-- General A Setup -->
+                <div class="mb-6 p-4 bg-white rounded-lg border border-purple-200">
+                    <h4 class="font-semibold mb-3 text-purple-600">General A</h4>
+                    <label for="generalAName" class="block text-sm font-medium mb-2">General A Name:</label>
+                    <input id="generalAName" type="text" placeholder="Enter general name" class="w-full border p-2 rounded mb-3" />
+                    
+                    <div class="flex items-start gap-4">
+                        <img id="generalImageA" src="images/general1.png" alt="General A" class="w-20 h-20 max-w-[300px] max-h-[300px] rounded-full border-3 border-purple-500 object-cover shadow-lg flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <label for="generalImageSelectA" class="block text-xs font-medium mb-2">General A Image:</label>
+                            <select id="generalImageSelectA" class="border p-2 rounded w-full text-sm mb-2">
+                                <option value="images/general1.png">General A (Default)</option>
+                                <option value="images/general2.png">General B</option>
+                                <option value="custom">Custom Image...</option>
+                            </select>
+                            <input type="file" id="customImageA" accept="image/*" class="hidden">
+                            <input type="url" id="customUrlA" placeholder="Or enter image URL..." class="border p-2 rounded w-full text-sm mb-2 hidden">
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="generalLevelA" class="block text-sm font-medium mb-1">Level:</label>
+                                    <input id="generalLevelA" type="number" min="1" max="10" value="1" class="border p-2 rounded w-full text-sm" />
+                                </div>
+                                <div>
+                                    <label for="generalTraitA" class="block text-sm font-medium mb-1">Trait:</label>
+                                    <select id="generalTraitA" class="border p-2 rounded w-full text-sm">
+                                        <option value="None">None</option>
+                                        <option value="Ambitious">Ambitious</option>
+                                        <option value="Bold">Bold</option>
+                                        <option value="Brilliant">Brilliant</option>
+                                        <option value="Brutal">Brutal</option>
+                                        <option value="Cautious">Cautious</option>
+                                        <option value="Chivalrous">Chivalrous</option>
+                                        <option value="Confident">Confident</option>
+                                        <option value="Defiant">Defiant</option>
+                                        <option value="Disciplined">Disciplined</option>
+                                        <option value="Dogged">Dogged</option>
+                                        <option value="Heroic">Heroic</option>
+                                        <option value="Inspiring">Inspiring</option>
+                                        <option value="Lucky">Lucky</option>
+                                        <option value="Mariner">Mariner</option>
+                                        <option value="Merciless">Merciless</option>
+                                        <option value="Prodigious">Prodigious</option>
+                                        <option value="Relentless">Relentless</option>
+                                        <option value="Resolute">Resolute</option>
+                                        <option value="Wary">Wary</option>
+                                        <option value="Zealous">Zealous</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Army A Unit Controls -->
+                <div class="border-t-2 border-purple-200 pt-4 bg-white rounded-lg p-4">
+                    <h4 class="font-semibold mb-3 text-purple-600">Add Units to Army A:</h4>
+                    <div class="flex items-center gap-3 mb-3 flex-wrap">
+                        <select id="unitTypeA" class="border p-2 rounded text-sm">
+                            <option value="cav">Cavalry</option>
+                            <option value="heavy">Heavy Infantry</option>
+                            <option value="light">Light Infantry</option>
+                            <option value="ranged">Ranged</option>
+                            <option value="support">Support</option>
+                        </select>
+                        <select id="enhancementA" class="border p-2 rounded text-sm">
+                            <option value="">No Enhancement</option>
+                            <optgroup label="Cavalry">
+                                <option value="Life Guard">Life Guard</option>
+                                <option value="Lancers">Lancers</option>
+                                <option value="Dragoons">Dragoons</option>
+                            </optgroup>
+                            <optgroup label="Heavy Infantry">
+                                <option value="Artillery Team">Artillery Team</option>
+                                <option value="Grenadiers">Grenadiers</option>
+                                <option value="Stormtroopers">Stormtroopers</option>
+                            </optgroup>
+                            <optgroup label="Light Infantry">
+                                <option value="Rangers">Rangers</option>
+                                <option value="Assault Team">Assault Team</option>
+                                <option value="Commando">Commando</option>
+                            </optgroup>
+                            <optgroup label="Ranged">
+                                <option value="Sharpshooters">Sharpshooters</option>
+                                <option value="Mobile Platforms">Mobile Platforms</option>
+                                <option value="Mortar Team">Mortar Team</option>
+                            </optgroup>
+                            <optgroup label="Support">
+                                <option value="Field Hospital">Field Hospital</option>
+                                <option value="Combat Engineers">Combat Engineers</option>
+                                <option value="Officer Corps">Officer Corps</option>
+                            </optgroup>
+                            <optgroup label="Universal">
+                                <option value="Sentry Team">Sentry Team</option>
+                                <option value="Marines">Marines</option>
+                            </optgroup>
+                        </select>
+                        <input id="unitCountA" type="number" min="1" max="50" value="1" class="border p-2 rounded w-20 text-sm" />
+                        <button id="addUnitA" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm font-medium">Add Units</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Army B -->
+            <div class="army-section p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4 text-red-700">⚔️ Army B Setup ⚔️</h2>
+                
+                <!-- Army B Name -->
+                <div class="mb-6">
+                    <label for="armyBName" class="block text-sm font-medium mb-2">Army B Name:</label>
+                    <input id="armyBName" type="text" placeholder="Enter army name" class="w-full border p-3 rounded" />
+                </div>
+                
+                <!-- General B Setup -->
+                <div class="mb-6 p-4 bg-white rounded-lg border border-red-200">
+                    <h4 class="font-semibold mb-3 text-red-600">General B</h4>
+                    <label for="generalBName" class="block text-sm font-medium mb-2">General B Name:</label>
+                    <input id="generalBName" type="text" placeholder="Enter general name" class="w-full border p-2 rounded mb-3" />
+                    
+                    <div class="flex items-start gap-4">
+                        <img id="generalImageB" src="images/general2.png" alt="General B" class="w-20 h-20 max-w-[300px] max-h-[300px] rounded-full border-3 border-red-500 object-cover shadow-lg flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <label for="generalImageSelectB" class="block text-xs font-medium mb-2">General B Image:</label>
+                            <select id="generalImageSelectB" class="border p-2 rounded w-full text-sm mb-2">
+                                <option value="images/general1.png">General A</option>
+                                <option value="images/general2.png" selected>General B (Default)</option>
+                                <option value="custom">Custom Image...</option>
+                            </select>
+                            <input type="file" id="customImageB" accept="image/*" class="hidden">
+                            <input type="url" id="customUrlB" placeholder="Or enter image URL..." class="border p-2 rounded w-full text-sm mb-2 hidden">
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="generalLevelB" class="block text-sm font-medium mb-1">Level:</label>
+                                    <input id="generalLevelB" type="number" min="1" max="10" value="1" class="border p-2 rounded w-full text-sm" />
+                                </div>
+                                <div>
+                                    <label for="generalTraitB" class="block text-sm font-medium mb-1">Trait:</label>
+                                    <select id="generalTraitB" class="border p-2 rounded w-full text-sm">
+                                        <option value="None">None</option>
+                                        <option value="Ambitious">Ambitious</option>
+                                        <option value="Bold">Bold</option>
+                                        <option value="Brilliant">Brilliant</option>
+                                        <option value="Brutal">Brutal</option>
+                                        <option value="Cautious">Cautious</option>
+                                        <option value="Chivalrous">Chivalrous</option>
+                                        <option value="Confident">Confident</option>
+                                        <option value="Defiant">Defiant</option>
+                                        <option value="Disciplined">Disciplined</option>
+                                        <option value="Dogged">Dogged</option>
+                                        <option value="Heroic">Heroic</option>
+                                        <option value="Inspiring">Inspiring</option>
+                                        <option value="Lucky">Lucky</option>
+                                        <option value="Mariner">Mariner</option>
+                                        <option value="Merciless">Merciless</option>
+                                        <option value="Prodigious">Prodigious</option>
+                                        <option value="Relentless">Relentless</option>
+                                        <option value="Resolute">Resolute</option>
+                                        <option value="Wary">Wary</option>
+                                        <option value="Zealous">Zealous</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Army B Unit Controls -->
+                <div class="border-t-2 border-red-200 pt-4 bg-white rounded-lg p-4">
+                    <h4 class="font-semibold mb-3 text-red-600">Add Units to Army B:</h4>
+                    <div class="flex items-center gap-3 mb-3 flex-wrap">
+                        <select id="unitTypeB" class="border p-2 rounded text-sm">
+                            <option value="cav">Cavalry</option>
+                            <option value="heavy">Heavy Infantry</option>
+                            <option value="light">Light Infantry</option>
+                            <option value="ranged">Ranged</option>
+                            <option value="support">Support</option>
+                        </select>
+                        <select id="enhancementB" class="border p-2 rounded text-sm">
+                            <option value="">No Enhancement</option>
+                            <optgroup label="Cavalry">
+                                <option value="Life Guard">Life Guard</option>
+                                <option value="Lancers">Lancers</option>
+                                <option value="Dragoons">Dragoons</option>
+                            </optgroup>
+                            <optgroup label="Heavy Infantry">
+                                <option value="Artillery Team">Artillery Team</option>
+                                <option value="Grenadiers">Grenadiers</option>
+                                <option value="Stormtroopers">Stormtroopers</option>
+                            </optgroup>
+                            <optgroup label="Light Infantry">
+                                <option value="Rangers">Rangers</option>
+                                <option value="Assault Team">Assault Team</option>
+                                <option value="Commando">Commando</option>
+                            </optgroup>
+                            <optgroup label="Ranged">
+                                <option value="Sharpshooters">Sharpshooters</option>
+                                <option value="Mobile Platforms">Mobile Platforms</option>
+                                <option value="Mortar Team">Mortar Team</option>
+                            </optgroup>
+                            <optgroup label="Support">
+                                <option value="Field Hospital">Field Hospital</option>
+                                <option value="Combat Engineers">Combat Engineers</option>
+                                <option value="Officer Corps">Officer Corps</option>
+                            </optgroup>
+                            <optgroup label="Universal">
+                                <option value="Sentry Team">Sentry Team</option>
+                                <option value="Marines">Marines</option>
+                            </optgroup>
+                        </select>
+                        <input id="unitCountB" type="number" min="1" max="50" value="1" class="border p-2 rounded w-20 text-sm" />
+                        <button id="addUnitB" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm font-medium">Add Units</button>
+                    </div>
+                </div>
+            </div>
+        </div>        <!-- Army Display Tables -->
+        <div class="flex flex-col lg:flex-row gap-8 mb-8 mt-8">
+            <!-- Army A Display (Left Side) -->
+            <div class="flex-1 w-full lg:w-1/2">
+                <div id="armyA" class="army-section p-6 rounded shadow-lg border-2 border-purple-300 bg-purple-50">
+                    <h2 class="text-2xl font-semibold mb-6 text-purple-700">🛡️ Army A Units (Left) 🛡️</h2>
+                    <div class="bg-white rounded-lg p-4">
+                        <table class="table-auto w-full border-collapse bg-white">
+                            <thead>
+                                <tr class="bg-purple-200 text-purple-800">
+                                    <th class="p-3 text-left">Unit Type</th>
+                                    <th class="p-3 text-left">Enhancement</th>
+                                    <th class="p-3 text-left">Skirmisher</th>
+                                    <th class="p-3 text-left">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="armyAList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Army B Display (Right Side) -->
+            <div class="flex-1 w-full lg:w-1/2">
+                <div id="armyB" class="army-section p-6 rounded shadow-lg border-2 border-red-300 bg-red-50">
+                    <h2 class="text-2xl font-semibold mb-6 text-red-700">⚔️ Army B Units (Right) ⚔️</h2>
+                    <div class="bg-white rounded-lg p-4">
+                        <table class="table-auto w-full border-collapse bg-white">
+                            <thead>
+                                <tr class="bg-red-200 text-red-800">
+                                    <th class="p-3 text-left">Unit Type</th>
+                                    <th class="p-3 text-left">Enhancement</th>
+                                    <th class="p-3 text-left">Skirmisher</th>
+                                    <th class="p-3 text-left">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="armyBList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battle Controls Section -->
+        <div class="text-center mb-6 p-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg text-white">
+            <label for="battleTypeDisplay" class="mr-3 font-semibold">⚔️ Battle Type:</label>
+            <select id="battleTypeDisplay" class="border-2 border-white p-2 rounded-lg text-gray-800 font-medium">
+                <option value="open">🌄 Open Battle</option>
+                <option value="siege">🏰 Siege</option>
+            </select>
+        </div>
+        
+        <!-- Siege options: city tier selection -->
+        <div id="siegeOptions" class="text-center mb-6 p-4 bg-gradient-to-r from-orange-400 to-red-400 rounded-lg text-white hidden">
+            <label for="cityTierDisplay" class="mr-3 font-semibold">🏰 City Tier:</label>
+            <select id="cityTierDisplay" class="border-2 border-white p-2 rounded-lg text-gray-800 font-medium">
+                <option value="1">🏘️ Tier 1</option>
+                <option value="2">🏙️ Tier 2</option>
+                <option value="3">🏛️ Tier 3</option>
+            </select>
+        </div>
+
+        <div class="text-center mb-6">
+            <button id="simulateBattle" class="px-8 py-4 rounded-lg mr-4 text-lg font-bold shadow-lg">
+                ⚔️ Simulate Battle ⚔️
+            </button>
+            <button id="newBattle" class="px-8 py-4 rounded-lg text-lg font-bold shadow-lg">
+                🆕 New Battle 🆕
+            </button>
+        </div>
+        <div id="battleResult" class="text-center text-xl font-medium mb-4 p-4 bg-gray-100 rounded min-h-[100px] max-h-[500px] overflow-y-auto">
+            <p class="text-gray-500">Set up your armies and click "Simulate Battle" to begin...</p>
+        </div>
+
+        <!-- Battle Report Generation -->
+        <div class="text-center mb-6">
+            <button id="generateReport" class="px-6 py-3 bg-green-500 text-white rounded-lg font-bold shadow-lg hover:bg-green-600 transition-colors hidden">
+                📊 Generate Battle Report Image 📊
+            </button>
+        </div>        <!-- Hidden canvas for image generation -->
+        <canvas id="battleCanvas" width="1400" height="1400" style="display: none;"></canvas>
+
+        <audio id="bgMusic" src="background-music.mp3" loop></audio>
+        <button id="toggleMusic" class="fixed bottom-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg w-14 h-14 flex items-center justify-center">
+            <i class="fas fa-play"></i>
+        </button>
+    </div>    <script src="battle.js"></script>
+    <script>
+    'use strict';
+    
+    // =============================================================================
+    // BATTLE SIMULATOR FRONTEND - PROFESSIONAL EDITION
+    // =============================================================================
+    
+    /**
+     * Application configuration and constants
+     */
+    const APP_CONFIG = {
+        armies: {
+            A: [],
+            B: []
+        },
+        enhancementOptions: {
+            cav: ['None', 'Life Guard', 'Lancers', 'Dragoons'],
+            heavy: ['None', 'Artillery Team', 'Grenadiers', 'Stormtroopers'],
+            light: ['None', 'Rangers', 'Assault Team', 'Commando'],
+            ranged: ['None', 'Sharpshooters', 'Mobile Platforms', 'Mortar Team'],
+            support: ['None', 'Field Hospital', 'Combat Engineers', 'Officer Corps'],
+            universal: ['Sentry Team', 'Marines']
+        }
+    };
+    
+    // Legacy global variables for backward compatibility
+    window.armyA = APP_CONFIG.armies.A;
+    window.armyB = APP_CONFIG.armies.B;
+    
+    /**
+     * Wait for DOM to be fully loaded before initializing application
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeApplication();
+    });
+    
+    /**
+     * Main application initialization function
+     */
+    function initializeApplication() {
+        setupEnhancementOptions();
+        setupArmyControllers();
+        setupBattleTypeHandlers();
+        setupGeneralImageHandlers();
+        setupBattleSimulation();
+        setupMusicControls();
+        setupSampleArmies();
+    }
+
+    /**
+     * Setup sample army dropdown and loading functionality
+     */
+    function setupSampleArmies() {
+        const sampleArmySelect = document.getElementById('sampleArmySelect');
+        const loadSampleBtn = document.getElementById('loadSampleArmy');
+        
+        if (!sampleArmySelect || !loadSampleBtn) {
+            console.warn('Sample army elements not found');
+            return;
+        }
+
+        // Populate dropdown with sample armies
+        if (window.SAMPLE_ARMIES && window.SAMPLE_ARMIES.length > 0) {
+            window.SAMPLE_ARMIES.forEach((army, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${army.name} (Size: ${army.units.length})`;
+                sampleArmySelect.appendChild(option);
+            });
+        }
+
+        // Load sample army button event
+        loadSampleBtn.addEventListener('click', function() {
+            const selectedIndex = parseInt(sampleArmySelect.value);
+            if (selectedIndex === -1 || !window.SAMPLE_ARMIES[selectedIndex]) return;
+
+            const selectedArmy = window.SAMPLE_ARMIES[selectedIndex];
+            
+            // Set Army B name and general info
+            document.getElementById('armyBName').value = selectedArmy.name;
+            document.getElementById('generalLevelB').value = selectedArmy.general.level;
+            document.getElementById('generalTraitB').value = selectedArmy.general.trait;
+            
+            // Clear existing Army B units
+            window.armyB.length = 0;
+            
+            // Add units from selected army
+            selectedArmy.units.forEach(unit => {
+                window.armyB.push({
+                    type: unit.type,
+                    enhancement: unit.enhancement || 'None'
+                });
+            });
+            
+            // Update the display
+            const armyBList = document.getElementById('armyBList');
+            if (armyBList && window.renderArmy) {
+                window.renderArmy(armyBList, window.armyB);
+            }
+            
+            console.log('Loaded sample army:', selectedArmy.name, 'Units:', window.armyB);
+        });
+    }
+
+    /**
+     * Setup general image handlers for both generals
+     */
+    function setupGeneralImageHandlers() {
+        // General A image selection
+        const generalImageSelectA = document.getElementById('generalImageSelectA');
+        const generalImageA = document.getElementById('generalImageA');
+        const customImageA = document.getElementById('customImageA');
+        const customUrlA = document.getElementById('customUrlA');
+        
+        if (generalImageSelectA && generalImageA) {
+            generalImageSelectA.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customImageA.classList.remove('hidden');
+                    customUrlA.classList.remove('hidden');
+                } else {
+                    customImageA.classList.add('hidden');
+                    customUrlA.classList.add('hidden');
+                    generalImageA.src = this.value;
+                }
+            });
+            
+            // Handle file upload for General A
+            if (customImageA) {
+                customImageA.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            generalImageA.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            // Handle URL input for General A
+            if (customUrlA) {
+                customUrlA.addEventListener('input', function() {
+                    if (this.value.trim()) {
+                        generalImageA.src = this.value.trim();
+                    }
+                });
+            }
+        }
+        
+        // General B image selection
+        const generalImageSelectB = document.getElementById('generalImageSelectB');
+        const generalImageB = document.getElementById('generalImageB');
+        const customImageB = document.getElementById('customImageB');
+        const customUrlB = document.getElementById('customUrlB');
+        
+        if (generalImageSelectB && generalImageB) {
+            generalImageSelectB.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customImageB.classList.remove('hidden');
+                    customUrlB.classList.remove('hidden');
+                } else {
+                    customImageB.classList.add('hidden');
+                    customUrlB.classList.add('hidden');
+                    generalImageB.src = this.value;
+                }
+            });
+            
+            // Handle file upload for General B
+            if (customImageB) {
+                customImageB.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            generalImageB.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            // Handle URL input for General B
+            if (customUrlB) {
+                customUrlB.addEventListener('input', function() {
+                    if (this.value.trim()) {
+                        generalImageB.src = this.value.trim();
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Setup battle type handlers
+     */
+    function setupBattleTypeHandlers() {
+        // This function can be used for battle type specific logic
+    }
+
+    /**
+     * Setup music controls
+     */
+    function setupMusicControls() {
+        const music = document.getElementById('bgMusic');
+        const toggleBtn = document.getElementById('toggleMusic');
+        if (toggleBtn && music) {
+            toggleBtn.addEventListener('click', () => {
+                const icon = toggleBtn.querySelector('i');
+                if (music.paused) {
+                    music.play().catch(e => console.error("Audio play failed:", e));
+                    icon.className = 'fas fa-pause';
+                } else {
+                    music.pause();
+                    icon.className = 'fas fa-play';
+                }
+            });
+        }
+    }    /**
+     * Setup battle simulation
+     */
+    function setupBattleSimulation() {        // Setup generate battle report button
+        const generateReportBtn = document.getElementById('generateReport');
+        if ( generateReportBtn) {
+            generateReportBtn.addEventListener('click', function() {
+                if (window.generateBattleReport && typeof window.generateBattleReport === 'function') {
+                    // Show loading state
+                    const originalText = this.textContent;
+                    this.textContent = '📊 Generating Report... 📊';
+                    this.disabled = true;
+                    
+                    // Generate report with a small delay to show loading state
+                    setTimeout(() => {
+                        try {
+                            window.generateBattleReport();
+                            this.textContent = '✅ Report Downloaded! 📊';
+                            setTimeout(() => {
+                                this.textContent = originalText;
+                                this.disabled = false;
+                            }, 2000);
+                        } catch (error) {
+                            console.error('Error generating report:', error);
+                            this.textContent = '❌ Report Error 📊';
+                            setTimeout(() => {
+                                this.textContent = originalText;
+                                this.disabled = false;
+                            }, 2000);
+                        }
+                    }, 100);
+                } else {
+                    console.error('generateBattleReport function not available');
+                    alert('Battle report generation is not available. Please ensure battle.js is loaded.');
+                }
+            });
+        }
+    }
+
+    /**
+     * Setup enhancement dropdown options based on unit type
+     */
+    function setupEnhancementOptions() {
+        const unitTypeA = document.getElementById('unitTypeA');
+        const enhancementA = document.getElementById('enhancementA');
+        const unitTypeB = document.getElementById('unitTypeB');
+        const enhancementB = document.getElementById('enhancementB');
+
+        // Initial population and event listeners
+        populateEnhancements(unitTypeA, enhancementA);
+        populateEnhancements(unitTypeB, enhancementB);
+        
+        unitTypeA.addEventListener('change', () => populateEnhancements(unitTypeA, enhancementA));
+        unitTypeB.addEventListener('change', () => populateEnhancements(unitTypeB, enhancementB));
+    }
+
+    /**
+     * Populate enhancement options based on selected unit type
+     * @param {HTMLElement} unitTypeEl - Unit type select element
+     * @param {HTMLElement} enhancementEl - Enhancement select element
+     */
+    function populateEnhancements(unitTypeEl, enhancementEl) {
+        const selectedType = unitTypeEl.value;
+        const enhancementOptions = APP_CONFIG.enhancementOptions;
+        
+        if (!enhancementOptions[selectedType]) {
+            enhancementEl.style.display = 'none';
+            enhancementEl.innerHTML = '';
+            return;
+        }
+        
+        const options = [...enhancementOptions[selectedType], ...enhancementOptions.universal];
+               enhancementEl.innerHTML = options.map(e => `<option value="${e}">${e}</option>`).join('');
+        enhancementEl.style.display = '';
+    }
+
+    /**
+     * Setup army controllers for adding/removing units
+     */
+    function setupArmyControllers() {
+        unitTypeA.addEventListener('change', () => populateEnhancements(unitTypeA, enhancementA));
+        unitTypeB.addEventListener('change', () => populateEnhancements(unitTypeB, enhancementB));
+
+        // Toggle siege options visibility
+        const battleTypeEl = document.getElementById('battleType');
+        const siegeOpts = document.getElementById('siegeOptions');
+        battleTypeEl.addEventListener('change', () => {
+            siegeOpts.classList.toggle('hidden', battleTypeEl.value !== 'siege');
+        });
+
+        // Music toggle
+        const music = document.getElementById('bgMusic');
+        const toggleBtn = document.getElementById('toggleMusic');
+        if (toggleBtn && music) {
+            toggleBtn.addEventListener('click', () => {
+                const icon = toggleBtn.querySelector('i');
+                if (music.paused) {
+                    music.play().catch(e => console.error("Audio play failed:", e));
+                    icon.className = 'fas fa-pause';
+                } else {
+                    music.pause();
+                    icon.className = 'fas fa-play';
+                }
+            });
+        }
+
+        // Get battle result div for both buttons
+        const battleResultDiv = document.getElementById('battleResult');
+
+        // New Battle button
+        const newBattleBtn = document.getElementById('newBattle');
+        if (newBattleBtn && battleResultDiv) {
+            newBattleBtn.addEventListener('click', () => {
+                battleResultDiv.innerHTML = '<p class="text-gray-500">Set up your armies and click "Simulate Battle" to begin...</p>';
+            });
+        }        // Simulate Battle button
+        const simulateBattleBtn = document.getElementById('simulateBattle');
+        if (simulateBattleBtn && battleResultDiv) {
+            simulateBattleBtn.addEventListener('click', async () => {
+                console.log('Simulate battle button clicked');
+                
+                if (!window.armyA?.length || (!window.armyB?.length && document.getElementById('battleType').value === 'open')) {
+                    battleResultDiv.textContent = 'Both armies must have at least one unit.';
+                    return;
+                }
+                
+                // Check if simulateBattle function exists
+                if (typeof window.simulateBattle !== 'function') {
+                    console.error('simulateBattle function not found. Available window properties:', Object.keys(window).filter(k => k.includes('simulate')));
+                    battleResultDiv.innerHTML = '<p class="text-red-500">❌ Error: Battle simulation function not loaded. Please refresh the page and try again.</p>';
+                    return;
+                }
+                
+                // Disable button during simulation
+                simulateBattleBtn.disabled = true;
+                simulateBattleBtn.textContent = 'Battle in Progress...';
+                  // Get user input names
+                const battleLocationInput = document.getElementById('battleLocation').value.trim();
+                const armyANameInput = document.getElementById('armyAName').value.trim();
+                const armyBNameInput = document.getElementById('armyBName').value.trim();
+                const generalANameInput = document.getElementById('generalAName').value.trim();
+                const generalBNameInput = document.getElementById('generalBName').value.trim();
+                
+                const genLevelA = parseInt(document.getElementById('generalLevelA').value);
+                const genTraitA = document.getElementById('generalTraitA').value;
+                const genLevelB = parseInt(document.getElementById('generalLevelB').value);
+                const genTraitB = document.getElementById('generalTraitB').value;
+                const battleType = document.getElementById('battleType').value;
+                const cityTier = battleType === 'siege' ? parseInt(document.getElementById('cityTier').value) : null;
+                
+                try {
+                    const result = await window.simulateBattle(
+                        window.armyA, window.armyB,
+                        { level: genLevelA, trait: genTraitA, name: generalANameInput || 'General A' },
+                        { level: genLevelB, trait: genTraitB, name: generalBNameInput || 'General B' },
+                        battleType, cityTier,
+                                               {
+                            battleLocation: battleLocationInput,
+                            armyAName: armyANameInput,
+                            armyBName: armyBNameInput,
+                            generalAName: generalANameInput,
+                            generalBName: generalBNameInput
+                        }
+                    );
+                    // Result is already displayed progressively, so we don't need to set innerHTML again
+                } catch (error) {
+                    battleResultDiv.innerHTML = `<pre class="text-left whitespace-pre-wrap">Error: ${error.message}</pre>`;
+                } finally {
+                    // Re-enable button
+                    simulateBattleBtn.disabled = false;
+                    simulateBattleBtn.textContent = 'Simulate Battle';                }
+            });        }
+        
+        // Synchronize battle type selectors
+        const battleTypeMain = document.getElementById('battleType');
+        const battleTypeDisplay = document.getElementById('battleTypeDisplay');
+        const cityTierMain = document.getElementById('cityTier');
+        const cityTierDisplay = document.getElementById('cityTierDisplay');
+        const siegeOptions = document.getElementById('siegeOptions');
+        const cityTierDiv = document.getElementById('cityTierDiv');
+        
+        // Sync main battle type to display battle type
+        if (battleTypeMain && battleTypeDisplay) {
+            battleTypeMain.addEventListener('change', function() {
+                battleTypeDisplay.value = this.value;
+                if (this.value === 'siege') {
+                    if (siegeOptions) siegeOptions.classList.remove('hidden');
+                    if (cityTierDiv) cityTierDiv.classList.remove('hidden');
+                } else {
+                    if (siegeOptions) siegeOptions.classList.add('hidden');
+                    if (cityTierDiv) cityTierDiv.classList.add('hidden');
+                }
+            });
+            
+            battleTypeDisplay.addEventListener('change', function() {
+                battleTypeMain.value = this.value;
+                if (this.value === 'siege') {
+                    if (siegeOptions) siegeOptions.classList.remove('hidden');
+                    if (cityTierDiv) cityTierDiv.classList.remove('hidden');
+                } else {
+                    if (siegeOptions) siegeOptions.classList.add('hidden');
+                    if (cityTierDiv) cityTierDiv.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Sync city tier selectors
+        if (cityTierMain && cityTierDisplay) {
+            cityTierMain.addEventListener('change', function() {
+                cityTierDisplay.value = this.value;
+            });
+            
+            cityTierDisplay.addEventListener('change', function() {
+                cityTierMain.value = this.value;
+            });
+        }
+
+        // Sample army loading
+        const sampleArmySelect = document.getElementById('sampleArmySelect');
+        const loadSampleArmyBtn = document.getElementById('loadSampleArmy');
+        loadSampleArmyBtn.addEventListener('click', () => {
+            const selectedValue = sampleArmySelect.value;
+            if (selectedValue === '-1') return; // No valid selection
+            
+            // Load sample army data (mocked for this example)
+            const sampleArmies = {
+                '1': { name: 'Barbarians', units: [{ type: 'cav', count: 10 }, { type: 'light', count: 50 }] },
+                '2': { name: 'Knights', units: [{ type: 'heavy', count: 20 }, { type: 'cav', count: 15 }] },
+                '3': { name: 'Archers', units: [{ type: 'ranged', count: 30 }, { type: 'support', count: 5 }] },
+                '4': { name: 'Samurai', units: [{ type: 'heavy', count: 10 }, { type: 'light', count: 40 }] },
+                '5': { name: 'Vikings', units: [{ type: 'cav', count: 25 }, { type: 'ranged', count: 10 }] },
+                '6': { name: 'Spartans', units: [{ type: 'heavy', count: 15 }, { type: 'light', count: 35 }] },
+                '7': { name: 'Mongols', units: [{ type: 'cav', count: 20 }, { type: 'ranged', count: 20 }] },
+                '8': { name: 'Persians', units: [{ type: 'heavy', count: 10 }, { type: 'support', count: 10 }] },
+                '9': { name: 'Chinese', units: [{ type: 'light', count: 30 }, { type: 'ranged', count: 15 }] },
+                '10': { name: 'Indians', units: [{ type: 'cav', count: 15 }, { type: 'heavy', count: 10 }] }
+            };
+            
+            const selectedArmy = sampleArmies[selectedValue];
+            if (selectedArmy) {
+                // Clear existing units
+                window.armyB = [];
+                
+                // Add sample units to Army B
+                selectedArmy.units.forEach(unit => {
+                    window.armyB.push({ type: unit.type, count: unit.count });
+                });
+                
+                // Update UI (you may want to create a separate function for this)
+                const armyBList = document.getElementById('armyBList');
+                armyBList.innerHTML = ''; // Clear existing rows
+                window.armyB.forEach((unit, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="border px-2 py-1"><img src="images/${unit.type}.png" alt="${unit.type}" class="w-10 h-10 object-cover rounded"></td>
+                        <td class="border px-2 py-1 capitalize">${unit.type}</td>
+                        <td class="border px-2 py-1">${unit.count}</td>
+                        <td class="border px-2 py-1">
+                            <button class="removeUnitA px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600" data-index="${index}">Remove</button>
+                        </td>
+                    `;
+                    armyBList.appendChild(row);
+                });
+                
+                // Optionally, you can auto-select this army in the setup
+                document.getElementById('armyBName').value = selectedArmy.name;
+            }
+        });
+    }
+      // Debug: Check if battle.js functions are loaded
+    window.addEventListener('load', function() {
+        console.log('Page fully loaded');
+        console.log('simulateBattle function available:', typeof window.simulateBattle === 'function');
+        if (typeof window.simulateBattle !== 'function') {
+            console.error('Battle.js not loaded properly');
+        }
+        
+    });
+    </script>
+    <!-- Modal for interactive prompts -->
+<div id="interactiveModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+        <h3 id="modalTitle" class="text-xl font-bold mb-4"></h3>
+        <div id="modalMessage" class="mb-4"></div>
+        <div id="modalChoices" class="flex justify-end gap-4 flex-wrap">
+            <!-- Buttons or inputs will be added here dynamically -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Navigation loader
+    fetch('nav.html')
+        .then(res => res.text())
+        .then(text => {
+            document.getElementById('nav-placeholder').innerHTML = text;
+            var script = document.createElement('script');
+            script.innerHTML = `
+                document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                    var menu = document.getElementById('mobile-menu');
+                    menu.classList.toggle('hidden');
+                });
+            `;
+            document.body.appendChild(script);
+        });
+
+    // Intersection Observer for fade-in animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => {
+        observer.observe(el);
+    });
+</script>
+</body>
+</html>

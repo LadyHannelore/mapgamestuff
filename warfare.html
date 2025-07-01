@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warfare - Map Game Mechanics</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100">
+    <div id="nav-placeholder"></div>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-8 glassmorphism p-8 rounded-lg">
+            <h1 class="text-5xl font-bold">Warfare</h1>
+        </div>
+
+        <!-- The Basics Section -->
+        <div id="basics" class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">The Basics</h2>
+            <p class="mb-4">War is fought between 2 or more nations with a valid Justification. Wars are fought with Brigades, which act as individual units. Generals allow you to combine brigades into an Army.</p>
+            <ul class="list-disc list-inside space-y-2 mb-4">
+                <li><strong>Action Cycle:</strong> Wars run on a 3-day action cycle (Tue-Thu, Fri-Sun) that determines allowed actions (organization, movement, combat).</li>
+                <li><strong>Brigade Cap:</strong> Starts at 2 and increases with cities (T1: +1, T2: +3, T3: +5).</li>
+                <li><strong>War College:</strong> Grants General benefits and levels up with General retirements and won wars.</li>
+                <li><strong>Peace Treaties:</strong> End wars and must follow justification stipulations. Carry a 2-week non-aggression pact.</li>
+                <li><strong>War Room:</strong> A private channel for all your warfare decisions.</li>
+            </ul>
+        </div>
+
+        <!-- War Justifications Section -->
+        <div id="justifications" class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">War Justifications</h2>
+            <p class="mb-4">Every offensive war requires a valid justification. Each has specific requirements, victory/defeat conditions, and peace terms.</p>
+            <p class="mb-4">When taking tiles in a peace deal, city tiles have a higher cost:</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li><strong>Tier 1 City:</strong> Costs 2 tiles.</li>
+                <li><strong>Tier 2 City:</strong> Costs 3 tiles.</li>
+                <li><strong>Tier 3 City:</strong> Costs 4 tiles.</li>
+            </ul>
+        </div>
+
+        <!-- Brigades Section -->
+        <div id="brigades" class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Brigades</h2>
+            <p class="mb-4">Brigades are your standard military units. They can be built at any city for 2 food and 1 metal, or 40 silver.</p>
+            <h3 class="text-2xl font-semibold mb-2">Brigade Types</h3>
+            <ul class="list-disc list-inside space-y-2 mb-4">
+                <li>🐴 <strong>Cavalry:</strong> +1 Skirmish, +1 Pitch, 5 Movement</li>
+                <li>⚔️ <strong>Heavy:</strong> +2 Defense, +1 Pitch, +1 Rally, 3 Movement</li>
+                <li>🪓 <strong>Light:</strong> +2 Skirmish, +1 Rally, 4 Movement</li>
+                <li>🏹 <strong>Ranged:</strong> +2 Defense, +1 Pitch, 4 Movement</li>
+                <li>🛡️ <strong>Support:</strong> +2 Defense, +1 Rally, 4 Movement</li>
+            </ul>
+            <h3 class="text-2xl font-semibold mb-2">Brigade Enhancements</h3>
+            <p class="mb-4">Each brigade can have one enhancement, costing 40 silver or the specified resources. Universal enhancements are available for all brigade types.</p>
+            
+            <div class="space-y-6">
+                <div class="p-4 rounded-lg bg-gray-50">
+                    <h4 class="text-xl font-bold mb-2">🐴 Cavalry (1 food, 1 gem, 1 metal)</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><strong>Life Guard:</strong> +2 Rally. This Brigade allows a General to reroll a 1 on the promotion roll once per battle.</li>
+                        <li><strong>Lancers:</strong> +2 Skirmish. If this brigade routs a brigade by a difference of 3+ in the Skirmish stage, that brigade must immediately roll a destruction roll.</li>
+                        <li><strong>Dragoons:</strong> +2 Defense. +1 Pitch. +1 Rally.</li>
+                    </ul>
+                </div>
+                <div class="p-4 rounded-lg bg-gray-50">
+                    <h4 class="text-xl font-bold mb-2">⚔️ Heavy (1 fuel, 2 metal)</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><strong>Artillery Team:</strong> +1 Defense. +1 Pitch. When Garrisoned, +1 Pitch. This Brigade applies -1 defense to all enemy brigades in a battle.</li>
+                        <li><strong>Grenadiers:</strong> +2 Skirmish. +2 Pitch.</li>
+                        <li><strong>Stormtroopers:</strong> +1 Pitch. +1 Rally. +1 Movement. This brigade ignores trench movement penalties.</li>
+                    </ul>
+                </div>
+                <div class="p-4 rounded-lg bg-gray-50">
+                    <h4 class="text-xl font-bold mb-2">🪓 Light (1 food, 1 metal, 1 timber)</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><strong>Rangers:</strong> +2 Skirmish. +1 Pitch.</li>
+                        <li><strong>Assault Team:</strong> +1 Skirmish. This unit may select what brigade it skirmishes, and negates that brigade's Garrison modifier for the battle.</li>
+                        <li><strong>Commando:</strong> +2 Defense. +1 Pitch. This Brigade cannot be seen by enemy Sentry Teams.</li>
+                    </ul>
+                </div>
+                <div class="p-4 rounded-lg bg-gray-50">
+                    <h4 class="text-xl font-bold mb-2">🏹 Ranged (1 stone, 2 timber)</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><strong>Sharpshooters:</strong> +2 Defense. When garrisoned, +1 Pitch. This Brigade routs any skirmishers that target this brigade and fail, and that brigade must immediately roll a destruction die.</li>
+                        <li><strong>Mobile Platforms:</strong> +1 Skirmish. +2 Defense. +1 Movement.</li>
+                        <li><strong>Mortar Team:</strong> +1 Pitch. +1 Rally. This brigade negates the garrison bonus for a single brigade, chosen randomly.</li>
+                    </ul>
+                </div>
+                <div class="p-4 rounded-lg bg-gray-50">
+                    <h4 class="text-xl font-bold mb-2">🛡️ Support (1 fuel, 2 Stone)</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><strong>Field Hospital:</strong> This Brigade may reroll the Action Report Destruction Die, and extends this to all brigades in the same army.</li>
+                        <li><strong>Combat Engineers:</strong> This Brigade may build one temporary structure on the tile it resides during an organization day each map cycle. Negates the trench movement penalty for the Army. Combat Engineers decreases all siege times by 1 (non-stacking).</li>
+                        <li><strong>Officer Corps:</strong> +2 Rally. When in an army the General in charge needs a 4-6 to level up. This brigade may choose where it retreats to.</li>
+                    </ul>
+                </div>
+                <div class="p-4 rounded-lg bg-gray-50">
+                    <h4 class="text-xl font-bold mb-2">🪖 Universal (2 Food, 1 metal)</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><strong>Sentry Team:</strong> +3 Defense. This Brigade has +1 tile of sight.</li>
+                        <li><strong>Marines:</strong> This Brigade may immediately siege when landing on an enemy city. +1 sea tile movement for the army (non-stacking).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generals Section -->
+        <div id="generals" class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Generals</h2>
+            <p class="mb-4">Generals lead your armies, providing powerful bonuses and abilities. They are recruited at the War College and gain experience from battles.</p>
+            <p class="mb-4">Generals have a chance to gain a new trait upon leveling up. These traits provide unique advantages in combat.</p>
+            <div class="space-y-4">
+                <div>
+                    <h4 class="text-xl font-bold">Trait Categories:</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><strong>Offensive:</strong> Increase damage or effectiveness in battle.</li>
+                        <li><strong>Defensive:</strong> Enhance survivability and reduce damage taken.</li>
+                        <li><strong>Support:</strong> Provide bonuses to allied brigades or generals.</li>
+                        <li><strong>Logistical:</strong> Improve movement, supply, and strategic options.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xl font-bold">Example Traits:</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><strong>Strategist:</strong> +1 to all tactical rolls.</li>
+                        <li><strong>Shield Bearer:</strong> +2 Defense to self and adjacent brigades.</li>
+                        <li><strong>Warrior's Spirit:</strong> +1 Skirmish and +1 Pitch.</li>
+                        <li><strong>Logistics Expert:</strong> +1 Movement and -1 supply cost.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- War College Section -->
+        <div id="war-college" class="card fade-in">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">War College</h2>
+            <p class="mb-4">The War College is essential for your military operations. It allows you to recruit and manage your generals, and it levels up as your nation gains military experience.</p>
+            <p class="mb-4">Retiring a general at level 10 provides a significant experience boost to the War College.</p>
+            <h3 class="text-2xl font-semibold mt-4 mb-2">War College Benefits</h3>
+            <ul class="list-disc list-inside space-y-2">
+                <li><strong>Increased General Cap:</strong> Allows you to recruit more generals.</li>
+                <li><strong>New Brigade Enhancements:</strong> Unlocks powerful upgrades for your brigades.</li>
+                <li><strong>Improved General Traits:</strong> Higher chance of gaining beneficial traits.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        // Navigation loader
+        fetch('nav.html')
+            .then(res => res.text())
+            .then(text => {
+                document.getElementById('nav-placeholder').innerHTML = text;
+                var script = document.createElement('script');
+                script.innerHTML = `
+                    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                        var menu = document.getElementById('mobile-menu');
+                        menu.classList.toggle('hidden');
+                    });
+                `;
+                document.body.appendChild(script);
+            });
+
+        // Intersection Observer for fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silver and How to Get It - Map Game Mechanics</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100">
+    <div id="nav-placeholder"></div>
+
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-4 text-center">Silver and How to Get It</h1>
+
+        <!-- Silver Generation Section -->
+        <div id="silver-generation" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">💰 Silver Generation</h2>
+            <p class="text-lg mb-4">Each player receives <strong>80 silver</strong> every cycle as a base income.</p>
+
+            <h3 class="text-2xl font-semibold mb-2">Ranks & Submissions</h3>
+            <p class="mb-2">There are 3 ranks for submissions, matching the names of the forum channels.</p>
+            <ul class="list-disc list-inside mb-4">
+                <li>Submissions are graded on a scale of 1–10.</li>
+                <li><strong>Final silver = grade × your rank.</strong></li>
+                <li>Each rank has a cap of 10 submissions.</li>
+                <li>Meta memes have a separate cap of 10 submissions.</li>
+            </ul>
+
+            <h3 class="text-2xl font-semibold mb-2">Hall of Fame Bonus</h3>
+            <p class="mb-4">Every 2 weeks, 5 exceptional submissions may be selected for a Hall of Fame slot. Each selection grants an additional <strong>+50 silver</strong>.</p>
+
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+                <p class="font-bold">Grading Day</p>
+                <p>Mondays will no longer permit silver submissions or RP, as that is now the day that grading will occur. This allows graders to get caught up and everyone to get their silver.</p>
+            </div>
+        </div>
+
+        <!-- Monthly Tournaments Section -->
+        <div id="monthly-tourneys" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Monthly Tourneys</h2>
+            <p class="mb-4">Tournaments are monthly optional activities for players to compete in for various prizes. There are four categories:</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <h4 class="font-bold text-xl">I: Essay-writing</h4>
+                    <p>A prompt will be agreed upon by the contestants, which must be submitted as an essay with a word count between 500 and 1000 words. A sensibly flexible deadline will be in place and each essay will be judged by its quality first and foremost.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-xl">II: Debates</h4>
+                    <p>A question will be agreed upon by the contestants, and each must pick a side and write a main argument for that side with a hard word cap of 150 words. Then, they must submit a counter to each other's main arguments consisting of no more than 100 words.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-xl">III: Arts</h4>
+                    <p>A specific prompt and format relating to a historical topic will be agreed upon by the two sides — such as a map, a comic strip, a drawing, a poster, etc. — and submitted within a reasonable deadline to be judged by the relevant moderator.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-xl">IV: Memes</h4>
+                    <p>A prompt or a topic will be decided upon by the two sides in the bracket and memed, to be judged before the entire server via voting through reactions.</p>
+                </div>
+            </div>
+
+            <div class="mt-6 text-sm text-gray-600">
+                <p>*If no topic can be decided upon within a reasonable time, the judge is free to pick as they please.</p>
+                <p>*Most deadlines are defined within the boundary of 24 hours; extensions will be dealt with on a case-by-case basis.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        fetch('nav.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('nav-placeholder').innerHTML = data;
+                // Mobile menu toggle
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const mobileMenu = document.getElementById('mobile-menu');
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            });
+        const faders = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in-visible');
+                }
+            });
+        });
+        faders.forEach(fader => {
+            observer.observe(fader);
+        });
+    </script>
+</body>
+</html>

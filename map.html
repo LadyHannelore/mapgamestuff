@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Map & Expansions - Map Game Mechanics</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100">
+    <div id="nav-placeholder"></div>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-8 glassmorphism p-8 rounded-lg">
+            <h1 class="text-5xl font-bold">The Map & Expansions</h1>
+        </div>
+
+        <!-- The Map Section -->
+        <div id="the-map" class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">The Map</h2>
+            <p class="mb-4">Every 14 days on Monday, a new map will be posted. The map will show territories, cities, and when large enough, nation names for all players. Always use the latest posted map for any expansions or building actions. You must own the territory on the map to interact with it — no exceptions.</p>
+            <a href="https://discord.com/channels/1297986070331523183/1366934439594164335" target="_blank" rel="noopener noreferrer" class="btn-gradient">
+                View the Latest Map on Discord
+            </a>
+        </div>
+
+        <!-- Expansions Section -->
+        <div id="expansions" class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Expansions</h2>
+            <p class="mb-4">Expansions are how you grow your territory peacefully — no wars needed. You can only expand into unoccupied land — not another player's tiles. Expansions may be posted until 4 days before the map update, so any expansions after Wednesday on a cycle change week (every other week) will be denied.</p>
+            <ul class="list-disc list-inside mb-4 space-y-2">
+                <li>Overland expansions must be contiguous (directly touching your current land).</li>
+                <li>Cross-water expansions originate from a coastal city to any other coastal tile connected by sea tiles.</li>
+                <li>No "snaking" expansions allowed. Snaking is when your expansion is way longer than it is wide, usually to grab something fast. Ugly expansions will be denied. Exceptions may be made for geographically sensical expansions, but get them approved first.</li>
+            </ul>
+
+            <h3 class="text-2xl font-semibold mb-2">How to Expand (Overland)</h3>
+            <ol class="list-decimal list-inside mb-4 space-y-2">
+                <li><strong>Calculate the cost:</strong> Cost per tile is 20 silver by default, increasing by +5 for every 25 total tiles you have. (e.g., your 26th tile costs 25 silver, your 101st costs 40 silver).</li>
+                <li><strong>Edit the map:</strong> Show your claimed tiles using Black X's. Indicate your nation to prevent confusion.</li>
+                <li><strong>Submit your expansion:</strong> Post your modified map, silver cost, and number of tiles taken in the appropriate geographic channel.</li>
+            </ol>
+
+            <h3 class="text-2xl font-semibold mb-2">How to Expand (Cross-Water)</h3>
+            <ol class="list-decimal list-inside mb-4 space-y-2">
+                <li><strong>Calculate the cost:</strong> Cost per water tile crossed is 50 silver, increasing by +10 for every 5 total tiles crossed. (e.g., your 6th tile costs 60, for a total of 310 silver). Single tile water crossings are free (beyond the 20 silver for the land tile) and do NOT require a coastal city.</li>
+                <li><strong>Edit the map:</strong> Draw a Black Arrow from your coastal city to your destination tile, and mark the tile with a Black X.</li>
+                <li><strong>Submit your expansion:</strong> Post your modified map, silver cost, and water tiles traversed in the appropriate geographic channel.</li>
+            </ol>
+
+            <h3 class="text-2xl font-semibold mb-2">Land Swapping</h3>
+            <p>You may swap up to 3 tiles every cycle (2 weeks) with another player through land cession treaties. Swapped tiles must be adjacent to the receiving nation, or you can swap over water up to 3 water tiles away. In the latter case, the receiving nation must pay the full cross-water expansion cost.</p>
+        </div>
+    </div>
+
+    <script>
+        // Navigation loader
+        fetch('nav.html')
+            .then(res => res.text())
+            .then(text => {
+                document.getElementById('nav-placeholder').innerHTML = text;
+                var script = document.createElement('script');
+                script.innerHTML = `
+                    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                        var menu = document.getElementById('mobile-menu');
+                        menu.classList.toggle('hidden');
+                    });
+                `;
+                document.body.appendChild(script);
+            });
+
+        // Intersection Observer for fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

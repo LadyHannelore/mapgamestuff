@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Religions - Map Game Mechanics</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100">
+    <div id="nav-placeholder"></div>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-8 glassmorphism p-8 rounded-lg">
+            <h1 class="text-5xl font-bold">Religions</h1>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Astronomism</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Silver Submissions about astronomy and astronomy adjacent topics receive an additional 2/4/6 silver.</li>
+                <li>Posting a picture of a current real life Celestial Event grants 10 silver (once per celestial event).</li>
+            </ul>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Animism</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Every month all animist members votes on three members to be declared shamans for the month.</li>
+                <li>Shamans are given a special joints monthly quest where they interact with the spirit world and attempt to secure bonuses for their religion.</li>
+            </ul>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Ash Catholic</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Members of this religion May declare a joint offensive War to retake territory previously owned by members of this religion. This will be a special justification, and any members of the defending religion may join as allies to the defender.</li>
+                <li>Neighboring Heretics may pay 100 silver to convert instead of 300, and you may help pay for the costs.</li>
+                <li>Every member of this religion gets 3 silver for every member of this religion, to a maximum of 60 silver, every cycle.</li>
+                <li>Your religion has a head of Faith. This head of faith is located in a predetermined tile, and grants his powers to individuals who win their respective vote. Each Monday, the Head "dies", and the players elect a new Head. Each player gets 1 vote, but the player who holds the predetermined tile has their vote weighted as 3.</li>
+                <li>The Head of Faith has 4 powers, each usable 1 time per week:
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Excommunicate:</strong> Cause 1 other player to suffer -2 on all silver submissions until the day following the next election. All players of this faith may declare a Diplomatic Insult war on the excommunicated player during this time.</li>
+                        <li><strong>Bless:</strong> Grant 1 other player +2 to all silver submissions until the day following the next election.</li>
+                        <li><strong>Beatify:</strong> Declare a recently deceased character a Saint, allowing their name to be added to the permissable Head of Faith names. Doing this requires the support of 60% of your religion and must make sense.</li>
+                        <li><strong>Send Missionaries:</strong> You may pay 300 silver and convert a willing nation anywhere in the world.</li>
+                    </ul>
+                </li>
+                <li>Your brigades have +1 sea tile movement, and a chance to become blessed. If a brigade rolls a 6 on the action report roll, they get +1 to rally checks for the remainder of the game. When Blessed brigades are destroyed, your next brigade purchase is free.</li>
+            </ul>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Benedictine Catholic</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Members of this religion May declare a joint offensive War to retake territory previously owned by members of this religion. This will be a special justification, and any members of the defending religion may join as allies to the defender.</li>
+                <li>Neighboring Heretics may pay 100 silver to convert instead of 300, and you may help pay for the costs.</li>
+                <li>Every member of this religion gets 3 silver for every member of this religion, to a maximum of 60 silver, every cycle.</li>
+                <li>Your religion has a head of Faith. This head of faith is located in a predetermined tile, and grants his powers to individuals who win their respective vote. Each Monday, the Head "dies", and the players elect a new Head. Each player gets 1 vote, but the player who holds the predetermined tile has their vote weighted as 3.</li>
+                <li>The Head of Faith has 4 powers, each usable 1 time per week:
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Excommunicate:</strong> Cause 1 other player to suffer -2 on all silver submissions until the day following the next election. All players of this faith may declare a Diplomatic Insult war on the excommunicated player during this time.</li>
+                        <li><strong>Bless:</strong> Grant 1 other player +2 to all silver submissions until the day following the next election.</li>
+                        <li><strong>Beatify:</strong> Declare a recently deceased character a Saint, allowing their name to be added to the permissable Head of Faith names. Doing this requires the support of 60% of your religion and must make sense.</li>
+                        <li><strong>Send Missionaries:</strong> You may pay 300 silver and convert a willing nation anywhere in the world.</li>
+                    </ul>
+                </li>
+                <li>Members may purchase 3 resources instead of 2 from individual resource tiles.</li>
+            </ul>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Buddhism</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Must make known their intention of declaring a war at least 72 hours before. No breaking treaties within 1 month. No plundering neutral trades or use pirates against neutral players.</li>
+                <li>You gain 10 silver for every Religious member following these restrictions every map cycle, but lose 10 for every member not following these restrictions. You can at most make or lose 80 silver every map cycle in this way.</li>
+                <li>Every cycle, Buddhist players may select Asceticism, Luxury or Middle Way.
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Asceticism:</strong> +1 silver to all silver submissions for every 50 silver less than 200 you have at the start of this cycle, maximum +3.</li>
+                        <li><strong>Luxury:</strong> +1 silver to all silver submissions for every 100 over 200 silver you have at the start of this cycle, maximum +3.</li>
+                        <li><strong>Middle Way:</strong> +3 silver to all submissions if you start this cycle within 20 of 200 silver.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Harmonism</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>+10 for rank 3 silver submissions that score at least 6/10.</li>
+            </ul>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Hindu</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Must make known their intention of declaring a war at least 72 hours before. No breaking treaties within 1 month. No plundering neutral trades or use pirates against neutral players.</li>
+                <li>You gain 10 silver for every Religious member following these restrictions every map cycle, but lose 10 for every member not following these restrictions. You can at most make or lose 80 silver every map cycle in this way.</li>
+                <li>Hindu players may curse other players with a city within 10 sea tiles, or 30 land tiles, of their own city.</li>
+                <li>Twice per cycle, a Hindu player may cause another player to lose 2 random resources, 30 silver, or -1 to all pitch rolls in their next battle.</li>
+                <li>Hindu players also get one counter curse every cycle, which can be used to negate one curse.</li>
+                <li>A player may only be successfully cursed once per cycle.</li>
+            </ul>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Islam</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Members of this religion may declare a joint offensive War to retake territory previously owned by members of this religion. This will be a special justification, and any members of the defending religion may join as allies to the defender.</li>
+                <li>Expansions cost 10 silver less per land tile, and you get 1 1/2 of the allowed tiles on a peace deal.</li>
+            </ul>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Judaism</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Members of this religion may declare a joint offensive War to retake territory previously owned by members of this religion. This will be a special justification, and any members of the defending religion may join as allies to the defender.</li>
+                <li>You are given a monthly list of objectives by your prophet, to be completed by the end of the month. Each one you complete gives rewards.</li>
+            </ul>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Orthodoxy</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Members of this religion May declare a joint offensive War to retake territory previously owned by members of this religion. This will be a special justification, and any members of the defending religion may join as allies to the defender.</li>
+                <li>Neighboring Heretics may pay 100 silver to convert instead of 300, and you may help pay for the costs.</li>
+                <li>Every member of this religion gets 3 silver for every member of this religion, to a maximum of 60 silver, every cycle.</li>
+                <li>Start with one additional subculture ability. This does not increase the Subculture ability cap.</li>
+            </ul>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Pagan</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Adjacency War Justification.</li>
+                <li>During a War your brigades cost 20 less silver, and when not at war you may sell your brigades for a random resource, 1 per brigade.</li>
+            </ul>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Protestantism</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Members of this religion May declare a joint offensive War to retake territory previously owned by members of this religion. This will be a special justification, and any members of the defending religion may join as allies to the defender.</li>
+                <li>Neighboring Heretics may pay 100 silver to convert instead of 300, and you may help pay for the costs.</li>
+                <li>Every member of this religion gets 3 silver for every member of this religion, to a maximum of 60 silver, every cycle.</li>
+                <li>+2/4/6 silver for silver submissions about theology, theologians, or theological institutions.</li>
+            </ul>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Roman Catholic</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Members of this religion may declare a joint offensive War to retake territory previously owned by members of this religion. This will be a special justification, and any members of the defending religion may join as allies to the defender.</li>
+                <li>Neighboring Heretics may pay 100 silver to convert instead of 300, and you may help pay for the costs.</li>
+                <li>Every member of this religion gets 3 silver for every member of this religion, to a maximum of 60 silver, every cycle.</li>
+                <li>Your religion has a head of Faith. This head of faith is located in a predetermined tile, and grants his powers to individuals who win their respective vote. Each Monday, the Head "dies", and the players elect a new Head. Each player gets 1 vote, but the player who holds the predetermined tile has their vote weighted as 3.</li>
+                <li>The Head of Faith has 4 powers, each usable 1 time per week:
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Excommunicate:</strong> Cause 1 other player to suffer -2 on all silver submissions until the day following the next election. All players of this faith may declare a Diplomatic Insult war on the excommunicated player during this time.</li>
+                        <li><strong>Bless:</strong> Grant 1 other player +2 to all silver submissions until the day following the next election.</li>
+                        <li><strong>Beatify:</strong> Declare a recently deceased character a Saint, allowing their name to be added to the permissable Head of Faith names. Doing this requires the support of 60% of your religion and must make sense.</li>
+                        <li><strong>Send Missionaries:</strong> You may pay 300 silver and convert a willing nation anywhere in the world.</li>
+                    </ul>
+                </li>
+                <li>Every time a new head of Faith is elected, that player receives 2 silver per member.</li>
+                <li>Blessed players receive an additional +1 silver on submissions, and it may be used an additional 2 times per cycle.</li>
+            </ul>
+        </div>
+
+        <div class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Zoroastrianism</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Must make known their intention of declaring a war at least 72 hours before. No breaking treaties within 1 month. No plundering neutral trades or use pirates against neutral players.</li>
+                <li>You gain 10 silver for every Religious member following these restrictions every map cycle, but lose 10 for every member not following these restrictions. You can at most make or lose 80 silver every map cycle in this way.</li>
+                <li>Zoroastrian players May select one of the divine aspects of Ahura Mazda to venerate. They may select a different one at the beginning of each cycle for 50 silver, but their initial selection is free.
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Spenta Mainyu:</strong> Your Silver submission caps are all raised by 1.</li>
+                        <li><strong>Vohu Manah:</strong> You count as two players for the Dharmic bonus.</li>
+                        <li><strong>Kshatra Vairya:</strong> Your Stone and Metal tiles can be purchased from an additional time.</li>
+                        <li><strong>Asha:</strong> Spend 20 silver to remove a debuff imposed on you by another player. Razing cities does not count against your Dharmic bonus. You may not have any secret clauses in your treaties.</li>
+                        <li><strong>Armaiti:</strong> Every food tile you own automatically creates 1 food for free. Maximum 3 tiles.</li>
+                        <li><strong>Haurvatat:</strong> Sea trade is free if the total sea travel distance is 3 sea tiles or less. Cross Sea Expansion costs 10 silver less per tile.</li>
+                        <li><strong>Ameretat:</strong> Your Brigades and Generals receive one additional destruction reroll in each action report.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Navigation loader
+        fetch('nav.html')
+            .then(res => res.text())
+            .then(text => {
+                document.getElementById('nav-placeholder').innerHTML = text;
+                var script = document.createElement('script');
+                script.innerHTML = `
+                    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                        var menu = document.getElementById('mobile-menu');
+                        menu.classList.toggle('hidden');
+                    });
+                `;
+                document.body.appendChild(script);
+            });
+
+        // Intersection Observer for fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

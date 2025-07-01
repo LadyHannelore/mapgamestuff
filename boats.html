@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boats - Map Game Mechanics</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100">
+    <div id="nav-placeholder"></div>
+
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-8 text-center">Naval Warfare</h1>
+
+        <!-- Shipbuilding Section -->
+        <div id="shipbuilding" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Shipbuilding</h2>
+            <p class="mb-4">Ships are built in T2/T3 coastal cities for either 4 timber/metal, or 60 silver. Unlike brigades, ships do not have different types, but they do have a few enhancements you may purchase. Only one enhancement per ship is allowed.</p>
+            
+            <h3 class="text-2xl font-semibold mb-2">Ship Enhancements</h3>
+            <p class="mb-4">All enhancements cost either the listed resources or 60 silver.</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li><strong>Additional Firepower:</strong> +2 to gunnery rolls (4 metal).</li>
+                <li><strong>Additional Propulsion:</strong> This ship can move one additional sea tile and gets +1 to their maneuver rolls (4 fuel).</li>
+                <li><strong>Camouflage:</strong> Increase the number required to spot this ship by two (2 gems, 2 timber/metal).</li>
+                <li><strong>Debris Netting:</strong> After destroying an enemy ship, you get one timber and one metal (2 timber, 2 stone).</li>
+                <li><strong>Experienced Spotters:</strong> This ship rolls two dice during spot checks (2 food, 2 gems).</li>
+                <li><strong>False Flags:</strong> Select two nations in your region. You are now allowed to fly their national flags and will be treated as their nation while flying them (4 gems).</li>
+                <li><strong>Marine Detachment:</strong> +2 to boarding phases, and a 50% chance pirates cannot take silver from the ship if flying white flags (2 food, 2 metal).</li>
+                <li><strong>Reinforced Hulls:</strong> This ship gets +1 on its damage report rolls (4 metal/timber).</li>
+            </ul>
+        </div>
+
+        <!-- Maneuver & Actions Section -->
+        <div id="maneuver" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Maneuver & Actions</h2>
+            <p class="mb-4">Ships have 2 movement points. Every action cycle, they can move up to 2 sea tiles. When ships finish moving, they will roll a Spot Check and proceed with any potential battles.</p>
+            <p class="mb-4">Alternatively, ships flying national flags may abandon their movement to take an Action:</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li><strong>Blockade:</strong> Any expansions or trades through this sea tile by enemy Nations are automatically canceled.</li>
+                <li><strong>Bombard:</strong> Select a city adjacent to the sea tile that is under siege. Reduce the action cycles it takes to force a Battle by one.</li>
+                <li><strong>Embargo:</strong> All cities adjacent to this sea tile are unable to send or receive trades.</li>
+                <li><strong>Guard:</strong> Remove this ship from the map and attach it to a trade over water. The ship will reappear at the end destination of the trade on the next map update. This blocks any attempts at pirating the trade.</li>
+                <li><strong>Search:</strong> Decrease the number required to spot a ship by two.</li>
+            </ul>
+        </div>
+
+        <!-- Flags Section -->
+        <div id="flags" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Flags</h2>
+            <p class="mb-4">Each ship can fly one of three different flags, determined on the first day of each action cycle:</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li><strong>National Flags:</strong> Identify you as belonging to your nation. When striking National Flags, you may not engage any ships flying white flags.</li>
+                <li><strong>Black Flags:</strong> Identify you as Pirates. Pirates may engage with any ships, and their presence allows them to steal a trade over sea tiles.</li>
+                <li><strong>White Flags:</strong> Identify you as a surrendered ship. Surrendered ships may not engage with any ships but cannot be attacked following an engagement. Pirates that engage surrendered ships may take 10 silver from the owner. You may not fly white flags without moving towards an owned coastal city and may not remove them until docking.</li>
+            </ul>
+        </div>
+
+        <!-- Spotting & Engagement Section -->
+        <div id="spotting" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Spotting & Engagement</h2>
+            <p class="mb-4">When multiple ships are in the same sea tile, they must each make a d6 spot check for every other ship. On a 4-6, your ship spots the revealed ship and will be informed of what flags they are flying.</p>
+            <p>Spotting a ship allows you to <strong>Engage</strong> them. Engagement is NOT an attack but triggers a fog of war diplomacy between the two ship's players. Either player may choose to attack at any point, triggering a naval battle. If no battle occurs, both ships part ways after some short diplomacy.</p>
+        </div>
+
+        <!-- Combat Section -->
+        <div id="combat" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Combat</h2>
+            <p class="mb-4">Ship combat is done in stages, starting with preparation and ending in an Action Report.</p>
+            
+            <h3 class="text-2xl font-semibold mb-2">Maneuver Phase</h3>
+            <p class="mb-4">Both players roll a d6. The winner decides to Advance, Retreat, or Hold, changing the range band. All engagements start at Range 2. Range 0 triggers boarding, and Range 4 is an automatic retreat.</p>
+
+            <h3 class="text-2xl font-semibold mb-2">Gunnery Phase</h3>
+            <p class="mb-4">After maneuvering, both ships fire. Each rolls a d6, adding +2 at Range 1 and +1 at Range 2. A roll of 5 or better is a hit, forcing a damage report. This continues until a ship retreats, sinks, or boarding occurs.</p>
+
+            <h3 class="text-2xl font-semibold mb-2">Boarding</h3>
+            <p class="mb-4">At Range 0, both sides roll a d6. If one ship's roll is 3+ higher than the other, they win and capture the enemy ship. Otherwise, return to the Maneuver Phase. Captured ships can be kept or sold for 50 silver, 2 timber, and 2 metal.</p>
+            <p>Combat automatically ends after the 10th Gunnery phase. The ship with more damage report results of 4 or lower loses.</p>
+        </div>
+
+        <!-- Damage Reports Section -->
+        <div id="damage-reports" class="glassmorphism card fade-in p-6 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Damage Reports</h2>
+            <p class="mb-4">When a ship is hit, roll a d6 and consult this chart:</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li><strong>6+:</strong> Glancing Blow (no effect).</li>
+                <li><strong>5:</strong> Blasted Deck (-1 to your next boarding check).</li>
+                <li><strong>4:</strong> Ammunition Strike (-2 to your next Gunnery check).</li>
+                <li><strong>3:</strong> Raking Fire (-1 to your next damage report).</li>
+                <li><strong>2:</strong> Hull Breach (automatically fail the next maneuver phase and -2 to your next damage report).</li>
+                <li><strong>1:</strong> Critical Hit (-4 on your next damage report).</li>
+                <li><strong>0:</strong> Kill Shot (your ship sinks).</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        fetch('nav.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('nav-placeholder').innerHTML = data;
+                // Mobile menu toggle
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const mobileMenu = document.getElementById('mobile-menu');
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            });
+        const faders = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in-visible');
+                }
+            });
+        });
+        faders.forEach(fader => {
+            observer.observe(fader);
+        });
+    </script>
+</body>
+</html>

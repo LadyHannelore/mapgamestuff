@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roleplay - Map Game Mechanics</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100">
+    <div id="nav-placeholder"></div>
+
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-4 text-center">Roleplay</h1>
+
+        <!-- Roleplaying as Your Nation/Leader Section -->
+        <div id="roleplaying" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Roleplaying as Your Nation/Leader</h2>
+            <p class="mb-4">In this game, you are not just moving armies or drawing borders — you are the living voice of your nation/leader. Roleplay (RP) adds color, depth, and personality to the world. It is highly encouraged and rewarded.</p>
+
+            <h3 class="text-2xl font-semibold mb-2">RP Rules</h3>
+            <ul class="list-disc list-inside mb-4 space-y-2">
+                <li><strong>Stay in character:</strong> Speak, act, and think as your nation’s leader, council, or people would.</li>
+                <li><strong>Be respectful:</strong> In-character insults are fine. OOC (Out of Character) harassment is not.</li>
+                <li><strong>Clear when OOC:</strong> Use `(())` or `[OOC:]` if you need to speak as yourself.</li>
+                <li><strong>Creative writing is welcome:</strong> Speeches, manifestos, journal entries, news articles, royal decrees — all these deepen the immersion.</li>
+                <li><strong>Consistency matters:</strong> Your actions should align with your nation's culture, goals, and prior behavior.</li>
+            </ul>
+        </div>
+
+        <!-- RP Grading Section -->
+        <div id="rp-grading" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">RP Grading</h2>
+            <p>Flesh out your nation's story while getting paid. There will be a cap of <strong>10 RP posts bi-weekly per player</strong>. In which, within the 2 week period they will be graded and silver given out as if it was a Rank 2 submission.</p>
+        </div>
+
+        <!-- Events Section -->
+        <div id="events" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Events</h2>
+            <p class="mb-4">Events are massive roleplay interactions that have the potential to impact the whole world. These come in two types:</p>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="border p-4 rounded">
+                    <h4 class="font-bold text-xl">Player Events</h4>
+                    <p>Created when multiple players begin to encroach upon each other in a questline. These are hosted by one player who sets the ground rules for the event and designs it. Rewards are set by moderators.</p>
+                </div>
+                <div class="border p-4 rounded">
+                    <h4 class="font-bold text-xl">Server Events</h4>
+                    <p>Spawned in by a moderator and cover such instances as natural disasters, real life holidays and global economic crashes or booms. These events are designed by a moderator without player input.</p>
+                </div>
+            </div>
+            <p class="mt-4">To join an event you must read the roleplay post that began it which will outline the specific requirements for participation.</p>
+        </div>
+
+        <!-- Quests Section -->
+        <div id="quests" class="glassmorphism card fade-in p-6 rounded-lg shadow-md">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Quests</h2>
+            <p class="mb-4">Quests are exclusive storylines for the best roleplayers that bring the world to life. They function as narratives split into several objectives that you complete through roleplay. At the end of a quest you unlock plenty of material rewards such as bonus resources, elite units and silver.</p>
+            <p class="mb-2">Examples of possible Quests include:</p>
+            <ul class="list-disc list-inside mb-4 grid grid-cols-2 md:grid-cols-3 gap-2">
+                <li>Finding ancient relics</li>
+                <li>Leading pilgrimages</li>
+                <li>Expeditions to discover new continents</li>
+                <li>Coronations</li>
+                <li>Rebellions</li>
+                <li>Miracles</li>
+                <li>Catastrophes</li>
+            </ul>
+            <p>There is no way for a player to request a quest but you may increase your chances of getting one by posting lots of quality roleplay with a recurring through line to catch the eye of a moderator who then may create one for you.</p>
+        </div>
+    </div>
+
+    <script>
+        fetch('nav.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('nav-placeholder').innerHTML = data;
+                // Mobile menu toggle
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const mobileMenu = document.getElementById('mobile-menu');
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            });
+        const faders = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in-visible');
+                }
+            });
+        });
+        faders.forEach(fader => {
+            observer.observe(fader);
+        });
+    </script>
+</body>
+</html>
