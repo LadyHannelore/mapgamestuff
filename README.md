@@ -2,6 +2,23 @@
 
 This project is a comprehensive HTML/CSS/JavaScript application designed to help users create, simulate, and manage mock battles for a custom map game warfare system. It follows the detailed warfare tutorial by John, Princeps Corvinus {Lex}.
 
+## 🌍 Map Game Overview
+
+**Welcome to the World of Hegemony** - a grand strategy roleplaying game set in the mystical world of **Aethel**. Players assume the role of nation leaders, guiding their civilizations through complex political landscapes, economic challenges, and military campaigns.
+
+### Game Purpose & Mechanics
+This map game combines strategic planning, diplomatic negotiation, and tactical warfare in an immersive roleplaying environment. Players must balance multiple aspects of leadership:
+
+- **🗺️ Territorial Management**: Expand your nation's borders through strategic conquest and diplomatic annexation
+- **⚔️ Military Command**: Build and deploy armies using a sophisticated unit system with enhancements and general traits
+- **🤝 Diplomatic Relations**: Forge alliances, negotiate treaties, and manage complex international relationships
+- **💰 Economic Development**: Generate silver through trade, resource management, and infrastructure development
+- **🎭 Narrative Roleplay**: Participate in events, quests, and storylines that shape the world's history
+- **⛪ Cultural Identity**: Choose religions and cultural enhancements that provide unique bonuses and abilities
+
+### Gameplay Flow
+The game operates through structured phases where players make decisions across multiple interconnected systems. Military actions are resolved through detailed battle simulations, diplomatic agreements are negotiated through roleplay, and economic growth is managed through infrastructure development. The battle simulator component of this application serves as a crucial tool for testing military strategies before committing to actual conflicts.
+
 ## ✨ Features
 
 ### 🛡️ **Army & Unit Management**
@@ -153,19 +170,57 @@ The system includes all 20 general traits from the tutorial:
 ### File Structure
 ```
 mapgamestuff/
-├── index.html          # Main application file
-├── battle.js           # Battle simulation logic
-├── background-music.mp3 # Combat music
-├── README.md           # This file
-└── images/             # Unit artwork
-    ├── cav.jpg
-    ├── heavy.jpg
-    ├── light.jpg
-    ├── ranged.jpg
-    ├── support.png
-    ├── general1.png
-    └── general2.png
+├── .gitattributes              # Git version control attributes configuration
+├── .gitignore                  # Files and directories to ignore in version control
+├── README.md                   # Comprehensive project documentation
+├── background-music.mp3        # Atmospheric combat music for battle simulator
+├── battle-simulator.html       # Advanced battle simulation interface
+├── battle.js                   # Core JavaScript logic for battle mechanics
+├── boats.html                  # Naval management and fleet building interface
+├── diplomacy.html              # Diplomatic relations and treaty management
+├── enhancements.html           # Unit and cultural enhancement selection
+├── index.html                  # Main application homepage and navigation hub
+├── infrastructure.html         # Infrastructure development and city management
+├── map.html                    # Interactive world map and territorial management
+├── nav.html                    # Navigation component for consistent site structure
+├── navy-battle-simulator.html  # Specialized naval combat simulation
+├── religions.html              # Religious system and faith-based bonuses
+├── roleplay.html               # Roleplay events, quests, and narrative content
+├── silver.html                 # Economic system and silver resource management
+├── style.css                   # Unified CSS styling for the entire application
+├── warfare.html                # Military mechanics and warfare rules
+└── images/                     # Visual assets and artwork directory
+    ├── cav.jpg                 # Cavalry unit artwork
+    ├── heavy.jpg               # Heavy infantry unit artwork
+    ├── light.jpg               # Light infantry unit artwork
+    ├── ranged.jpg              # Ranged unit artwork
+    ├── support.png             # Support unit artwork
+    ├── general1.png            # General portrait option 1
+    └── general2.png            # General portrait option 2
 ```
+
+### Root Directory Files Explained
+
+- **`.gitattributes`**: Specifies Git attributes for proper line ending handling and file type recognition across different operating systems
+- **`.gitignore`**: Defines files and directories that should be excluded from version control (build artifacts, temporary files, etc.)
+- **`README.md`**: This comprehensive documentation file detailing the entire map game system and its components  
+- **`background-music.mp3`**: Atmospheric medieval combat music that enhances the battle simulation experience
+- **`battle-simulator.html`**: Advanced battle simulation interface with detailed unit management, general traits, and combat resolution
+- **`battle.js`**: Core JavaScript engine containing all battle logic, statistical calculations, and combat mechanics
+- **`boats.html`**: Naval management interface for building fleets, managing ships, and planning maritime operations
+- **`diplomacy.html`**: Diplomatic interface for managing international relations, treaties, alliances, and political interactions
+- **`enhancements.html`**: System for selecting and applying military unit enhancements and cultural bonuses to customize your nation
+- **`images/`**: Directory containing all visual artwork including unit portraits, general images, and interface graphics
+- **`index.html`**: Main application entry point providing navigation to all game systems and the central game overview
+- **`infrastructure.html`**: Infrastructure development interface for managing cities, resources, trade routes, and economic growth
+- **`map.html`**: Interactive world map interface for territorial management, expansion planning, and geographical strategy
+- **`nav.html`**: Shared navigation component ensuring consistent interface structure across all game modules
+- **`navy-battle-simulator.html`**: Specialized naval combat simulator with ship-to-ship battle mechanics and fleet engagement rules
+- **`religions.html`**: Religious system interface for selecting faiths, managing religious bonuses, and spiritual development
+- **`roleplay.html`**: Roleplay event management system for participating in narrative quests, storylines, and character development
+- **`silver.html`**: Economic management interface for tracking silver resources, trade income, and financial planning
+- **`style.css`**: Comprehensive CSS stylesheet providing consistent visual design, glassmorphism effects, and responsive layouts
+- **`warfare.html`**: Military mechanics documentation and warfare rules reference for understanding combat systems
 
 ### Technologies Used
 - **HTML5**: Semantic structure and accessibility
