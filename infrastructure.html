@@ -6,74 +6,304 @@
     <title>Infrastructure - Map Game Mechanics</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .resource-card {
+            transition: all 0.3s ease;
+            border-left: 5px solid transparent;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .food-card { border-left-color: #22c55e; }
+        .fuel-card { border-left-color: #f59e0b; }
+        .gems-card { border-left-color: #a855f7; }
+        .metal-card { border-left-color: #6b7280; }
+        .stone-card { border-left-color: #78716c; }
+        .timber-card { border-left-color: #d97706; }
+        
+        .section-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-box {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-box:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            transform: translateY(-2px);
+        }
+        
+        .icon-bg {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .city-tier-1 { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .city-tier-2 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .city-tier-3 { background: linear-gradient(135deg, #a855f7, #7c3aed); }
+        
+        .trade-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+            border: 2px solid rgba(34, 197, 94, 0.2);
+        }
+        
+        .straits-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+            border: 2px solid rgba(59, 130, 246, 0.2);
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
     <div id="nav-placeholder"></div>
 
     <div class="container mx-auto px-4 py-8">
-        <div class="text-center mb-8 glassmorphism p-8 rounded-lg">
-            <h1 class="text-5xl font-bold">Infrastructure</h1>
+        <div class="text-center mb-8 hero-gradient p-8 rounded-2xl shadow-2xl">
+            <h1 class="text-6xl font-bold text-white drop-shadow-lg">🏗️ Infrastructure 🏗️</h1>
+            <p class="text-xl text-white mt-4 opacity-90">Build, Trade, and Expand Your Empire</p>
+        </div>
+
+        <div class="card fade-in mb-8 bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
+            <div class="section-header">
+                <h2 class="text-4xl font-bold mb-2">⚡ Resources ⚡</h2>
+                <p class="text-lg opacity-90">The Foundation of Your Nation's Power</p>
+            </div>
+            <div class="p-6">
+                <p class="mb-4 text-lg text-gray-700">Resources are powerful tool which are integral to your nation's success. They are required to build cities, can be used to build armies, and navies, and each have their own abilities</p>
+                <p class="mb-6 font-semibold text-xl text-gray-800">There are six resources in the game:</p>
+                
+                <div class="space-y-6">
+                    <div class="bg-gradient-to-r from-green-100 to-green-50 p-6 rounded-xl resource-card food-card shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="icon-bg">
+                                <span class="text-2xl">🌾</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-green-700">Food</h3>
+                        </div>
+                        <ul class="list-disc list-inside space-y-2 text-green-800">
+                            <li><strong>Growth</strong> | 2 food - expand 1 tile</li>
+                            <li><strong>Extra Supplies</strong> | 3 food - Increase siege timer by 1 action cycle, this can be preformed a number of times equal to city tier. (ex. 1 time for T1, 2 for T2, and 3 for T3)</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-yellow-100 to-orange-50 p-6 rounded-xl resource-card fuel-card shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="icon-bg">
+                                <span class="text-2xl">⛽</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-yellow-700">Fuel</h3>
+                        </div>
+                        <ul class="list-disc list-inside space-y-2 text-yellow-800">
+                            <li><strong>Prepared Voyage</strong> | 3 Fuel per Tile - Negate the cost of 1 sea tile</li>
+                            <li><strong>Transport</strong> | 2 Fuel per Brigade - May teleport a Brigade between two cities. Brigade will be removed from the map for a cycle, and reappear at the destination afterwards.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-purple-100 to-pink-50 p-6 rounded-xl resource-card gems-card shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="icon-bg">
+                                <span class="text-2xl">💎</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-purple-700">Gems</h3>
+                        </div>
+                        <ul class="list-disc list-inside space-y-2 text-purple-800">
+                            <li><strong>Sell</strong> | 3 gems- Gain 45 silver</li>
+                            <li><strong>New Training</strong> | 3 gems - Reroll general Trait</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-gray-100 to-slate-50 p-6 rounded-xl resource-card metal-card shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="icon-bg">
+                                <span class="text-2xl">⚙️</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-700">Metal</h3>
+                        </div>
+                        <ul class="list-disc list-inside space-y-2 text-gray-800">
+                            <li><strong>Armed Guards</strong> | 4 metal - Prevent a trade from being stolen by Middlemen and Pirates</li>
+                            <li><strong>Bombard</strong> | 1-3 Metal - Spend metal equal to the stone cost of a war structure adjacent to one of your brigades to destroy it.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-stone-100 to-neutral-50 p-6 rounded-xl resource-card stone-card shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="icon-bg">
+                                <span class="text-2xl">🪨</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-stone-700">Stone</h3>
+                        </div>
+                        <ul class="list-disc list-inside space-y-2 text-stone-800">
+                            <li><strong>Settle</strong> | 1 Stone - You may bid 1 stone as 15 silver in contested expansions</li>
+                            <li><strong>Construct</strong> | 1-3 Stone - You may create Trenches (1 Stone), Towers (2 Stone) or Forts (3 Stone)</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-amber-100 to-yellow-50 p-6 rounded-xl resource-card timber-card shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="icon-bg">
+                                <span class="text-2xl">🌳</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-amber-700">Timber</h3>
+                        </div>
+                        <ul class="list-disc list-inside space-y-2 text-amber-800">
+                            <li><strong>Printing Press</strong> | 1 Timber - You may spend 1 Timber to post silver submissions over your cap. You may do this multiple times per map cycle. Post the usage like this: Post 11/10, spending 1 Timber</li>
+                            <li><strong>Emergency Repairs</strong> | 2 Timber - Instantly Repair a surrendered ship without docking</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-6 bg-gradient-to-r from-blue-100 to-cyan-50 rounded-xl shadow-lg border-l-4 border-blue-500">
+                    <div class="flex items-center mb-4">
+                        <div class="icon-bg">
+                            <span class="text-2xl">💰</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-blue-700">How to Purchase Resources:</h3>
+                    </div>
+                    <ul class="list-disc list-inside space-y-2 text-blue-800">
+                        <li><strong>Cost:</strong> 5 silver per resource unit</li>
+                        <li><strong>Maximum:</strong> 12 resources spawned per Map Cycle</li>
+                        <li><strong>Submission:</strong> You may purchase a maximum of two resources from any individual resource tile each cycle</li>
+                    </ul>
+                    <p class="mt-4 text-blue-700">Resources are added to your national stockpile and remain there until spent, traded, or stolen.</p>
+                    <p class="mt-2 text-sm italic text-blue-600"><strong>Note:</strong> Resources do not deplete over time and that spawning doesn't need to be all in one batch.</p>
+                </div>
+            </div>
         </div>
 
         <div class="card fade-in mb-8">
-            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Resources</h2>
-            <ul class="list-disc list-inside space-y-2">
-                <li>Each province produces 1 resource.</li>
-                <li>Each province can have a total of 5 infrastructure points.</li>
-                <li>These can be used on:
-                    <ul class="list-disc list-inside ml-4">
-                        <li>Forts (max 5)</li>
-                        <li>Production buildings (max 5)</li>
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Resource Trading</h2>
+            <p class="mb-4">Players may freely trade resources with one another under the following rules:</p>
+            
+            <div class="space-y-4">
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-bold text-green-700 mb-2">Direct Border Trades:</h3>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Trading must occur from city to city.</li>
+                        <li>No trading across unowned or enemy land.</li>
                     </ul>
-                </li>
-                <li>Production buildings increase the amount of resources a province produces:
-                    <ul class="list-disc list-inside ml-4">
-                        <li>Tier 1: 1 building = +1 resource (cost 1)</li>
-                        <li>Tier 2: 2 buildings = +2 resources (cost 2)</li>
-                        <li>Tier 3: 3 buildings = +3 resources (cost 3)</li>
-                        <li>Tier 4: 4 buildings = +4 resources (cost 4)</li>
-                        <li>Tier 5: 5 buildings = +5 resources (cost 5)</li>
+                </div>
+
+                <div class="bg-orange-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-bold text-orange-700 mb-2">Middlemen:</h3>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>If trading through another player's land, both trading nations must pay 5 silver per middleman player. (10 total silver to the middleman)</li>
+                        <li>Middlemen may seize the goods instead of taxing — this grants all players along the route a Trade War Justification against them.</li>
                     </ul>
-                </li>
-            </ul>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-bold text-blue-700 mb-2">Sea Trading:</h3>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Each player must pay 2 silver per sea tile between coastal cities to trade by sea. (4 total silver)</li>
+                        <li>Sea trades that do not leave one sea tile do not have a fee, much like sea expansions.</li>
+                        <li>Pirates may attack and seize sea trades, see Section 6: Boats</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-bold text-gray-700 mb-2">Trade Limits:</h3>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>You may trade any number of resources within a 2-week period.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-purple-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-bold text-purple-700 mb-2">Trade Timing:</h3>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>All trades take 72 hours from the moment they are posted to complete.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-red-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-bold text-red-700 mb-2">Important:</h3>
+                    <p>Gifts are not allowed. All trades must involve fair exchanges — no one-sided deals. Each resource must be paid for with at least 5 silver or another resource.</p>
+                </div>
+            </div>
         </div>
 
         <div class="card fade-in mb-8">
             <h2 class="text-3xl font-bold mb-4 border-b pb-2">Cities</h2>
-            <ul class="list-disc list-inside space-y-2">
-                <li>Cities are hubs of trade and commerce.</li>
-                <li>They do not produce resources, but instead generate silver.</li>
-                <li>Cities can have a total of 10 infrastructure points.</li>
-                <li>These can be used on:
-                    <ul class="list-disc list-inside ml-4">
-                        <li>Forts (max 5)</li>
-                        <li>Trade buildings (max 10)</li>
-                    </ul>
-                </li>
-                <li>Trade buildings increase the amount of silver a city produces:
-                    <ul class="list-disc list-inside ml-4">
-                        <li>Tier 1: 1 building = +1 silver (cost 1)</li>
-                        <li>Tier 2: 2 buildings = +2 silver (cost 2)</li>
-                        <li>Tier 3: 3 buildings = +3 silver (cost 3)</li>
-                        <li>Tier 4: 4 buildings = +4 silver (cost 4)</li>
-                        <li>Tier 5: 5 buildings = +5 silver (cost 5)</li>
-                        <li>Tier 6: 6 buildings = +6 silver (cost 6)</li>
-                        <li>Tier 7: 7 buildings = +7 silver (cost 7)</li>
-                        <li>Tier 8: 8 buildings = +8 silver (cost 8)</li>
-                        <li>Tier 9: 9 buildings = +9 silver (cost 9)</li>
-                        <li>Tier 10: 10 buildings = +10 silver (cost 10)</li>
-                    </ul>
-                </li>
-            </ul>
+            <p class="mb-4">Cities are the backbone of your nation's infrastructure. They unlock trade, allow expansion across seas, provide military garrisons, and are required for subculture creation.</p>
+            <p class="mb-6">Cities come in three tiers, starting at Tier 1 and upgrading as you gather more resources and silver.</p>
+            
+            <div class="space-y-4">
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-bold text-green-700 mb-2">T1 Cost:</h3>
+                    <p>3 Food, 3 Stone/Timber | +1 brigade capacity</p>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-bold text-blue-700 mb-2">T2 Cost:</h3>
+                    <p>4 Food, 2 Fuel, 2 Metal, 100 Silver (or 3 Gems), 4 Stone/Timber | +3 brigade capacity, +1 ship capacity</p>
+                </div>
+
+                <div class="bg-purple-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-bold text-purple-700 mb-2">T3 Cost:</h3>
+                    <p>5 Food, 4 Fuel, 4 Metal, 300 Silver (or 9 Gems), 5 Stone/Timber | +5 brigade capacity, +2 ship capacity</p>
+                </div>
+            </div>
+
+            <div class="mt-6 p-4 bg-yellow-50 rounded-lg">
+                <h3 class="text-lg font-bold text-yellow-700 mb-2">Quick Reminders for Infrastructure Management:</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>Plan your resource purchases carefully each cycle. buy what you need, you only have a cap of 12.</li>
+                    <li>Building cities is important both to allow for easier trade, a larger military, and better defense, see Section 5: Warfare to see how city garrisons and brigades work, and Section 6: Boats to see how the navy works</li>
+                </ul>
+            </div>
         </div>
 
         <div class="card fade-in">
-            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Trading</h2>
-            <ul class="list-disc list-inside space-y-2">
-                <li>Players can trade resources and silver with each other.</li>
-                <li>Trade is done through trade routes, which can be established between cities.</li>
-                <li>The amount of trade that can be done is limited by the number of trade buildings in a city.</li>
-            </ul>
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Straits and Canals</h2>
+            <p class="mb-4">The entire canal must be owned to benefit from being a middleman (shown in orange) The entire strait must be owned to benefit from being a middleman (shown in red) (new map currently under construction)</p>
+            
+            <div class="space-y-4">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <p class="mb-2">The owner of a strait or canal is treated as a middleman for naval trading. The standard middleman fees apply, and they may decide to rob the shipment.</p>
+                    <p class="mb-2">-Strait and Canal Middleman fees also apply to any expansions through them, but the expansions cannot be stopped.</p>
+                    <p>the straight controller may additionally charge either 50 silver or 10% of the naval expansion cost (their choice) to those seeking to expand through their straight. Doing so will grant the expander a Trade War justification against them for ownership of the strait or canal.</p>
+                </div>
+
+                <div class="bg-red-50 p-4 rounded-lg">
+                    <p class="mb-2">Pirates operating in straits and canals are always visible.</p>
+                    <p class="mb-2">Canals count as their own sea tiles.</p>
+                    <p>During times of war, the owner of a strait or canal automatically closes it off to their enemy.</p>
+                </div>
+            </div>
         </div>
     </div>
 

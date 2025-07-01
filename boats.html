@@ -11,7 +11,10 @@
     <div id="nav-placeholder"></div>
 
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold mb-8 text-center">Naval Warfare</h1>
+        <div class="text-center mb-8 glassmorphism p-8 rounded-lg floating pulse-glow">
+            <h1 class="hero-title">⛵ Naval Warfare</h1>
+            <p class="text-xl gradient-text">Command the Seas, Control Your Destiny</p>
+        </div>
 
         <!-- Shipbuilding Section -->
         <div id="shipbuilding" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
@@ -112,7 +115,7 @@
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('fade-in-visible');
+                    entry.target.classList.add('visible');
                 }
             });
         });

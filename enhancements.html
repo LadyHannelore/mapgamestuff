@@ -11,8 +11,10 @@
     <div id="nav-placeholder"></div>
 
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold mb-4 text-center">Enhancements to Your Nation/Leader</h1>
-        <p class="text-lg text-center mb-8">In this game, you can customize and strengthen your nation or leader through Religions, Leader Titles, and Subcultures. These enhancements affect gameplay, diplomacy, warfare, and RP opportunities.</p>
+        <div class="text-center mb-8 glassmorphism p-8 rounded-lg floating pulse-glow">
+            <h1 class="hero-title">✨ Enhancements</h1>
+            <p class="text-xl gradient-text">Forge Your Nation's Unique Identity</p>
+        </div>
 
         <!-- Religions Section -->
         <div id="religions" class="glassmorphism card fade-in p-6 rounded-lg shadow-md mb-8">
@@ -119,7 +121,7 @@
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('fade-in-visible');
+                    entry.target.classList.add('visible');
                 }
             });
         });

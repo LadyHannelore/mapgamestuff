@@ -8,53 +8,99 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-gray-100">
+    <div class="particles" id="particles"></div>
     <div id="nav-placeholder"></div>
 
     <div class="container mx-auto px-4 py-8">
-        <div class="bg-white p-8 rounded-lg shadow-md text-center glassmorphism">
-            <h1 class="text-5xl font-bold mb-4">Welcome to the World of Hegemony</h1>
-            <p class="text-xl mb-8"><span id="typed-subtitle"></span></p>
+        <div class="bg-white p-8 rounded-lg shadow-md text-center glassmorphism floating pulse-glow">
+            <h1 class="hero-title">Welcome to the World of Hegemony</h1>
+            <p class="text-xl mb-8 gradient-text"><span id="typed-subtitle"></span></p>
             <a href="map.html" class="btn-gradient">
-                Explore the Map
+                🗺️ Explore the Map
             </a>
         </div>
 
         <!-- Game Summary Section -->
         <div class="card fade-in">
-            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Game Summary</h2>
-            <p class="mb-4">This is a grand strategy roleplaying game set in the world of Aethel. Players take on the role of leaders of nations, guiding their people through diplomacy, warfare, and economic development. The game is divided into several key areas, each with its own set of rules and mechanics:</p>
-            <ul class="list-disc list-inside space-y-2 mb-4">
-                <li><strong>Map & Expansions:</strong> The core of the game, where you can view the world map, plan your expansions, and interact with other nations.</li>
-                <li><strong>Warfare:</strong> Engage in strategic combat with other nations, using a variety of units, generals, and tactics.</li>
-                <li><strong>Battle Simulator:</strong> Test your army compositions and strategies in a mock battle environment before committing to a real war.</li>
-                <li><strong>Religions:</strong> Choose a religion for your nation and gain unique bonuses and abilities.</li>
-                <li><strong>Infrastructure:</strong> Develop your nation's infrastructure, including cities, resources, and trade routes.</li>
-                <li><strong>Enhancements:</strong> Further customize your nation with unique cultural and leadership enhancements.</li>
-                <li><strong>Silver:</strong> The primary currency of the game, earned through various activities and used to fund your nation's growth.</li>
-                <li><strong>Roleplay:</strong> Engage in roleplaying events and quests to further develop your nation's story and earn unique rewards.</li>
-                <li><strong>Diplomacy:</strong> Form alliances, make treaties, and engage in diplomatic relations with other nations.</li>
-                <li><strong>Boats:</strong> Build and command a navy to control the seas and engage in naval warfare.</li>
-            </ul>
+            <h2 class="section-title">🎮 Game Summary</h2>
+            <p class="mb-6 text-lg leading-relaxed">This is a grand strategy roleplaying game set in the world of <span class="gradient-text">Aethel</span>. Players take on the role of leaders of nations, guiding their people through diplomacy, warfare, and economic development. The game is divided into several key areas, each with its own set of rules and mechanics:</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="enhanced-list">
+                    <div class="p-4 rounded-lg card-warfare">
+                        <strong>⚔️ Map & Expansions:</strong> The core of the game, where you can view the world map, plan your expansions, and interact with other nations.
+                    </div>
+                    <div class="p-4 rounded-lg card-warfare">
+                        <strong>🏰 Warfare:</strong> Engage in strategic combat with other nations, using a variety of units, generals, and tactics.
+                    </div>
+                    <div class="p-4 rounded-lg card-warfare">
+                        <strong>⚡ Battle Simulator:</strong> Test your army compositions and strategies in a mock battle environment before committing to a real war.
+                    </div>
+                    <div class="p-4 rounded-lg card-diplomacy">
+                        <strong>🙏 Religions:</strong> Choose a religion for your nation and gain unique bonuses and abilities.
+                    </div>
+                    <div class="p-4 rounded-lg card-infrastructure">
+                        <strong>🏗️ Infrastructure:</strong> Develop your nation's infrastructure, including cities, resources, and trade routes.
+                    </div>
+                </div>
+                <div class="enhanced-list">
+                    <div class="p-4 rounded-lg card-diplomacy">
+                        <strong>✨ Enhancements:</strong> Further customize your nation with unique cultural and leadership enhancements.
+                    </div>
+                    <div class="p-4 rounded-lg card-economy">
+                        <strong>💰 Silver:</strong> The primary currency of the game, earned through various activities and used to fund your nation's growth.
+                    </div>
+                    <div class="p-4 rounded-lg card-diplomacy">
+                        <strong>🎭 Roleplay:</strong> Engage in roleplaying events and quests to further develop your nation's story and earn unique rewards.
+                    </div>
+                    <div class="p-4 rounded-lg card-diplomacy">
+                        <strong>🤝 Diplomacy:</strong> Form alliances, make treaties, and engage in diplomatic relations with other nations.
+                    </div>
+                    <div class="p-4 rounded-lg card-infrastructure">
+                        <strong>⛵ Boats:</strong> Build and command a navy to control the seas and engage in naval warfare.
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Rules Section -->
-        <div class="card fade-in">
-            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Rules</h2>
-            <ol class="list-decimal list-inside space-y-2">
-                <li>Follow Discord TOS and Community Guidelines.</li>
-                <li>The Use of AI is PROHIBITED for anything related to the mechanical playing of the game, including earning silver, winning tournaments, and establishing treaties.</li>
-                <li>All players must read the tutorials before asking questions related to mechanics or gameplay.</li>
-                <li>Administrators ALWAYS have the final say in anything on this server. Personal conflicts between players and moderators, disagreement on rulings, or anything else that needs an administrator should be brought to their attention swiftly, and their arbitration should be respected.</li>
-                <li>Making in game decisions based on out of game events and opinions, while not outright banned, is heavily frowned upon. This is ultimately a game based on Roleplay, and we expect a concerted effort to avoid metagaming.</li>
-                <li>No promotion of any other servers is to be permitted without Administrator approval.</li>
-                <li>Warfare is a key part of this game and the failure to act with respect and courtesy toward your enemies will not be tolerated.</li>
-                <li>Sharing any visual evidence of your War Room is grounds for an immediate Timeout with no exceptions. DO NOT SHARE PICTURES OF YOUR WAR ROOM. You may discuss the contents with anyone, so long as there is no visual evidence shared between you.</li>
+        <div class="card fade-in card-warfare">
+            <h2 class="section-title">📜 Rules</h2>
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded">
+                <p class="text-red-700 font-semibold">⚠️ Important: Please read all rules carefully before participating!</p>
+            </div>
+            <ol class="enhanced-list space-y-3">
+                <li><strong>🔒 Discord Guidelines:</strong> Follow Discord TOS and Community Guidelines at all times.</li>
+                <li><strong>🤖 AI Prohibition:</strong> The use of AI is <span class="text-red-600 font-bold">PROHIBITED</span> for anything related to the mechanical playing of the game, including earning silver, winning tournaments, and establishing treaties.</li>
+                <li><strong>📚 Tutorial Requirement:</strong> All players must read the tutorials before asking questions related to mechanics or gameplay.</li>
+                <li><strong>👑 Administrator Authority:</strong> Administrators <span class="gradient-text font-bold">ALWAYS</span> have the final say in anything on this server. Personal conflicts between players and moderators, disagreement on rulings, or anything else that needs an administrator should be brought to their attention swiftly, and their arbitration should be respected.</li>
+                <li><strong>🎭 Roleplay Focus:</strong> Making in-game decisions based on out-of-game events and opinions, while not outright banned, is heavily frowned upon. This is ultimately a game based on Roleplay, and we expect a concerted effort to avoid metagaming.</li>
+                <li><strong>🚫 No Promotion:</strong> No promotion of any other servers is to be permitted without Administrator approval.</li>
+                <li><strong>⚔️ Warfare Respect:</strong> Warfare is a key part of this game and the failure to act with respect and courtesy toward your enemies will not be tolerated.</li>
+                <li><strong>🔐 War Room Privacy:</strong> Sharing any visual evidence of your War Room is grounds for an <span class="text-red-600 font-bold">immediate Timeout</span> with no exceptions. <span class="bg-yellow-200 px-2 py-1 rounded font-bold">DO NOT SHARE PICTURES OF YOUR WAR ROOM.</span> You may discuss the contents with anyone, so long as there is no visual evidence shared between you.</li>
             </ol>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
     <script>
+        // Particle effects
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Initialize particles
+        createParticles();
+        
         // Navigation loader
         fetch('nav.html')
             .then(res => res.text())
@@ -69,11 +115,13 @@
 
         // Typed.js effect
         new Typed('#typed-subtitle', {
-            strings: ['Your ultimate resource for the mechanics, lore, and strategies of our map game.'],
-            typeSpeed: 40,
-            backSpeed: 50,
-            loop: false,
-            showCursor: false
+            strings: ['Your ultimate resource for the mechanics, lore, and strategies of our map game.', 'Build your empire. Forge alliances. Conquer the world.', 'Welcome to the realm of strategic mastery!'],
+            typeSpeed: 50,
+            backSpeed: 30,
+            loop: true,
+            loopCount: Infinity,
+            showCursor: true,
+            cursorChar: '|'
         });
 
         // Intersection Observer for fade-in animations
@@ -89,6 +137,16 @@
         document.querySelectorAll('.fade-in').forEach(el => {
             observer.observe(el);
         });
+        
+        // Add dynamic text color cycling
+        setInterval(() => {
+            const gradientTexts = document.querySelectorAll('.gradient-text');
+            gradientTexts.forEach(el => {
+                el.style.backgroundImage = `linear-gradient(45deg, 
+                    hsl(${Math.random() * 360}, 70%, 50%), 
+                    hsl(${Math.random() * 360}, 70%, 50%))`;
+            });
+        }, 3000);
     </script>
 </body>
 </html>

@@ -1664,9 +1664,9 @@
         </div>        <!-- Hidden canvas for image generation -->
         <canvas id="battleCanvas" width="1400" height="1400" style="display: none;"></canvas>
 
-        <audio id="bgMusic" src="background-music.mp3" loop></audio>
-        <button id="toggleMusic" class="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 bg-gray-800 text-white p-2 lg:p-3 rounded-full shadow-lg w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 flex items-center justify-center text-xs sm:text-sm lg:text-base z-50">
-            <i class="fas fa-play"></i>
+        <audio id="bgMusic" src="background-music.mp3" loop preload="auto"></audio>
+        <button id="toggleMusic" class="fixed top-2 sm:top-4 right-2 sm:right-4 bg-gray-800 text-white p-2 lg:p-3 rounded-full shadow-lg w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 flex items-center justify-center text-xs sm:text-sm lg:text-base z-50 hover:bg-gray-700 transition-colors">
+            <i class="fas fa-volume-up"></i>
         </button>
     </div>    <script src="battle.js"></script>
     <script>
@@ -1875,15 +1875,57 @@
     function setupMusicControls() {
         const music = document.getElementById('bgMusic');
         const toggleBtn = document.getElementById('toggleMusic');
+        
         if (toggleBtn && music) {
+            // Set initial volume to 25%
+            music.volume = 0.25;
+            
+            // Try to auto-play the music
+            const playMusic = () => {
+                music.play()
+                    .then(() => {
+                        console.log('Background music started automatically');
+                        const icon = toggleBtn.querySelector('i');
+                        icon.className = 'fas fa-volume-up';
+                    })
+                    .catch(e => {
+                        console.log('Auto-play prevented by browser:', e.message);
+                        // If auto-play fails, show play button
+                        const icon = toggleBtn.querySelector('i');
+                        icon.className = 'fas fa-play';
+                    });
+            };
+            
+            // Try to play immediately
+            playMusic();
+            
+            // Also try to play on first user interaction
+            const enableAutoPlay = () => {
+                if (music.paused) {
+                    playMusic();
+                }
+                document.removeEventListener('click', enableAutoPlay);
+                document.removeEventListener('keydown', enableAutoPlay);
+            };
+            
+            document.addEventListener('click', enableAutoPlay);
+            document.addEventListener('keydown', enableAutoPlay);
+            
+            // Handle toggle button click
             toggleBtn.addEventListener('click', () => {
                 const icon = toggleBtn.querySelector('i');
                 if (music.paused) {
-                    music.play().catch(e => console.error("Audio play failed:", e));
-                    icon.className = 'fas fa-pause';
+                    music.play()
+                        .then(() => {
+                            icon.className = 'fas fa-volume-up';
+                        })
+                        .catch(e => {
+                            console.error("Audio play failed:", e);
+                            icon.className = 'fas fa-play';
+                        });
                 } else {
                     music.pause();
-                    icon.className = 'fas fa-play';
+                    icon.className = 'fas fa-volume-mute';
                 }
             });
         }
@@ -2127,21 +2169,8 @@
             });
         }
 
-        // Music toggle
-        const music = document.getElementById('bgMusic');
-        const toggleBtn = document.getElementById('toggleMusic');
-        if (toggleBtn && music) {
-            toggleBtn.addEventListener('click', () => {
-                const icon = toggleBtn.querySelector('i');
-                if (music.paused) {
-                    music.play().catch(e => console.error("Audio play failed:", e));
-                    icon.className = 'fas fa-pause';
-                } else {
-                    music.pause();
-                    icon.className = 'fas fa-play';
-                }
-            });
-        }
+        // Music toggle (handled by setupMusicControls function)
+        // This section is kept for any additional music-related setup if needed
 
         // Get battle result div for both buttons
         const battleResultDiv = document.getElementById('battleResult');
