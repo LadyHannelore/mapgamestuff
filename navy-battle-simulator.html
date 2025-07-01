@@ -812,8 +812,25 @@
 
         // Maneuver phase
         function maneuverPhase(shipA, shipB) {
-            const rollA = rollD6() + shipA.maneuverModifier;
-            const rollB = rollD6() + shipB.maneuverModifier;
+            // Check for auto-fail conditions (Hull Breach damage)
+            const shipAAutoFail = shipA.maneuverModifier <= -100; // Hull Breach auto-fail
+            const shipBAutoFail = shipB.maneuverModifier <= -100; // Hull Breach auto-fail
+            
+            let rollA, rollB;
+            
+            if (shipAAutoFail) {
+                rollA = 0; // Auto-fail shows as 0
+                shipA.maneuverModifier = 0; // Reset after use
+            } else {
+                rollA = rollD6() + shipA.maneuverModifier;
+            }
+            
+            if (shipBAutoFail) {
+                rollB = 0; // Auto-fail shows as 0
+                shipB.maneuverModifier = 0; // Reset after use
+            } else {
+                rollB = rollD6() + shipB.maneuverModifier;
+            }
             
             let winner, action;
             if (rollA > rollB) {
@@ -821,7 +838,7 @@
             } else if (rollB > rollA) {
                 winner = 'B';
             } else {
-                return { winner: 'tie', action: 'hold', rollA, rollB };
+                return { winner: 'tie', action: 'hold', rollA, rollB, shipAAutoFail, shipBAutoFail };
             }
             
             // Winner decides action (for simulation, use random choice)
@@ -835,7 +852,7 @@
                 currentBattle.range++;
             }
             
-            return { winner, action, rollA, rollB };
+            return { winner, action, rollA, rollB, shipAAutoFail, shipBAutoFail };
         }
 
         // Gunnery phase
@@ -900,7 +917,7 @@
             } else if (roll === 1) {
                 ship.damageReportModifier -= 4;
             } else if (roll === 2) {
-                ship.maneuverModifier = -1000; // Auto-fail next maneuver
+                ship.maneuverModifier = -999; // Auto-fail next maneuver (marker value)
                 ship.damageReportModifier -= 2;
             } else if (roll === 3) {
                 ship.damageReportModifier -= 1;
@@ -1360,11 +1377,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div class="p-3 bg-purple-50 rounded-lg">
                             <strong>🏴‍☠️ ${fleetAName} Ship ${shipA.id}</strong><br>
-                            <span class="text-lg">🎲 Rolled: ${maneuver.rollA}</span>
+                            <span class="text-lg">🎲 Rolled: ${maneuver.shipAAutoFail ? '0 (Hull Breach - Auto-fail)' : maneuver.rollA}</span>
                         </div>
                         <div class="p-3 bg-red-50 rounded-lg">
                             <strong>⚓ ${fleetBName} Ship ${shipB.id}</strong><br>
-                            <span class="text-lg">🎲 Rolled: ${maneuver.rollB}</span>
+                            <span class="text-lg">🎲 Rolled: ${maneuver.shipBAutoFail ? '0 (Hull Breach - Auto-fail)' : maneuver.rollB}</span>
                         </div>
                     </div>
                     <div class="text-center p-3 bg-blue-50 rounded-lg mb-4">
