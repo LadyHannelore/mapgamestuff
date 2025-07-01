@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navy Battle Simulator - Map Game Mechanics</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* Naval Combat Specific Styles */
+        .ship-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+            border: 2px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .fleet-a { border-color: rgba(147, 51, 234, 0.5); }
+        .fleet-b { border-color: rgba(239, 68, 68, 0.5); }
+        
+        .range-indicator {
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+            color: white;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+        
+        .damage-report {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        
+        .ship-enhancement {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        
+        .combat-phase {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        
+        .flag-indicator {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin: 2px;
+        }
+        
+        .flag-national { background: #3b82f6; color: white; }
+        .flag-black { background: #1f2937; color: white; }
+        .flag-white { background: #f3f4f6; color: #1f2937; border: 1px solid #d1d5db; }
+        
+        .gunnery-phase-counter {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        
+        .combat-log {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .ship-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin: 2px;
+        }
+        
+        .ship-active { background: #10b981; color: white; }
+        .ship-damaged { background: #f59e0b; color: white; }
+        .ship-sunk { background: #ef4444; color: white; }
+        .ship-captured { background: #8b5cf6; color: white; }
+        
+        /* Animation enhancements */
+        .phase-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: revealPhase 0.8s ease-out forwards;
+        }
+        
+        @keyframes revealPhase {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .battle-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hit-animation {
+            animation: hitFlash 0.5s ease-out;
+        }
+        
+        @keyframes hitFlash {
+            0% { background-color: #ef4444; }
+            50% { background-color: #fbbf24; }
+            100% { background-color: transparent; }
+        }
+        
+        .phase-counter {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 10px 0;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .victory-announcement {
+            animation: victoryFade 1s ease-out;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: 3px solid #d97706;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        @keyframes victoryFade {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.8) translateY(-20px); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1) translateY(0); 
+            }
+        }
+        
+        .ship-sink-animation {
+            animation: sinkShip 1s ease-out;
+        }
+        
+        @keyframes sinkShip {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            50% { transform: translateY(10px) rotate(-5deg); opacity: 0.7; }
+            100% { transform: translateY(30px) rotate(-15deg); opacity: 0; }
+        }
+        
+        .damage-impact {
+            animation: damageShake 0.3s ease-out;
+        }
+        
+        @keyframes damageShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .range-change {
+            animation: rangeShift 0.5s ease-out;
+        }
+        
+        @keyframes rangeShift {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* 2D Animation Styles */
+        .battle-arena {
+            background: linear-gradient(180deg, #3b82f6 0%, #1e40af 100%);
+            border: 3px solid #1d4ed8;
+            border-radius: 15px;
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .sea-waves {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(255,255,255,0.3) 0px,
+                transparent 10px,
+                rgba(255,255,255,0.3) 20px
+            );
+            animation: waveFlow 3s linear infinite;
+        }
+        
+        @keyframes waveFlow {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(20px); }
+        }
+        
+        .ship {
+            position: absolute;
+            width: 60px;
+            height: 30px;
+            background: #8b4513;
+            border-radius: 5px 20px 20px 5px;
+            border: 2px solid #654321;
+            transition: all 0.8s ease-in-out;
+            z-index: 10;
+        }
+        
+        .ship::before {
+            content: '⛵';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            z-index: 11;
+        }
+        
+        .ship-a {
+            left: 50px;
+            top: 100px;
+            background: #9333ea;
+            border-color: #7c3aed;
+        }
+        
+        .ship-b {
+            right: 50px;
+            top: 170px;
+            background: #dc2626;
+            border-color: #b91c1c;
+            transform: scaleX(-1);
+        }
+        
+        .cannon-fire {
+            position: absolute;
+            width: 30px;
+            height: 4px;
+            background: linear-gradient(90deg, #fbbf24, #f59e0b, #dc2626);
+            border-radius: 2px;
+            opacity: 0;
+            z-index: 15;
+        }
+        
+        .cannon-smoke {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(128,128,128,0.8), transparent);
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 12;
+        }
+        
+        .hit-explosion {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #fbbf24, #f59e0b, #dc2626, transparent);
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 20;
+            animation: explode 0.6s ease-out;
+        }
+        
+        @keyframes explode {
+            0% { 
+                opacity: 1; 
+                transform: scale(0.2); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1.2); 
+            }
+            100% { 
+                opacity: 0; 
+                transform: scale(2); 
+            }
+        }
+        
+        .ship-maneuver-advance {
+            animation: shipAdvance 1.5s ease-in-out;
+        }
+        
+        .ship-maneuver-retreat {
+            animation: shipRetreat 1.5s ease-in-out;
+        }
+        
+        .ship-maneuver-hold {
+            animation: shipHold 1s ease-in-out;
+        }
+        
+        @keyframes shipAdvance {
+            0%, 100% { transform: translateX(0) scaleX(1); }
+            50% { transform: translateX(30px) scaleX(1); }
+        }
+        
+        @keyframes shipRetreat {
+            0%, 100% { transform: translateX(0) scaleX(1); }
+            50% { transform: translateX(-30px) scaleX(1); }
+        }
+        
+        @keyframes shipHold {
+            0%, 100% { transform: translateY(0); }
+            25% { transform: translateY(-5px); }
+            75% { transform: translateY(5px); }
+        }
+        
+        .cannon-fire-a {
+            animation: fireCannonA 1s ease-out;
+        }
+        
+        .cannon-fire-b {
+            animation: fireCannonB 1s ease-out;
+        }
+        
+        @keyframes fireCannonA {
+            0% { 
+                opacity: 1; 
+                left: 110px; 
+                width: 10px; 
+            }
+            50% { 
+                opacity: 1; 
+                left: 200px; 
+                width: 20px; 
+            }
+            100% { 
+                opacity: 0; 
+                left: 300px; 
+                width: 30px; 
+            }
+        }
+        
+        @keyframes fireCannonB {
+            0% { 
+                opacity: 1; 
+                right: 110px; 
+                width: 10px; 
+            }
+            50% { 
+                opacity: 1; 
+                right: 200px; 
+                width: 20px; 
+            }
+            100% { 
+                opacity: 0; 
+                right: 300px; 
+                width: 30px; 
+            }
+        }
+        
+        .ship-hit {
+            animation: shipHit 0.8s ease-out;
+        }
+        
+        @keyframes shipHit {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-8px) rotate(-2deg); }
+            75% { transform: translateX(8px) rotate(2deg); }
+        }
+        
+        .ship-sinking {
+            animation: shipSink 2s ease-in forwards;
+        }
+        
+        @keyframes shipSink {
+            0% { 
+                transform: translateY(0) rotate(0deg); 
+                opacity: 1; 
+            }
+            50% { 
+                transform: translateY(20px) rotate(-10deg); 
+                opacity: 0.7; 
+            }
+            100% { 
+                transform: translateY(60px) rotate(-25deg); 
+                opacity: 0; 
+            }
+        }
+        
+        .range-indicator-visual {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.9);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            color: #1e40af;
+            z-index: 25;
+        }
+        
+        .boarding-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            opacity: 0;
+            animation: boardingAction 2s ease-in-out;
+            z-index: 30;
+        }
+        
+        @keyframes boardingAction {
+            0% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.5); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1.2); 
+            }
+            100% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(1); 
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="nav-placeholder"></div>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-8 glassmorphism p-8 rounded-lg floating pulse-glow">
+            <h1 class="hero-title">⛵ Navy Battle Simulator ⚔️</h1>
+            <p class="text-xl gradient-text">Command the Seas, Control the Battle</p>
+            <p class="text-sm mt-2 text-gray-600">Simulate naval combat based on the official naval warfare rules</p>
+        </div>
+
+        <!-- Fleet Setup -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Fleet A -->
+            <div class="ship-section fleet-a p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4 text-purple-700">🏴‍☠️ Fleet A Setup</h2>
+                
+                <!-- Fleet A Name -->
+                <div class="mb-4">
+                    <label for="fleetAName" class="block text-sm font-medium mb-2">Fleet A Name:</label>
+                    <input id="fleetAName" type="text" placeholder="Enter fleet name" class="w-full border p-2 rounded" value="Royal Navy" />
+                </div>
+                
+                <!-- Admiral A Setup -->
+                <div class="mb-6 p-4 bg-white rounded-lg border border-purple-200">
+                    <h4 class="font-semibold mb-3 text-purple-600">Admiral A</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="admiralAName" class="block text-sm font-medium mb-2">Admiral Name:</label>
+                            <input id="admiralAName" type="text" placeholder="Enter admiral name" class="w-full border p-2 rounded" value="Admiral Nelson" />
+                        </div>
+                        <div>
+                            <label for="admiralALevel" class="block text-sm font-medium mb-2">Admiral Level:</label>
+                            <input id="admiralALevel" type="number" min="1" max="10" value="1" class="w-full border p-2 rounded" />
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fleet A Ship Controls -->
+                <div class="border-t-2 border-purple-200 pt-4 bg-white rounded-lg p-4">
+                    <h4 class="font-semibold mb-3 text-purple-600">Add Ships to Fleet A:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                        <select id="enhancementA" class="border p-2 rounded text-sm">
+                            <option value="">No Enhancement</option>
+                            <option value="Additional Firepower">Additional Firepower (+2 gunnery)</option>
+                            <option value="Additional Propulsion">Additional Propulsion (+1 move, +1 maneuver)</option>
+                            <option value="Camouflage">Camouflage (+2 to spot requirement)</option>
+                            <option value="Debris Netting">Debris Netting (salvage resources)</option>
+                            <option value="Experienced Spotters">Experienced Spotters (2 dice spotting)</option>
+                            <option value="False Flags">False Flags (disguise capability)</option>
+                            <option value="Marine Detachment">Marine Detachment (+2 boarding)</option>
+                            <option value="Reinforced Hulls">Reinforced Hulls (+1 damage report)</option>
+                        </select>
+                        <select id="flagA" class="border p-2 rounded text-sm">
+                            <option value="National">National Flags</option>
+                            <option value="Black">Black Flags (Pirate)</option>
+                            <option value="White">White Flags (Surrender)</option>
+                        </select>
+                        <input id="shipCountA" type="number" min="1" max="20" value="1" class="border p-2 rounded" />
+                        <button id="addShipA" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 font-medium">Add Ships</button>
+                    </div>
+                </div>
+                
+                <!-- Fleet A List -->
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Fleet A Ships:</h4>
+                    <div class="bg-white rounded border overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-purple-50">
+                                <tr>
+                                    <th class="text-left p-2 border-b">Enhancement</th>
+                                    <th class="text-left p-2 border-b">Flags</th>
+                                    <th class="text-left p-2 border-b">Status</th>
+                                    <th class="text-left p-2 border-b">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fleetAList">
+                                <!-- Ships will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fleet B -->
+            <div class="ship-section fleet-b p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4 text-red-700">⚓ Fleet B Setup</h2>
+                
+                <!-- Fleet B Name -->
+                <div class="mb-4">
+                    <label for="fleetBName" class="block text-sm font-medium mb-2">Fleet B Name:</label>
+                    <input id="fleetBName" type="text" placeholder="Enter fleet name" class="w-full border p-2 rounded" value="Enemy Fleet" />
+                </div>
+                
+                <!-- Admiral B Setup -->
+                <div class="mb-6 p-4 bg-white rounded-lg border border-red-200">
+                    <h4 class="font-semibold mb-3 text-red-600">Admiral B</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="admiralBName" class="block text-sm font-medium mb-2">Admiral Name:</label>
+                            <input id="admiralBName" type="text" placeholder="Enter admiral name" class="w-full border p-2 rounded" value="Captain Blackbeard" />
+                        </div>
+                        <div>
+                            <label for="admiralBLevel" class="block text-sm font-medium mb-2">Admiral Level:</label>
+                            <input id="admiralBLevel" type="number" min="1" max="10" value="1" class="w-full border p-2 rounded" />
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fleet B Ship Controls -->
+                <div class="border-t-2 border-red-200 pt-4 bg-white rounded-lg p-4">
+                    <h4 class="font-semibold mb-3 text-red-600">Add Ships to Fleet B:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                        <select id="enhancementB" class="border p-2 rounded text-sm">
+                            <option value="">No Enhancement</option>
+                            <option value="Additional Firepower">Additional Firepower (+2 gunnery)</option>
+                            <option value="Additional Propulsion">Additional Propulsion (+1 move, +1 maneuver)</option>
+                            <option value="Camouflage">Camouflage (+2 to spot requirement)</option>
+                            <option value="Debris Netting">Debris Netting (salvage resources)</option>
+                            <option value="Experienced Spotters">Experienced Spotters (2 dice spotting)</option>
+                            <option value="False Flags">False Flags (disguise capability)</option>
+                            <option value="Marine Detachment">Marine Detachment (+2 boarding)</option>
+                            <option value="Reinforced Hulls">Reinforced Hulls (+1 damage report)</option>
+                        </select>
+                        <select id="flagB" class="border p-2 rounded text-sm">
+                            <option value="National">National Flags</option>
+                            <option value="Black">Black Flags (Pirate)</option>
+                            <option value="White">White Flags (Surrender)</option>
+                        </select>
+                        <input id="shipCountB" type="number" min="1" max="20" value="1" class="border p-2 rounded" />
+                        <button id="addShipB" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 font-medium">Add Ships</button>
+                    </div>
+                </div>
+                
+                <!-- Fleet B List -->
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Fleet B Ships:</h4>
+                    <div class="bg-white rounded border overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-red-50">
+                                <tr>
+                                    <th class="text-left p-2 border-b">Enhancement</th>
+                                    <th class="text-left p-2 border-b">Flags</th>
+                                    <th class="text-left p-2 border-b">Status</th>
+                                    <th class="text-left p-2 border-b">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fleetBList">
+                                <!-- Ships will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battle Controls -->
+        <div class="glassmorphism card fade-in p-6 rounded-lg mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-center">⚔️ Naval Combat Controls</h2>
+            <div class="flex flex-wrap justify-center gap-4">
+                <button id="simulateNavalBattle" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-bold shadow-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300">
+                    <i class="fas fa-anchor mr-2"></i>Simulate Naval Battle
+                </button>
+                <button id="newNavalBattle" class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-bold shadow-lg hover:from-green-700 hover:to-green-800 transition-all duration-300">
+                    <i class="fas fa-ship mr-2"></i>New Battle
+                </button>
+                <button id="generateNavalReport" class="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-bold shadow-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-300">
+                    <i class="fas fa-scroll mr-2"></i>Generate Report
+                </button>
+            </div>
+        </div>
+
+        <!-- 2D Battle Arena -->
+        <div id="battleArena" class="glassmorphism card fade-in p-6 rounded-lg mb-8" style="display: none;">
+            <h2 class="text-2xl font-bold mb-4 text-center">🌊 Battle Arena 🌊</h2>
+            <div class="relative bg-gradient-to-b from-blue-300 via-blue-500 to-blue-700 rounded-lg overflow-hidden" style="height: 400px;">
+                <!-- Ocean waves background -->
+                <div class="absolute inset-0 opacity-30">
+                    <div class="wave wave1"></div>
+                    <div class="wave wave2"></div>
+                    <div class="wave wave3"></div>
+                </div>
+                
+                <!-- Range indicators -->
+                <div class="absolute top-2 left-2 right-2 flex justify-between text-white text-sm font-bold">
+                    <span id="rangeDisplay" class="bg-black bg-opacity-50 px-2 py-1 rounded">Range: 2</span>
+                    <span id="phaseDisplay" class="bg-black bg-opacity-50 px-2 py-1 rounded">Phase: Setup</span>
+                </div>
+                
+                <!-- Fleet A ships (left side) -->
+                <div id="fleetAShips" class="absolute left-8 top-1/2 transform -translate-y-1/2 space-y-4">
+                    <!-- Ships will be dynamically added here -->
+                </div>
+                
+                <!-- Fleet B ships (right side) -->
+                <div id="fleetBShips" class="absolute right-8 top-1/2 transform -translate-y-1/2 space-y-4">
+                    <!-- Ships will be dynamically added here -->
+                </div>
+                
+                <!-- Combat effects container -->
+                <div id="combatEffects" class="absolute inset-0 pointer-events-none">
+                    <!-- Cannon fire, explosions, etc. will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Battle Results -->
+        <div id="navalBattleResult" class="combat-log min-h-48 mb-8">
+            <div class="text-center text-gray-500 py-8">
+                <i class="fas fa-ship text-4xl mb-4"></i>
+                <p>Set up your fleets and click "Simulate Naval Battle" to begin the engagement!</p>
+                <p class="text-sm mt-2">⚠️ Remember: Combat is limited to 10 Gunnery phases maximum</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables for fleets
+        window.fleetA = [];
+        window.fleetB = [];
+        
+        // Ship enhancement effects
+        const SHIP_ENHANCEMENTS = {
+            'Additional Firepower': { gunnery: 2 },
+            'Additional Propulsion': { move: 1, maneuver: 1 },
+            'Camouflage': { spotRequirement: 2 },
+            'Debris Netting': { salvage: true },
+            'Experienced Spotters': { spotDice: 2 },
+            'False Flags': { disguise: true },
+            'Marine Detachment': { boarding: 2, pirateProtection: 0.5 },
+            'Reinforced Hulls': { damageReport: 1 }
+        };
+
+        // Current battle state
+        let currentBattle = {
+            range: 2, // All battles start at Range 2
+            gunneryPhase: 0,
+            maxGunneryPhases: 10,
+            fleetAShips: [],
+            fleetBShips: [],
+            battleLog: []
+        };
+
+        // Add ships to fleet
+        function addShipsToFleet(fleet, listElement, enhancement, flag, count) {
+            for (let i = 0; i < count; i++) {
+                const ship = {
+                    id: fleet.length + i + 1,
+                    enhancement: enhancement || 'None',
+                    flag: flag,
+                    status: 'Active',
+                    damageReports: [],
+                    gunneryModifier: 0,
+                    maneuverModifier: 0,
+                    boardingModifier: 0,
+                    damageReportModifier: 0
+                };
+                
+                // Apply enhancement effects
+                if (enhancement && SHIP_ENHANCEMENTS[enhancement]) {
+                    const effects = SHIP_ENHANCEMENTS[enhancement];
+                    ship.gunneryModifier += effects.gunnery || 0;
+                    ship.maneuverModifier += effects.maneuver || 0;
+                    ship.boardingModifier += effects.boarding || 0;
+                    ship.damageReportModifier += effects.damageReport || 0;
+                }
+                
+                fleet.push(ship);
+            }
+            renderFleet(listElement, fleet);
+        }
+
+        // Render fleet display
+        function renderFleet(listElement, fleet) {
+            listElement.innerHTML = '';
+            const fleetId = listElement.id.includes('fleetA') ? 'A' : 'B';
+            
+            fleet.forEach((ship, index) => {
+                const row = document.createElement('tr');
+                row.className = 'border-b hover:bg-gray-50';
+                
+                row.innerHTML = `
+                    <td class="p-2">
+                        ${ship.enhancement !== 'None' ? `<span class="ship-enhancement">${ship.enhancement}</span>` : 'No Enhancement'}
+                    </td>
+                    <td class="p-2">
+                        <span class="flag-indicator flag-${ship.flag.toLowerCase()}">${ship.flag}</span>
+                    </td>
+                    <td class="p-2">
+                        <span class="ship-status ship-${ship.status.toLowerCase()}">${ship.status}</span>
+                    </td>
+                    <td class="p-2">
+                        <button onclick="removeShip(${index}, '${fleetId}')" class="px-2 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </td>
+                `;
+                
+                listElement.appendChild(row);
+            });
+        }
+
+        // Remove ship from fleet
+        function removeShip(index, fleetId) {
+            const fleet = fleetId === 'A' ? window.fleetA : window.fleetB;
+            const listElement = document.getElementById(`fleet${fleetId}List`);
+            fleet.splice(index, 1);
+            renderFleet(listElement, fleet);
+        }
+
+        // Roll dice
+        function rollD6() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        // Spotting check
+        function spotCheck(ship1, ship2) {
+            let requiredRoll = 4; // Base requirement is 4-6
+            
+            // Apply camouflage modifier
+            if (ship2.enhancement === 'Camouflage') {
+                requiredRoll += 2;
+            }
+            
+            let dice = 1;
+            if (ship1.enhancement === 'Experienced Spotters') {
+                dice = 2;
+            }
+            
+            let spotted = false;
+            for (let i = 0; i < dice; i++) {
+                const roll = rollD6();
+                if (roll >= requiredRoll) {
+                    spotted = true;
+                    break;
+                }
+            }
+            
+            return spotted;
+        }
+
+        // Maneuver phase
+        function maneuverPhase(shipA, shipB) {
+            const rollA = rollD6() + shipA.maneuverModifier;
+            const rollB = rollD6() + shipB.maneuverModifier;
+            
+            let winner, action;
+            if (rollA > rollB) {
+                winner = 'A';
+            } else if (rollB > rollA) {
+                winner = 'B';
+            } else {
+                return { winner: 'tie', action: 'hold', rollA, rollB };
+            }
+            
+            // Winner decides action (for simulation, use random choice)
+            const actions = ['advance', 'retreat', 'hold'];
+            action = actions[Math.floor(Math.random() * actions.length)];
+            
+            // Apply action to range
+            if (action === 'advance' && currentBattle.range > 0) {
+                currentBattle.range--;
+            } else if (action === 'retreat' && currentBattle.range < 4) {
+                currentBattle.range++;
+            }
+            
+            return { winner, action, rollA, rollB };
+        }
+
+        // Gunnery phase
+        function gunneryPhase(shipA, shipB) {
+            const range = currentBattle.range;
+            let modifierA = shipA.gunneryModifier;
+            let modifierB = shipB.gunneryModifier;
+            
+            // Range bonuses
+            if (range === 1) {
+                modifierA += 2;
+                modifierB += 2;
+            } else if (range === 2) {
+                modifierA += 1;
+                modifierB += 1;
+            }
+            
+            const rollA = rollD6() + modifierA;
+            const rollB = rollD6() + modifierB;
+            
+            const hitA = rollA >= 5;
+            const hitB = rollB >= 5;
+            
+            let damageA = null, damageB = null;
+            
+            if (hitA) {
+                damageB = damageReport(shipB);
+                shipB.damageReports.push(damageB);
+            }
+            
+            if (hitB) {
+                damageA = damageReport(shipA);
+                shipA.damageReports.push(damageA);
+            }
+            
+            return {
+                rollA, rollB, hitA, hitB, damageA, damageB,
+                modifierA, modifierB
+            };
+        }
+
+        // Damage report
+        function damageReport(ship) {
+            let roll = rollD6() + ship.damageReportModifier;
+            
+            const damageTypes = {
+                7: { name: 'Glancing Blow', effect: 'No effect' },
+                6: { name: 'Glancing Blow', effect: 'No effect' },
+                5: { name: 'Blasted Deck', effect: '-1 to next boarding check' },
+                4: { name: 'Ammunition Strike', effect: '-2 to next gunnery check' },
+                3: { name: 'Raking Fire', effect: '-1 to next damage report' },
+                2: { name: 'Hull Breach', effect: 'Auto-fail next maneuver, -2 to next damage report' },
+                1: { name: 'Critical Hit', effect: '-4 to next damage report' },
+                0: { name: 'Kill Shot', effect: 'Ship sinks' }
+            };
+            
+            // Apply damage effects
+            const damage = damageTypes[Math.min(roll, 7)] || damageTypes[0];
+            
+            if (roll <= 0) {
+                ship.status = 'Sunk';
+            } else if (roll === 1) {
+                ship.damageReportModifier -= 4;
+            } else if (roll === 2) {
+                ship.maneuverModifier = -1000; // Auto-fail next maneuver
+                ship.damageReportModifier -= 2;
+            } else if (roll === 3) {
+                ship.damageReportModifier -= 1;
+            } else if (roll === 4) {
+                ship.gunneryModifier -= 2;
+            } else if (roll === 5) {
+                ship.boardingModifier -= 1;
+            }
+            
+            return { roll, ...damage };
+        }
+
+        // Boarding phase
+        function boardingPhase(shipA, shipB) {
+            const rollA = rollD6() + shipA.boardingModifier;
+            const rollB = rollD6() + shipB.boardingModifier;
+            
+            let winner = null;
+            if (Math.abs(rollA - rollB) >= 3) {
+                winner = rollA > rollB ? 'A' : 'B';
+                if (winner === 'A') {
+                    shipB.status = 'Captured';
+                } else {
+                    shipA.status = 'Captured';
+                }
+            }
+            
+            return { rollA, rollB, winner };
+        }
+
+        // Enhanced 2D Animation Functions
+        
+        // Initialize battle arena with ships
+        function initializeBattleArena() {
+            const arena = document.getElementById('battleArena');
+            if (!arena) return;
+            
+            const fleetAContainer = document.getElementById('fleetAShips');
+            const fleetBContainer = document.getElementById('fleetBShips');
+            
+            // Clear existing ships
+            fleetAContainer.innerHTML = '';
+            fleetBContainer.innerHTML = '';
+            
+            // Add Fleet A ships (left side)
+            currentBattle.fleetAShips.forEach((ship, index) => {
+                if (ship.status !== 'sunk') {
+                    const shipElement = createShipElement(ship, 'fleet-a', index);
+                    fleetAContainer.appendChild(shipElement);
+                }
+            });
+            
+            // Add Fleet B ships (right side)
+            currentBattle.fleetBShips.forEach((ship, index) => {
+                if (ship.status !== 'sunk') {
+                    const shipElement = createShipElement(ship, 'fleet-b', index);
+                    fleetBContainer.appendChild(shipElement);
+                }
+            });
+            
+            // Show arena
+            arena.style.display = 'block';
+            arena.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Create visual ship element
+        function createShipElement(ship, fleetClass, index) {
+            const shipDiv = document.createElement('div');
+            shipDiv.className = `battle-ship ${fleetClass}`;
+            shipDiv.id = `${fleetClass}-ship-${index}`;
+            shipDiv.setAttribute('data-ship-index', index);
+            
+            // Add health bar
+            const healthBar = document.createElement('div');
+            healthBar.className = 'ship-health-bar';
+            const healthFill = document.createElement('div');
+            healthFill.className = 'ship-health-fill';
+            healthFill.style.width = '100%';
+            healthBar.appendChild(healthFill);
+            shipDiv.appendChild(healthBar);
+            
+            // Add ship name
+            const shipName = document.createElement('div');
+            shipName.className = 'ship-name';
+            shipName.textContent = ship.id || `Ship ${index + 1}`;
+            shipDiv.appendChild(shipName);
+            
+            return shipDiv;
+        }
+
+        // Update ship health visually
+        function updateShipHealth(fleetClass, shipIndex, ship) {
+            const shipElement = document.getElementById(`${fleetClass}-ship-${shipIndex}`);
+            if (!shipElement) return;
+            
+            const healthFill = shipElement.querySelector('.ship-health-fill');
+            const maxHP = ship.structure || 3;
+            const currentHP = Math.max(0, maxHP - ship.damageReports.length);
+            const healthPercent = (currentHP / maxHP) * 100;
+            
+            healthFill.style.width = `${healthPercent}%`;
+            
+            // Update health bar color based on damage
+            healthFill.className = 'ship-health-fill';
+            if (healthPercent <= 25) {
+                healthFill.classList.add('critical');
+            } else if (healthPercent <= 50) {
+                healthFill.classList.add('damaged');
+            }
+        }
+
+        // Enhanced maneuver animation
+        function animateManeuver(winner, action, shipA, shipB) {
+            const fleetAShips = document.querySelectorAll('.battle-ship.fleet-a');
+            const fleetBShips = document.querySelectorAll('.battle-ship.fleet-b');
+            const allShips = [...fleetAShips, ...fleetBShips];
+            
+            // Animate all ships maneuvering
+            allShips.forEach(ship => {
+                if (!ship.classList.contains('sinking')) {
+                    ship.classList.add('maneuvering');
+                }
+            });
+            
+            // Update phase display
+            updatePhaseDisplay('Maneuver Phase');
+            
+            // Clean up animation
+            setTimeout(() => {
+                allShips.forEach(ship => {
+                    ship.classList.remove('maneuvering');
+                });
+            }, 1000);
+        }
+
+        // Enhanced gunnery animation with cannon fire
+        function animateGunnery(hitA, hitB, shipA, shipB) {
+            const fleetAShips = document.querySelectorAll('.battle-ship.fleet-a');
+            const fleetBShips = document.querySelectorAll('.battle-ship.fleet-b');
+            
+            updatePhaseDisplay('Gunnery Phase');
+            
+            // Animate firing
+            if (fleetAShips.length > 0) {
+                fleetAShips[0].classList.add('firing');
+                setTimeout(() => fleetAShips[0].classList.remove('firing'), 800);
+                
+                if (hitA && fleetBShips.length > 0) {
+                    setTimeout(() => {
+                        createExplosion(fleetBShips[0]);
+                        animateShipDamage('fleet-b', 0);
+                        updateShipHealth('fleet-b', 0, shipB);
+                        
+                        if (shipB.status === 'sunk') {
+                            setTimeout(() => animateShipSinking('fleet-b', 0), 500);
+                        }
+                    }, 500);
+                }
+            }
+            
+            if (fleetBShips.length > 0) {
+                setTimeout(() => {
+                    fleetBShips[0].classList.add('firing');
+                    setTimeout(() => fleetBShips[0].classList.remove('firing'), 800);
+                    
+                    if (hitB && fleetAShips.length > 0) {
+                        setTimeout(() => {
+                            createExplosion(fleetAShips[0]);
+                            animateShipDamage('fleet-a', 0);
+                            updateShipHealth('fleet-a', 0, shipA);
+                            
+                            if (shipA.status === 'sunk') {
+                                setTimeout(() => animateShipSinking('fleet-a', 0), 500);
+                            }
+                        }, 500);
+                    }
+                }, 300);
+            }
+        }
+
+        // Enhanced boarding animation
+        function animateBoarding() {
+            const fleetAShips = document.querySelectorAll('.battle-ship.fleet-a');
+            const fleetBShips = document.querySelectorAll('.battle-ship.fleet-b');
+            
+            updatePhaseDisplay('Boarding Phase');
+            
+            // Animate ships moving for boarding
+            [...fleetAShips, ...fleetBShips].forEach(ship => {
+                if (!ship.classList.contains('sinking')) {
+                    ship.classList.add('boarding');
+                }
+            });
+            
+            // Create boarding plank effect
+            if (fleetAShips.length > 0 && fleetBShips.length > 0) {
+                const boardingEffect = document.createElement('div');
+                boardingEffect.className = 'boarding-effect';
+                
+                const arenaRect = document.getElementById('battleArena').getBoundingClientRect();
+                const shipARect = fleetAShips[0].getBoundingClientRect();
+                
+                boardingEffect.style.left = `${shipARect.left - arenaRect.left + shipARect.width}px`;
+                boardingEffect.style.top = `${shipARect.top - arenaRect.top + shipARect.height/2}px`;
+                boardingEffect.style.setProperty('--boarding-distance', '150px');
+                
+                document.getElementById('combatEffects').appendChild(boardingEffect);
+                
+                setTimeout(() => {
+                    if (boardingEffect.parentNode) {
+                        boardingEffect.parentNode.removeChild(boardingEffect);
+                    }
+                }, 1500);
+            }
+            
+            // Clean up boarding animation
+            setTimeout(() => {
+                [...fleetAShips, ...fleetBShips].forEach(ship => {
+                    ship.classList.remove('boarding');
+                });
+            }, 1500);
+        }
+
+        // Animate ship taking damage
+        function animateShipDamage(fleetClass, shipIndex) {
+            const shipElement = document.getElementById(`${fleetClass}-ship-${shipIndex}`);
+            if (!shipElement) return;
+            
+            // Remove existing animation classes
+            shipElement.classList.remove('damaged', 'heavily-damaged');
+            
+            // Add damage animation
+            shipElement.classList.add('damaged');
+            
+            // Remove animation class after animation completes
+            setTimeout(() => {
+                shipElement.classList.remove('damaged');
+            }, 500);
+        }
+
+        // Animate ship sinking
+        function animateShipSinking(fleetClass, shipIndex) {
+            const shipElement = document.getElementById(`${fleetClass}-ship-${shipIndex}`);
+            if (!shipElement) return;
+            
+            shipElement.classList.add('sinking');
+            
+            setTimeout(() => {
+                shipElement.style.visibility = 'hidden';
+            }, 2000);
+        }
+
+        // Create explosion effect at target
+        function createExplosion(targetElement) {
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            
+            const targetRect = targetElement.getBoundingClientRect();
+            const arenaRect = document.getElementById('battleArena').getBoundingClientRect();
+            
+            explosion.style.left = `${targetRect.left - arenaRect.left + targetRect.width/2 - 20}px`;
+            explosion.style.top = `${targetRect.top - arenaRect.top + targetRect.height/2 - 20}px`;
+            
+            document.getElementById('combatEffects').appendChild(explosion);
+            
+            // Create smoke effect
+            setTimeout(() => {
+                createSmokeEffect(targetElement);
+            }, 300);
+            
+            // Clean up explosion
+            setTimeout(() => {
+                if (explosion.parentNode) {
+                    explosion.parentNode.removeChild(explosion);
+                }
+            }, 600);
+        }
+
+        // Create smoke effect
+        function createSmokeEffect(targetElement) {
+            const smoke = document.createElement('div');
+            smoke.className = 'smoke';
+            
+            const targetRect = targetElement.getBoundingClientRect();
+            const arenaRect = document.getElementById('battleArena').getBoundingClientRect();
+            
+            smoke.style.left = `${targetRect.left - arenaRect.left + targetRect.width/2 - 10}px`;
+            smoke.style.top = `${targetRect.top - arenaRect.top + targetRect.height/2 - 10}px`;
+            
+            document.getElementById('combatEffects').appendChild(smoke);
+            
+            setTimeout(() => {
+                if (smoke.parentNode) {
+                    smoke.parentNode.removeChild(smoke);
+                }
+            }, 2000);
+        }
+
+        // Update phase display with animation
+        function updatePhaseDisplay(phase) {
+            const phaseDisplay = document.getElementById('phaseDisplay');
+            if (phaseDisplay) {
+                phaseDisplay.textContent = `Phase: ${phase}`;
+            }
+            
+            // Create phase transition effect
+            const phaseTransition = document.createElement('div');
+            phaseTransition.className = 'phase-transition';
+            phaseTransition.textContent = phase;
+            
+            const combatEffects = document.getElementById('combatEffects');
+            if (combatEffects) {
+                combatEffects.appendChild(phaseTransition);
+                
+                setTimeout(() => {
+                    if (phaseTransition.parentNode) {
+                        phaseTransition.parentNode.removeChild(phaseTransition);
+                    }
+                }, 2000);
+            }
+        }
+
+        // Update range display with animation
+        function updateRangeDisplay(range) {
+            const rangeDisplay = document.getElementById('rangeDisplay');
+            if (rangeDisplay) {
+                rangeDisplay.textContent = `Range: ${range}`;
+            }
+            
+            const rangeChange = document.createElement('div');
+            rangeChange.className = 'range-change';
+            rangeChange.textContent = `Range: ${range}`;
+            
+            const combatEffects = document.getElementById('combatEffects');
+            if (combatEffects) {
+                combatEffects.appendChild(rangeChange);
+                
+                setTimeout(() => {
+                    if (rangeChange.parentNode) {
+                        rangeChange.parentNode.removeChild(rangeChange);
+                    }
+                }, 2000);
+            }
+        }
+
+        // Show victory animation
+        function showVictoryAnimation(winner) {
+            const victoryEffect = document.createElement('div');
+            victoryEffect.className = 'victory-effect';
+            victoryEffect.innerHTML = `
+                <div>🏆 VICTORY! 🏆</div>
+                <div style="font-size: 18px; margin-top: 10px;">${winner} Wins!</div>
+            `;
+            
+            const combatEffects = document.getElementById('combatEffects');
+            if (combatEffects) {
+                combatEffects.appendChild(victoryEffect);
+                
+                setTimeout(() => {
+                    if (victoryEffect.parentNode) {
+                        victoryEffect.parentNode.removeChild(victoryEffect);
+                    }
+                }, 5000);
+            }
+        }
+
+        // Main naval battle simulation with delays and animations
+        async function simulateNavalBattle() {
+            if (window.fleetA.length === 0 || window.fleetB.length === 0) {
+                updateNavalBattleDisplay('<div class="text-red-600 font-bold">⚠️ Both fleets must have at least one ship!</div>');
+                return;
+            }
+            
+            // Disable battle button during simulation
+            const battleButton = document.getElementById('simulateNavalBattle');
+            battleButton.disabled = true;
+            battleButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Simulating Battle...';
+            
+            // Initialize battle
+            currentBattle = {
+                range: 2,
+                gunneryPhase: 0,
+                maxGunneryPhases: 10,
+                fleetAShips: [...window.fleetA.map(ship => ({...ship}))],
+                fleetBShips: [...window.fleetB.map(ship => ({...ship}))],
+                battleLog: []
+            };
+            
+            // Initialize 2D battle arena
+            initializeBattleArena();
+            
+            const fleetAName = document.getElementById('fleetAName').value || 'Fleet A';
+            const fleetBName = document.getElementById('fleetBName').value || 'Fleet B';
+            
+            let battleHTML = `
+                <div class="text-center mb-6 phase-reveal">
+                    <h3 class="text-2xl font-bold text-blue-600">⚔️ Naval Battle: ${fleetAName} vs ${fleetBName} ⚔️</h3>
+                    <div class="range-indicator">Starting Range: ${currentBattle.range}</div>
+                    <div class="phase-counter">Battle Commencing...</div>
+                </div>
+                
+                <!-- 2D Battle Arena -->
+                <div class="battle-arena" id="battleArena">
+                    <div class="sea-waves"></div>
+                    <div class="range-indicator-visual" id="rangeDisplay">Range: ${currentBattle.range}</div>
+                    <div class="ship ship-a" id="shipA"></div>
+                    <div class="ship ship-b" id="shipB"></div>
+                </div>
+            `;
+            
+            updateNavalBattleDisplay(battleHTML);
+            await delay(2000); // Initial delay
+            
+            // Simulate battle phases
+            let battleEnded = false;
+            let currentShipA = 0;
+            let currentShipB = 0;
+            let phaseCount = 0;
+            
+            while (!battleEnded && currentBattle.gunneryPhase < currentBattle.maxGunneryPhases) {
+                phaseCount++;
+                const shipA = currentBattle.fleetAShips[currentShipA % currentBattle.fleetAShips.length];
+                const shipB = currentBattle.fleetBShips[currentShipB % currentBattle.fleetBShips.length];
+                
+                // Skip sunk/captured ships
+                if (shipA.status !== 'Active') {
+                    currentShipA++;
+                    continue;
+                }
+                if (shipB.status !== 'Active') {
+                    currentShipB++;
+                    continue;
+                }
+                
+                // Show loading indicator
+                const loadingHTML = `
+                    <div class="battle-loading">
+                        <div class="loading-spinner"></div>
+                        <span>Preparing Combat Phase ${phaseCount}...</span>
+                    </div>
+                `;
+                updateNavalBattleDisplay(loadingHTML, true);
+                await delay(1500);
+                
+                let phaseHTML = `<div class="combat-phase phase-reveal">`;
+                phaseHTML += `<div class="phase-counter">Combat Phase ${phaseCount}</div>`;
+                
+                // Maneuver Phase
+                const maneuver = maneuverPhase(shipA, shipB);
+                
+                // Animate maneuver
+                animateManeuver(maneuver.winner, maneuver.action, shipA, shipB);
+                updateRangeDisplay(currentBattle.range);
+                
+                phaseHTML += `
+                    <h4 class="font-bold text-blue-600 mb-2">⚓ Maneuver Phase</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="p-3 bg-purple-50 rounded-lg">
+                            <strong>🏴‍☠️ ${fleetAName} Ship ${shipA.id}</strong><br>
+                            <span class="text-lg">🎲 Rolled: ${maneuver.rollA}</span>
+                        </div>
+                        <div class="p-3 bg-red-50 rounded-lg">
+                            <strong>⚓ ${fleetBName} Ship ${shipB.id}</strong><br>
+                            <span class="text-lg">🎲 Rolled: ${maneuver.rollB}</span>
+                        </div>
+                    </div>
+                    <div class="text-center p-3 bg-blue-50 rounded-lg mb-4">
+                        <strong>📋 Result:</strong> ${maneuver.winner === 'A' ? fleetAName : maneuver.winner === 'B' ? fleetBName : 'Tie'} 
+                        ${maneuver.winner !== 'tie' ? `<span class="text-green-600 font-bold">${maneuver.action}s</span>` : '<span class="text-gray-600">both hold position</span>'}
+                    </div>
+                    <div class="range-indicator range-change">Current Range: ${currentBattle.range}</div>
+                `;
+                
+                updateNavalBattleDisplay(phaseHTML, true);
+                await delay(3000); // 3 second delay after maneuver phase
+                
+                // Check for boarding at Range 0
+                if (currentBattle.range === 0) {
+                    const boarding = boardingPhase(shipA, shipB);
+                    
+                    // Animate boarding
+                    animateBoarding();
+                    
+                    let boardingHTML = `
+                        <div class="mt-4 p-4 bg-red-100 border-l-4 border-red-500 rounded">
+                            <h4 class="font-bold text-red-600 mb-2">🏴‍☠️ BOARDING PHASE</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div class="p-3 bg-purple-50 rounded-lg">
+                                    <strong>${fleetAName} Ship ${shipA.id}</strong><br>
+                                    <span class="text-lg">⚔️ Rolled: ${boarding.rollA}</span>
+                                </div>
+                                <div class="p-3 bg-red-50 rounded-lg">
+                                    <strong>${fleetBName} Ship ${shipB.id}</strong><br>
+                                    <span class="text-lg">⚔️ Rolled: ${boarding.rollB}</span>
+                                </div>
+                            </div>
+                    `;
+                    
+                    if (boarding.winner) {
+                        const winnerFleet = boarding.winner === 'A' ? fleetAName : fleetBName;
+                        const loserFleet = boarding.winner === 'A' ? fleetBName : fleetAName;
+                        boardingHTML += `<div class="text-center p-3 bg-green-100 rounded-lg"><p class="font-bold text-green-600 text-lg">🎉 ${winnerFleet} captures ${loserFleet} ship!</p></div>`;
+                        battleEnded = true;
+                    } else {
+                        boardingHTML += `<div class="text-center p-3 bg-yellow-100 rounded-lg"><p class="text-yellow-700">Boarding attempt fails, returning to maneuver phase</p></div>`;
+                        currentBattle.range = 1; // Move back to Range 1
+                        updateRangeDisplay(currentBattle.range);
+                    }
+                    
+                    boardingHTML += `</div>`;
+                    updateNavalBattleDisplay(boardingHTML, true);
+                    await delay(3000);
+                }
+                
+                // Gunnery Phase (if not boarding)
+                if (currentBattle.range > 0 && !battleEnded) {
+                    currentBattle.gunneryPhase++;
+                    
+                    let gunneryHTML = `
+                        <div class="mt-4 p-4 bg-orange-100 border-l-4 border-orange-500 rounded">
+                            <div class="gunnery-phase-counter">💥 Gunnery Phase ${currentBattle.gunneryPhase}/10</div>
+                            <h4 class="font-bold text-orange-600 mb-2">Cannon Fire Exchange</h4>
+                    `;
+                    
+                    updateNavalBattleDisplay(gunneryHTML, true);
+                    await delay(1500);
+                    
+                    const gunnery = gunneryPhase(shipA, shipB);
+                    
+                    // Animate gunnery with enhanced effects
+                    animateGunnery(gunnery.hitA, gunnery.hitB, shipA, shipB);
+                    
+                    let gunneryResultHTML = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="p-3 bg-purple-50 rounded-lg ${gunnery.hitA ? 'hit-animation' : ''}">
+                                <strong>🏴‍☠️ ${fleetAName} Ship ${shipA.id}</strong><br>
+                                <span class="text-sm text-gray-600">Base roll + ${gunnery.modifierA} modifier</span><br>
+                                <span class="text-lg">🎲 Total: ${gunnery.rollA} - ${gunnery.hitA ? '<span class="text-red-600 font-bold">💥 HIT!</span>' : '<span class="text-gray-500">Miss</span>'}</span>
+                            </div>
+                            <div class="p-3 bg-red-50 rounded-lg ${gunnery.hitB ? 'hit-animation' : ''}">
+                                <strong>⚓ ${fleetBName} Ship ${shipB.id}</strong><br>
+                                <span class="text-sm text-gray-600">Base roll + ${gunnery.modifierB} modifier</span><br>
+                                <span class="text-lg">🎲 Total: ${gunnery.rollB} - ${gunnery.hitB ? '<span class="text-red-600 font-bold">💥 HIT!</span>' : '<span class="text-gray-500">Miss</span>'}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    updateNavalBattleDisplay(gunneryResultHTML, true);
+                    await delay(2000);
+                    
+                    // Damage reports
+                    if (gunnery.damageA || gunnery.damageB) {
+                        let damageHTML = `<div class="mt-4">`;
+                        
+                        if (gunnery.damageA) {
+                            damageHTML += `
+                                <div class="damage-report damage-impact mb-3">
+                                    <strong>💀 ${fleetAName} Ship ${shipA.id} Damage Report:</strong><br>
+                                    <span class="text-lg font-bold text-red-600">${gunnery.damageA.name}</span><br>
+                                    <span class="text-sm italic">${gunnery.damageA.effect}</span>
+                                </div>
+                            `;
+                            if (shipA.status === 'Sunk') {
+                                damageHTML += `<div class="text-center p-3 bg-red-100 rounded-lg ship-sink-animation"><p class="font-bold text-red-600 text-lg">🔥⚰️ ${fleetAName} Ship ${shipA.id} has been sunk!</p></div>`;
+                            }
+                        }
+                        
+                        if (gunnery.damageB) {
+                            damageHTML += `
+                                <div class="damage-report damage-impact mb-3">
+                                    <strong>💀 ${fleetBName} Ship ${shipB.id} Damage Report:</strong><br>
+                                    <span class="text-lg font-bold text-red-600">${gunnery.damageB.name}</span><br>
+                                    <span class="text-sm italic">${gunnery.damageB.effect}</span>
+                                </div>
+                            `;
+                            if (shipB.status === 'Sunk') {
+                                damageHTML += `<div class="text-center p-3 bg-red-100 rounded-lg ship-sink-animation"><p class="font-bold text-red-600 text-lg">🔥⚰️ ${fleetBName} Ship ${shipB.id} has been sunk!</p></div>`;
+                            }
+                        }
+                        
+                        damageHTML += `</div></div>`;
+                        updateNavalBattleDisplay(damageHTML, true);
+                        await delay(3000);
+                    } else {
+                        updateNavalBattleDisplay(`</div>`, true);
+                        await delay(1500);
+                    }
+                }
+                
+                updateNavalBattleDisplay(`</div>`, true);
+                
+                // Check for battle end conditions
+                const activeShipsA = currentBattle.fleetAShips.filter(s => s.status === 'Active').length;
+                const activeShipsB = currentBattle.fleetBShips.filter(s => s.status === 'Active').length;
+                
+                if (activeShipsA === 0 || activeShipsB === 0 || currentBattle.range >= 4) {
+                    battleEnded = true;
+                }
+                
+                // Move to next ships if current ones are out of action
+                if (shipA.status !== 'Active') currentShipA++;
+                if (shipB.status !== 'Active') currentShipB++;
+            }
+            
+            // Battle conclusion with animation
+            await delay(2000);
+            let conclusionHTML = `<div class="text-center mt-6 p-6 victory-announcement rounded-lg">`;
+            
+            if (currentBattle.gunneryPhase >= currentBattle.maxGunneryPhases) {
+                // 10 gunnery phase limit reached
+                const damageA = currentBattle.fleetAShips.reduce((acc, ship) => 
+                    acc + ship.damageReports.filter(d => d.roll <= 4).length, 0);
+                const damageB = currentBattle.fleetBShips.reduce((acc, ship) => 
+                    acc + ship.damageReports.filter(d => d.roll <= 4).length, 0);
+                
+                if (damageA > damageB) {
+                    conclusionHTML += `<h3 class="text-3xl font-bold mb-4">🏆 ${fleetBName} Wins!</h3>`;
+                    conclusionHTML += `<p class="text-lg">⏰ 10 gunnery phase limit reached. ${fleetAName} took more severe damage (${damageA} vs ${damageB})</p>`;
+                    showVictoryAnimation(fleetBName);
+                } else if (damageB > damageA) {
+                    conclusionHTML += `<h3 class="text-3xl font-bold mb-4">🏆 ${fleetAName} Wins!</h3>`;
+                    conclusionHTML += `<p class="text-lg">⏰ 10 gunnery phase limit reached. ${fleetBName} took more severe damage (${damageB} vs ${damageA})</p>`;
+                    showVictoryAnimation(fleetAName);
+                } else {
+                    conclusionHTML += `<h3 class="text-3xl font-bold mb-4">⚖️ Draw!</h3>`;
+                    conclusionHTML += `<p class="text-lg">⏰ 10 gunnery phase limit reached. Both fleets took equal damage (${damageA} each)</p>`;
+                }
+            } else {
+                const activeShipsA = currentBattle.fleetAShips.filter(s => s.status === 'Active').length;
+                const activeShipsB = currentBattle.fleetBShips.filter(s => s.status === 'Active').length;
+                
+                if (activeShipsA === 0 && activeShipsB === 0) {
+                    conclusionHTML += `<h3 class="text-3xl font-bold mb-4">💥 Mutual Destruction!</h3>`;
+                    conclusionHTML += `<p class="text-lg">Both fleets have been completely destroyed</p>`;
+                } else if (activeShipsA === 0) {
+                    conclusionHTML += `<h3 class="text-3xl font-bold mb-4">🏆 ${fleetBName} Wins!</h3>`;
+                    conclusionHTML += `<p class="text-lg">All ${fleetAName} ships destroyed or captured</p>`;
+                    showVictoryAnimation(fleetBName);
+                } else if (activeShipsB === 0) {
+                    conclusionHTML += `<h3 class="text-3xl font-bold mb-4">🏆 ${fleetAName} Wins!</h3>`;
+                    conclusionHTML += `<p class="text-lg">All ${fleetBName} ships destroyed or captured</p>`;
+                    showVictoryAnimation(fleetAName);
+                } else if (currentBattle.range >= 4) {
+                    conclusionHTML += `<h3 class="text-3xl font-bold mb-4">🏃‍♂️ Tactical Retreat!</h3>`;
+                    conclusionHTML += `<p class="text-lg">One fleet successfully retreated from combat</p>`;
+                }
+            }
+            
+            conclusionHTML += `
+                <div class="mt-4 p-4 bg-white bg-opacity-20 rounded-lg">
+                    <p class="text-sm">Battle Duration: ${phaseCount} combat phases</p>
+                    <p class="text-sm">Gunnery Phases: ${currentBattle.gunneryPhase}/10</p>
+                    <p class="text-sm">Final Range: ${currentBattle.range}</p>
+                </div>
+            </div>`;
+            
+            updateNavalBattleDisplay(conclusionHTML, true);
+            
+            // Re-enable battle button
+            battleButton.disabled = false;
+            battleButton.innerHTML = '<i class="fas fa-anchor mr-2"></i>Simulate Naval Battle';
+        }
+        
+        // Helper function for delays
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        // Animation helper functions
+        function updateRangeDisplay(range) {
+            const rangeDisplay = document.getElementById('rangeDisplay');
+            if (rangeDisplay) {
+                rangeDisplay.textContent = `Range: ${range}`;
+                rangeDisplay.classList.add('range-change');
+                setTimeout(() => rangeDisplay.classList.remove('range-change'), 500);
+            }
+        }
+        
+        function animateManeuver(winner, action, shipA, shipB) {
+            const shipAElement = document.getElementById('shipA');
+            const shipBElement = document.getElementById('shipB');
+            
+            if (!shipAElement || !shipBElement) return;
+            
+            // Remove any existing animation classes
+            shipAElement.className = 'ship ship-a';
+            shipBElement.className = 'ship ship-b';
+            
+            // Add animation based on winner and action
+            if (winner === 'A') {
+                shipAElement.classList.add(`ship-maneuver-${action}`);
+            } else if (winner === 'B') {
+                shipBElement.classList.add(`ship-maneuver-${action}`);
+            } else {
+                // Tie - both ships hold
+                shipAElement.classList.add('ship-maneuver-hold');
+                shipBElement.classList.add('ship-maneuver-hold');
+            }
+            
+            // Update ship positions based on range
+            setTimeout(() => {
+                updateShipPositions();
+            }, 750);
+        }
+        
+        function updateShipPositions() {
+            const shipAElement = document.getElementById('shipA');
+            const shipBElement = document.getElementById('shipB');
+            const range = currentBattle.range;
+            
+            if (!shipAElement || !shipBElement) return;
+            
+            // Adjust ship positions based on range
+            const baseDistanceA = 50;
+            const baseDistanceB = 50;
+            const rangeMultiplier = 40;
+            
+            shipAElement.style.left = `${baseDistanceA + (range * rangeMultiplier)}px`;
+            shipBElement.style.right = `${baseDistanceB + (range * rangeMultiplier)}px`;
+        }
+        
+        function animateGunnery(hitA, hitB, damageA, damageB) {
+            const arena = document.getElementById('battleArena');
+            const shipA = document.getElementById('shipA');
+            const shipB = document.getElementById('shipB');
+            
+            if (!arena || !shipA || !shipB) return;
+            
+            // Create cannon fire effects
+            if (hitA || Math.random() > 0.3) { // Show cannon fire even on misses sometimes
+                const cannonFireA = document.createElement('div');
+                cannonFireA.className = 'cannon-fire cannon-fire-a';
+                cannonFireA.style.top = '115px';
+                arena.appendChild(cannonFireA);
+                
+                setTimeout(() => arena.removeChild(cannonFireA), 1000);
+            }
+            
+            if (hitB || Math.random() > 0.3) {
+                const cannonFireB = document.createElement('div');
+                cannonFireB.className = 'cannon-fire cannon-fire-b';
+                cannonFireB.style.top = '185px';
+                arena.appendChild(cannonFireB);
+                
+                setTimeout(() => arena.removeChild(cannonFireB), 1000);
+            }
+            
+            // Add hit effects and damage animations
+            setTimeout(() => {
+                if (hitA && damageB) {
+                    shipB.classList.add('ship-hit');
+                    createExplosion(shipB);
+                    
+                    if (damageB.name === 'Kill Shot') {
+                        setTimeout(() => {
+                            shipB.classList.add('ship-sinking');
+                        }, 800);
+                    }
+                }
+                
+                if (hitB && damageA) {
+                    shipA.classList.add('ship-hit');
+                    createExplosion(shipA);
+                    
+                    if (damageA.name === 'Kill Shot') {
+                        setTimeout(() => {
+                            shipA.classList.add('ship-sinking');
+                        }, 800);
+                    }
+                }
+                
+                // Remove hit animation classes
+                setTimeout(() => {
+                    shipA.classList.remove('ship-hit');
+                    shipB.classList.remove('ship-hit');
+                }, 800);
+            }, 500);
+        }
+        
+        function createExplosion(targetShip) {
+            const arena = document.getElementById('battleArena');
+            if (!arena || !targetShip) return;
+            
+            const explosion = document.createElement('div');
+            explosion.className = 'hit-explosion';
+            
+            const rect = targetShip.getBoundingClientRect();
+            const arenaRect = arena.getBoundingClientRect();
+            
+            explosion.style.left = `${rect.left - arenaRect.left + 10}px`;
+            explosion.style.top = `${rect.top - arenaRect.top + 5}px`;
+            
+            arena.appendChild(explosion);
+            
+            setTimeout(() => {
+                if (arena.contains(explosion)) {
+                    arena.removeChild(explosion);
+                }
+            }, 600);
+        }
+        
+        function animateBoarding() {
+            const arena = document.getElementById('battleArena');
+            if (!arena) return;
+            
+            const boardingEffect = document.createElement('div');
+            boardingEffect.className = 'boarding-animation';
+            boardingEffect.textContent = '⚔️🏴‍☠️';
+            
+            arena.appendChild(boardingEffect);
+            
+            setTimeout(() => {
+                if (arena.contains(boardingEffect)) {
+                    arena.removeChild(boardingEffect);
+                }
+            }, 2000);
+        }
+        
+        function addCannonSmoke(ship) {
+            const arena = document.getElementById('battleArena');
+            if (!arena || !ship) return;
+            
+            const smoke = document.createElement('div');
+            smoke.className = 'cannon-smoke';
+            
+            const rect = ship.getBoundingClientRect();
+            const arenaRect = arena.getBoundingClientRect();
+            
+            smoke.style.left = `${rect.left - arenaRect.left + 60}px`;
+            smoke.style.top = `${rect.top - arenaRect.top + 10}px`;
+            smoke.style.opacity = '0.8';
+            
+            arena.appendChild(smoke);
+            
+            // Animate smoke dissipation
+            let opacity = 0.8;
+            const fadeInterval = setInterval(() => {
+                opacity -= 0.1;
+                smoke.style.opacity = opacity;
+                if (opacity <= 0) {
+                    clearInterval(fadeInterval);
+                    if (arena.contains(smoke)) {
+                        arena.removeChild(smoke);
+                    }
+                }
+            }, 100);
+        }
+
+        // Update battle display
+        function updateNavalBattleDisplay(content, append = false) {
+            const resultDiv = document.getElementById('navalBattleResult');
+            if (append) {
+                resultDiv.innerHTML += content;
+            } else {
+                resultDiv.innerHTML = content;
+            }
+            resultDiv.scrollTop = resultDiv.scrollHeight;
+        }
+
+        // Clear battle
+        function newNavalBattle() {
+            currentBattle = { range: 2, gunneryPhase: 0, maxGunneryPhases: 10, battleLog: [] };
+            
+            // Hide battle arena
+            const battleArena = document.getElementById('battleArena');
+            if (battleArena) {
+                battleArena.style.display = 'none';
+            }
+            
+            const resultDiv = document.getElementById('navalBattleResult');
+            resultDiv.innerHTML = `
+                <div class="text-center text-gray-500 py-8">
+                    <i class="fas fa-ship text-4xl mb-4"></i>
+                    <p>Set up your fleets and click "Simulate Naval Battle" to begin the engagement!</p>
+                    <p class="text-sm mt-2">⚠️ Remember: Combat is limited to 10 Gunnery phases maximum</p>
+                </div>
+            `;
+        }
+
+        // Generate battle report
+        function generateNavalReport() {
+            if (!currentBattle.fleetAShips || currentBattle.fleetAShips.length === 0) {
+                alert('No battle data available. Please simulate a battle first.');
+                return;
+            }
+            
+            const fleetAName = document.getElementById('fleetAName').value || 'Fleet A';
+            const fleetBName = document.getElementById('fleetBName').value || 'Fleet B';
+            
+            let report = `NAVAL BATTLE REPORT\n`;
+            report += `===================\n\n`;
+            report += `${fleetAName} vs ${fleetBName}\n`;
+            report += `Gunnery Phases: ${currentBattle.gunneryPhase}/10\n`;
+            report += `Final Range: ${currentBattle.range}\n\n`;
+            
+            report += `${fleetAName} Fleet Status:\n`;
+            currentBattle.fleetAShips.forEach((ship, i) => {
+                report += `  Ship ${ship.id}: ${ship.status} (${ship.damageReports.length} damage reports)\n`;
+            });
+            
+            report += `\n${fleetBName} Fleet Status:\n`;
+            currentBattle.fleetBShips.forEach((ship, i) => {
+                report += `  Ship ${ship.id}: ${ship.status} (${ship.damageReports.length} damage reports)\n`;
+            });
+            
+            // Download report
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `naval-battle-report-${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fleet A controls
+            document.getElementById('addShipA').addEventListener('click', () => {
+                const enhancement = document.getElementById('enhancementA').value;
+                const flag = document.getElementById('flagA').value;
+                const count = parseInt(document.getElementById('shipCountA').value);
+                addShipsToFleet(window.fleetA, document.getElementById('fleetAList'), enhancement, flag, count);
+            });
+            
+            // Fleet B controls
+            document.getElementById('addShipB').addEventListener('click', () => {
+                const enhancement = document.getElementById('enhancementB').value;
+                const flag = document.getElementById('flagB').value;
+                const count = parseInt(document.getElementById('shipCountB').value);
+                addShipsToFleet(window.fleetB, document.getElementById('fleetBList'), enhancement, flag, count);
+            });
+            
+            // Battle controls
+            document.getElementById('simulateNavalBattle').addEventListener('click', simulateNavalBattle);
+            document.getElementById('newNavalBattle').addEventListener('click', newNavalBattle);
+            document.getElementById('generateNavalReport').addEventListener('click', generateNavalReport);
+        });
+
+        // Navigation setup
+        fetch('nav.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('nav-placeholder').innerHTML = data;
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (mobileMenuButton && mobileMenu) {
+                    mobileMenuButton.addEventListener('click', () => {
+                        mobileMenu.classList.toggle('hidden');
+                    });
+                }
+            });
+
+        // Fade-in animation
+        const faders = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        });
+        faders.forEach(fader => {
+            observer.observe(fader);
+        });
+    </script>
+</body>
+</html>
