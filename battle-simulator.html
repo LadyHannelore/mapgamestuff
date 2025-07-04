@@ -13,6 +13,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
     <style>
         /* Professional CSS following BEM methodology */
         
@@ -101,6 +105,49 @@
         #generateReport:active {
             transform: translateY(-1px);
         }
+        
+        /* Battle Animation Styles */
+        .unit-row {
+            transition: all 0.5s ease;
+            position: relative;
+        }
+        
+        .unit-row.routed {
+            opacity: 0.6 !important;
+            background-color: #fef3c7 !important;
+            transform: translateX(-10px);
+        }
+        
+        .unit-row.destroyed {
+            opacity: 0.3 !important;
+            background-color: #fee2e2 !important;
+            text-decoration: line-through;
+        }
+        
+        /* Animation keyframes for battle effects */
+        @keyframes battleShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        @keyframes damageFlash {
+            0% { background-color: transparent; }
+            50% { background-color: #fbbf24; }
+            100% { background-color: transparent; }
+        }
+        
+        @keyframes routeSlide {
+            0% { transform: translateX(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateX(-20px) rotate(-2deg); opacity: 0.6; }
+        }
+        
+        @keyframes destruction {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.1) rotate(5deg); }
+            100% { transform: scale(0.9) rotate(-5deg); opacity: 0.3; }
+        }
+        
         input[type="text"], input[type="number"], select {
             transition: all 0.3s ease;
             border: 2px solid #e2e8f0;
@@ -1699,9 +1746,64 @@
     window.armyB = APP_CONFIG.armies.B;
     
     /**
-     * Wait for DOM to be fully loaded before initializing application
+     * Wait for DOM to be fully loaded before initializing application with GSAP
      */
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize GSAP
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // GSAP page entrance animations
+        const tl = gsap.timeline();
+        
+        tl.fromTo('.glassmorphism', 
+            { opacity: 0, y: 50, scale: 0.95 },
+            { 
+                opacity: 1, 
+                y: 0, 
+                scale: 1,
+                duration: 0.8,
+                stagger: 0.2,
+                ease: "power2.out"
+            }
+        )
+        .fromTo('h1, h2', 
+            { opacity: 0, x: -30 },
+            { 
+                opacity: 1, 
+                x: 0,
+                duration: 0.6,
+                stagger: 0.1,
+                ease: "power2.out"
+            }, "-=0.6")
+        .fromTo('button', 
+            { opacity: 0, scale: 0.9 },
+            { 
+                opacity: 1, 
+                scale: 1,
+                duration: 0.5,
+                stagger: 0.05,
+                ease: "back.out(1.7)"
+            }, "-=0.4");
+        
+        // Animate cards with ScrollTrigger
+        gsap.utils.toArray('.card').forEach(card => {
+            gsap.fromTo(card, 
+                { opacity: 0, y: 30, rotation: 1 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    rotation: 0,
+                    duration: 0.8,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 85%",
+                        toggleActions: "play none none reverse"
+                    }
+                }
+            );
+        });
+        
         initializeApplication();
     });
     
@@ -2404,18 +2506,22 @@
             document.body.appendChild(script);
         });
 
-    // Intersection Observer for fade-in animations
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target);
+    // GSAP ScrollTrigger for scroll-based animations
+    gsap.utils.toArray('.fade-in').forEach(element => {
+        gsap.fromTo(element,
+            { opacity: 0, y: 30 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top 85%",
+                    toggleActions: "play none none reverse"
+                }
             }
-        });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.fade-in').forEach(el => {
-        observer.observe(el);
+        );
     });
 </script>
 </body>

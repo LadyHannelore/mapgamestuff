@@ -8,6 +8,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     
+    <!-- Navigation Bar Placeholder moved to body -->
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
     <style>
         /* Naval Combat Specific Styles */
         .ship-section {
@@ -473,6 +478,7 @@
 <body class="bg-gray-100">
     <div id="nav-placeholder"></div>
 
+
     <div class="container mx-auto px-4 py-8">
         <div class="text-center mb-8 glassmorphism p-8 rounded-lg floating pulse-glow">
             <h1 class="hero-title">⛵ Navy Battle Simulator ⚔️</h1>
@@ -625,6 +631,110 @@
             </div>
         </div>
 
+        <!-- Moderator Control Panel -->
+        <div class="glassmorphism card fade-in p-6 rounded-lg mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-center text-orange-600">🎯 Moderator Control Panel</h2>
+            <p class="text-center text-gray-600 mb-6">Apply external bonuses/penalties during battle (weather, tactics, divine intervention, etc.)</p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Fleet A Modifiers -->
+                <div class="bg-white rounded-lg p-4 border-2 border-purple-200">
+                    <h3 class="text-lg font-semibold mb-4 text-purple-700">🏴‍☠️ Fleet A External Modifiers</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="modFleetAManeuver" class="block text-sm font-medium mb-2">Maneuver Modifier:</label>
+                            <div class="flex items-center">
+                                <input id="modFleetAManeuver" type="number" value="0" min="-10" max="10" class="w-full border p-2 rounded text-center" />
+                                <span class="ml-2 text-xs text-gray-500">±10</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="modFleetAGunnery" class="block text-sm font-medium mb-2">Gunnery Modifier:</label>
+                            <div class="flex items-center">
+                                <input id="modFleetAGunnery" type="number" value="0" min="-10" max="10" class="w-full border p-2 rounded text-center" />
+                                <span class="ml-2 text-xs text-gray-500">±10</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="modFleetABoarding" class="block text-sm font-medium mb-2">Boarding Modifier:</label>
+                            <div class="flex items-center">
+                                <input id="modFleetABoarding" type="number" value="0" min="-10" max="10" class="w-full border p-2 rounded text-center" />
+                                <span class="ml-2 text-xs text-gray-500">±10</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="modFleetADamage" class="block text-sm font-medium mb-2">Damage Report Modifier:</label>
+                            <div class="flex items-center">
+                                <input id="modFleetADamage" type="number" value="0" min="-10" max="10" class="w-full border p-2 rounded text-center" />
+                                <span class="ml-2 text-xs text-gray-500">±10</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label for="modFleetAReason" class="block text-sm font-medium mb-2">Reason for Modifiers:</label>
+                        <input id="modFleetAReason" type="text" placeholder="e.g., Favorable winds, Divine blessing, Superior tactics..." class="w-full border p-2 rounded text-sm" />
+                    </div>
+                </div>
+
+                <!-- Fleet B Modifiers -->
+                <div class="bg-white rounded-lg p-4 border-2 border-red-200">
+                    <h3 class="text-lg font-semibold mb-4 text-red-700">⚓ Fleet B External Modifiers</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="modFleetBManeuver" class="block text-sm font-medium mb-2">Maneuver Modifier:</label>
+                            <div class="flex items-center">
+                                <input id="modFleetBManeuver" type="number" value="0" min="-10" max="10" class="w-full border p-2 rounded text-center" />
+                                <span class="ml-2 text-xs text-gray-500">±10</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="modFleetBGunnery" class="block text-sm font-medium mb-2">Gunnery Modifier:</label>
+                            <div class="flex items-center">
+                                <input id="modFleetBGunnery" type="number" value="0" min="-10" max="10" class="w-full border p-2 rounded text-center" />
+                                <span class="ml-2 text-xs text-gray-500">±10</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="modFleetBBoarding" class="block text-sm font-medium mb-2">Boarding Modifier:</label>
+                            <div class="flex items-center">
+                                <input id="modFleetBBoarding" type="number" value="0" min="-10" max="10" class="w-full border p-2 rounded text-center" />
+                                <span class="ml-2 text-xs text-gray-500">±10</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="modFleetBDamage" class="block text-sm font-medium mb-2">Damage Report Modifier:</label>
+                            <div class="flex items-center">
+                                <input id="modFleetBDamage" type="number" value="0" min="-10" max="10" class="w-full border p-2 rounded text-center" />
+                                <span class="ml-2 text-xs text-gray-500">±10</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label for="modFleetBReason" class="block text-sm font-medium mb-2">Reason for Modifiers:</label>
+                        <input id="modFleetBReason" type="text" placeholder="e.g., Storm interference, Cursed crew, Poor navigation..." class="w-full border p-2 rounded text-sm" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Moderator Controls -->
+            <div class="mt-6 text-center">
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button id="applyModifiers" class="px-4 py-2 bg-orange-600 text-white rounded-lg font-bold shadow-lg hover:bg-orange-700 transition-all duration-300">
+                        <i class="fas fa-magic mr-2"></i>Apply Modifiers
+                    </button>
+                    <button id="clearModifiers" class="px-4 py-2 bg-gray-600 text-white rounded-lg font-bold shadow-lg hover:bg-gray-700 transition-all duration-300">
+                        <i class="fas fa-eraser mr-2"></i>Clear All Modifiers
+                    </button>
+                    <button id="randomEvent" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-bold shadow-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300">
+                        <i class="fas fa-dice mr-2"></i>Random Event
+                    </button>
+                </div>
+                <div id="modifierStatus" class="mt-4 text-sm text-gray-600">
+                    No external modifiers currently applied
+                </div>
+            </div>
+        </div>
+
         <!-- Battle Controls -->
         <div class="glassmorphism card fade-in p-6 rounded-lg mb-8">
             <h2 class="text-2xl font-bold mb-4 text-center">⚔️ Naval Combat Controls</h2>
@@ -686,9 +796,15 @@
     </div>
 
     <script>
-        // Global variables for fleets
+        // Global variables for fleets and external modifiers
         window.fleetA = [];
         window.fleetB = [];
+        
+        // External modifiers from moderator
+        window.externalModifiers = {
+            fleetA: { maneuver: 0, gunnery: 0, boarding: 0, damage: 0, reason: '' },
+            fleetB: { maneuver: 0, gunnery: 0, boarding: 0, damage: 0, reason: '' }
+        };
         
         // Ship enhancement effects
         const SHIP_ENHANCEMENTS = {
@@ -810,7 +926,7 @@
             return spotted;
         }
 
-        // Maneuver phase
+        // Maneuver phase with external modifiers
         function maneuverPhase(shipA, shipB) {
             // Check for auto-fail conditions (Hull Breach damage)
             const shipAAutoFail = shipA.maneuverModifier <= -100; // Hull Breach auto-fail
@@ -822,14 +938,14 @@
                 rollA = 0; // Auto-fail shows as 0
                 shipA.maneuverModifier = 0; // Reset after use
             } else {
-                rollA = rollD6() + shipA.maneuverModifier;
+                rollA = rollD6() + shipA.maneuverModifier + window.externalModifiers.fleetA.maneuver;
             }
             
             if (shipBAutoFail) {
                 rollB = 0; // Auto-fail shows as 0
                 shipB.maneuverModifier = 0; // Reset after use
             } else {
-                rollB = rollD6() + shipB.maneuverModifier;
+                rollB = rollD6() + shipB.maneuverModifier + window.externalModifiers.fleetB.maneuver;
             }
             
             let winner, action;
@@ -855,11 +971,11 @@
             return { winner, action, rollA, rollB, shipAAutoFail, shipBAutoFail };
         }
 
-        // Gunnery phase
+        // Gunnery phase with external modifiers
         function gunneryPhase(shipA, shipB) {
             const range = currentBattle.range;
-            let modifierA = shipA.gunneryModifier;
-            let modifierB = shipB.gunneryModifier;
+            let modifierA = shipA.gunneryModifier + window.externalModifiers.fleetA.gunnery;
+            let modifierB = shipB.gunneryModifier + window.externalModifiers.fleetB.gunnery;
             
             // Range bonuses
             if (range === 1) {
@@ -894,9 +1010,10 @@
             };
         }
 
-        // Damage report
+        // Damage report with external modifiers
         function damageReport(ship) {
-            let roll = rollD6() + ship.damageReportModifier;
+            const fleet = currentBattle.fleetAShips.includes(ship) ? 'fleetA' : 'fleetB';
+            let roll = rollD6() + ship.damageReportModifier + window.externalModifiers[fleet].damage;
             
             const damageTypes = {
                 7: { name: 'Glancing Blow', effect: 'No effect' },
@@ -1029,44 +1146,85 @@
             }
         }
 
-        // Enhanced maneuver animation
+        // Enhanced maneuver animation with GSAP
         function animateManeuver(winner, action, shipA, shipB) {
             const fleetAShips = document.querySelectorAll('.battle-ship.fleet-a');
             const fleetBShips = document.querySelectorAll('.battle-ship.fleet-b');
             const allShips = [...fleetAShips, ...fleetBShips];
             
-            // Animate all ships maneuvering
-            allShips.forEach(ship => {
-                if (!ship.classList.contains('sinking')) {
-                    ship.classList.add('maneuvering');
-                }
-            });
-            
-            // Update phase display
+            // Update phase display with GSAP animation
             updatePhaseDisplay('Maneuver Phase');
             
-            // Clean up animation
-            setTimeout(() => {
-                allShips.forEach(ship => {
-                    ship.classList.remove('maneuvering');
+            // GSAP Timeline for coordinated ship movements
+            const tl = gsap.timeline();
+            
+            // Animate all ships maneuvering with staggered timing
+            tl.to(allShips.filter(ship => !ship.classList.contains('sinking')), {
+                rotation: "+=10",
+                x: "+=20",
+                duration: 0.3,
+                ease: "power2.inOut",
+                stagger: 0.1
+            })
+            .to(allShips.filter(ship => !ship.classList.contains('sinking')), {
+                rotation: "-=20",
+                x: "-=40",
+                duration: 0.4,
+                ease: "power2.inOut",
+                stagger: 0.1
+            }, "+=0.1")
+            .to(allShips.filter(ship => !ship.classList.contains('sinking')), {
+                rotation: "+=10",
+                x: "+=20",
+                duration: 0.3,
+                ease: "power2.out",
+                stagger: 0.1
+            }, "+=0.1");
+            
+            // Add water splash effects during maneuvering
+            tl.call(() => {
+                allShips.forEach((ship, index) => {
+                    if (!ship.classList.contains('sinking')) {
+                        setTimeout(() => createWaterSplash(ship), index * 100);
+                    }
                 });
-            }, 1000);
+            }, null, "+=0.2");
         }
 
-        // Enhanced gunnery animation with cannon fire
+        // Enhanced gunnery animation with GSAP cannon fire
         function animateGunnery(hitA, hitB, shipA, shipB) {
             const fleetAShips = document.querySelectorAll('.battle-ship.fleet-a');
             const fleetBShips = document.querySelectorAll('.battle-ship.fleet-b');
             
             updatePhaseDisplay('Gunnery Phase');
             
-            // Animate firing
+            // GSAP Timeline for coordinated gunnery sequence
+            const tl = gsap.timeline();
+            
+            // Fleet A fires first
             if (fleetAShips.length > 0) {
-                fleetAShips[0].classList.add('firing');
-                setTimeout(() => fleetAShips[0].classList.remove('firing'), 800);
+                const shipA = fleetAShips[0];
                 
+                // Cannon recoil animation
+                tl.to(shipA, {
+                    x: "-=15",
+                    rotation: "-=5",
+                    duration: 0.2,
+                    ease: "power2.out"
+                })
+                .to(shipA, {
+                    x: "+=15",
+                    rotation: "+=5",
+                    duration: 0.3,
+                    ease: "bounce.out"
+                });
+                
+                // Create muzzle flash effect
+                tl.call(() => createMuzzleFlash(shipA), null, "-=0.4");
+                
+                // If hit, create explosion and damage
                 if (hitA && fleetBShips.length > 0) {
-                    setTimeout(() => {
+                    tl.call(() => {
                         createExplosion(fleetBShips[0]);
                         animateShipDamage('fleet-b', 0);
                         updateShipHealth('fleet-b', 0, shipB);
@@ -1074,106 +1232,242 @@
                         if (shipB.status === 'sunk') {
                             setTimeout(() => animateShipSinking('fleet-b', 0), 500);
                         }
-                    }, 500);
+                    }, null, "+=0.3");
                 }
             }
             
+            // Fleet B fires back
             if (fleetBShips.length > 0) {
-                setTimeout(() => {
-                    fleetBShips[0].classList.add('firing');
-                    setTimeout(() => fleetBShips[0].classList.remove('firing'), 800);
-                    
-                    if (hitB && fleetAShips.length > 0) {
-                        setTimeout(() => {
-                            createExplosion(fleetAShips[0]);
-                            animateShipDamage('fleet-a', 0);
-                            updateShipHealth('fleet-a', 0, shipA);
-                            
-                            if (shipA.status === 'sunk') {
-                                setTimeout(() => animateShipSinking('fleet-a', 0), 500);
-                            }
-                        }, 500);
-                    }
-                }, 300);
+                const shipB = fleetBShips[0];
+                
+                // Cannon recoil animation
+                tl.to(shipB, {
+                    x: "+=15",
+                    rotation: "+=5",
+                    duration: 0.2,
+                    ease: "power2.out"
+                }, "+=0.5")
+                .to(shipB, {
+                    x: "-=15",
+                    rotation: "-=5",
+                    duration: 0.3,
+                    ease: "bounce.out"
+                });
+                
+                // Create muzzle flash effect
+                tl.call(() => createMuzzleFlash(shipB), null, "-=0.4");
+                
+                // If hit, create explosion and damage
+                if (hitB && fleetAShips.length > 0) {
+                    tl.call(() => {
+                        createExplosion(fleetAShips[0]);
+                        animateShipDamage('fleet-a', 0);
+                        updateShipHealth('fleet-a', 0, shipA);
+                        
+                        if (shipA.status === 'sunk') {
+                            setTimeout(() => animateShipSinking('fleet-a', 0), 500);
+                        }
+                    }, null, "+=0.3");
+                }
             }
         }
 
-        // Enhanced boarding animation
+        // Enhanced boarding animation with GSAP
         function animateBoarding() {
             const fleetAShips = document.querySelectorAll('.battle-ship.fleet-a');
             const fleetBShips = document.querySelectorAll('.battle-ship.fleet-b');
             
             updatePhaseDisplay('Boarding Phase');
             
-            // Animate ships moving for boarding
-            [...fleetAShips, ...fleetBShips].forEach(ship => {
-                if (!ship.classList.contains('sinking')) {
-                    ship.classList.add('boarding');
-                }
-            });
+            // GSAP Timeline for boarding sequence
+            const tl = gsap.timeline();
             
-            // Create boarding plank effect
+            // Ships move closer for boarding
+            tl.to(fleetAShips.filter(ship => !ship.classList.contains('sinking')), {
+                x: "+=30",
+                duration: 0.8,
+                ease: "power2.inOut"
+            })
+            .to(fleetBShips.filter(ship => !ship.classList.contains('sinking')), {
+                x: "-=30",
+                duration: 0.8,
+                ease: "power2.inOut"
+            }, "<");
+            
+            // Create boarding plank effect with GSAP
             if (fleetAShips.length > 0 && fleetBShips.length > 0) {
-                const boardingEffect = document.createElement('div');
-                boardingEffect.className = 'boarding-effect';
-                
-                const arenaRect = document.getElementById('battleArena').getBoundingClientRect();
-                const shipARect = fleetAShips[0].getBoundingClientRect();
-                
-                boardingEffect.style.left = `${shipARect.left - arenaRect.left + shipARect.width}px`;
-                boardingEffect.style.top = `${shipARect.top - arenaRect.top + shipARect.height/2}px`;
-                boardingEffect.style.setProperty('--boarding-distance', '150px');
-                
-                document.getElementById('combatEffects').appendChild(boardingEffect);
-                
-                setTimeout(() => {
-                    if (boardingEffect.parentNode) {
-                        boardingEffect.parentNode.removeChild(boardingEffect);
-                    }
-                }, 1500);
+                tl.call(() => {
+                    const boardingEffect = document.createElement('div');
+                    boardingEffect.className = 'boarding-effect';
+                    boardingEffect.style.position = 'absolute';
+                    boardingEffect.style.height = '4px';
+                    boardingEffect.style.backgroundColor = '#8B4513';
+                    boardingEffect.style.transformOrigin = 'left center';
+                    boardingEffect.style.zIndex = '10';
+                    
+                    const arenaRect = document.getElementById('battleArena').getBoundingClientRect();
+                    const shipARect = fleetAShips[0].getBoundingClientRect();
+                    
+                    boardingEffect.style.left = `${shipARect.left - arenaRect.left + shipARect.width}px`;
+                    boardingEffect.style.top = `${shipARect.top - arenaRect.top + shipARect.height/2}px`;
+                    
+                    document.getElementById('combatEffects').appendChild(boardingEffect);
+                    
+                    // Animate plank extending
+                    gsap.fromTo(boardingEffect, 
+                        { width: 0, scaleX: 0 },
+                        { 
+                            width: '120px', 
+                            scaleX: 1,
+                            duration: 0.5,
+                            ease: "power2.out",
+                            onComplete: () => {
+                                // Animate crew crossing
+                                for (let i = 0; i < 3; i++) {
+                                    setTimeout(() => {
+                                        const crew = document.createElement('div');
+                                        crew.style.position = 'absolute';
+                                        crew.style.width = '8px';
+                                        crew.style.height = '8px';
+                                        crew.style.backgroundColor = '#4A5568';
+                                        crew.style.borderRadius = '50%';
+                                        crew.style.left = '0px';
+                                        crew.style.top = '-2px';
+                                        boardingEffect.appendChild(crew);
+                                        
+                                        gsap.to(crew, {
+                                            x: '120px',
+                                            duration: 0.8,
+                                            ease: "none",
+                                            onComplete: () => crew.remove()
+                                        });
+                                    }, i * 200);
+                                }
+                            }
+                        }
+                    );
+                    
+                    // Remove boarding effect after animation
+                    setTimeout(() => {
+                        gsap.to(boardingEffect, {
+                            opacity: 0,
+                            duration: 0.3,
+                            onComplete: () => {
+                                if (boardingEffect.parentNode) {
+                                    boardingEffect.parentNode.removeChild(boardingEffect);
+                                }
+                            }
+                        });
+                    }, 2500);
+                }, null, "+=0.5");
             }
             
-            // Clean up boarding animation
-            setTimeout(() => {
-                [...fleetAShips, ...fleetBShips].forEach(ship => {
-                    ship.classList.remove('boarding');
-                });
-            }, 1500);
+            // Ships return to original positions
+            tl.to(fleetAShips.filter(ship => !ship.classList.contains('sinking')), {
+                x: "-=30",
+                duration: 0.8,
+                ease: "power2.inOut"
+            }, "+=1.5")
+            .to(fleetBShips.filter(ship => !ship.classList.contains('sinking')), {
+                x: "+=30",
+                duration: 0.8,
+                ease: "power2.inOut"
+            }, "<");
         }
 
-        // Animate ship taking damage
+        // Animate ship taking damage with GSAP
         function animateShipDamage(fleetClass, shipIndex) {
             const shipElement = document.getElementById(`${fleetClass}-ship-${shipIndex}`);
             if (!shipElement) return;
             
-            // Remove existing animation classes
-            shipElement.classList.remove('damaged', 'heavily-damaged');
+            // GSAP damage animation sequence
+            const tl = gsap.timeline();
             
-            // Add damage animation
-            shipElement.classList.add('damaged');
+            // Impact shake and flash
+            tl.to(shipElement, {
+                x: "+=5",
+                rotation: "+=3",
+                duration: 0.1,
+                ease: "power2.out"
+            })
+            .to(shipElement, {
+                x: "-=10",
+                rotation: "-=6",
+                duration: 0.1,
+                ease: "power2.out"
+            })
+            .to(shipElement, {
+                x: "+=5",
+                rotation: "+=3",
+                duration: 0.1,
+                ease: "power2.out"
+            })
+            .to(shipElement, {
+                filter: "brightness(1.5) contrast(1.2)",
+                duration: 0.1,
+                yoyo: true,
+                repeat: 2
+            }, 0)
+            .to(shipElement, {
+                filter: "brightness(1) contrast(1)",
+                duration: 0.2
+            });
             
-            // Remove animation class after animation completes
-            setTimeout(() => {
-                shipElement.classList.remove('damaged');
-            }, 500);
+            // Add smoke effect
+            tl.call(() => createSmokeEffect(shipElement), null, "+=0.1");
         }
 
-        // Animate ship sinking
+        // Animate ship sinking with GSAP
         function animateShipSinking(fleetClass, shipIndex) {
             const shipElement = document.getElementById(`${fleetClass}-ship-${shipIndex}`);
             if (!shipElement) return;
             
             shipElement.classList.add('sinking');
             
-            setTimeout(() => {
-                shipElement.style.visibility = 'hidden';
-            }, 2000);
+            // GSAP sinking animation
+            const tl = gsap.timeline();
+            
+            // Tilting and sinking motion
+            tl.to(shipElement, {
+                rotation: "+=15",
+                y: "+=10",
+                duration: 0.5,
+                ease: "power2.in"
+            })
+            .to(shipElement, {
+                rotation: "+=30",
+                y: "+=50",
+                scaleY: 0.7,
+                duration: 1,
+                ease: "power2.inOut"
+            })
+            .to(shipElement, {
+                y: "+=100",
+                scaleY: 0.3,
+                opacity: 0.3,
+                duration: 0.8,
+                ease: "power2.in"
+            })
+            .to(shipElement, {
+                visibility: "hidden",
+                duration: 0,
+                onComplete: () => {
+                    // Create sinking bubbles effect
+                    createSinkingBubbles(shipElement);
+                }
+            });
         }
 
-        // Create explosion effect at target
+        // Create explosion effect with GSAP
         function createExplosion(targetElement) {
             const explosion = document.createElement('div');
             explosion.className = 'explosion';
+            explosion.style.position = 'absolute';
+            explosion.style.width = '40px';
+            explosion.style.height = '40px';
+            explosion.style.borderRadius = '50%';
+            explosion.style.background = 'radial-gradient(circle, #ff6b00 0%, #ff4500 50%, #ff0000 100%)';
+            explosion.style.zIndex = '20';
             
             const targetRect = targetElement.getBoundingClientRect();
             const arenaRect = document.getElementById('battleArena').getBoundingClientRect();
@@ -1183,105 +1477,334 @@
             
             document.getElementById('combatEffects').appendChild(explosion);
             
+            // GSAP explosion animation
+            const tl = gsap.timeline();
+            
+            tl.fromTo(explosion, 
+                { scale: 0, opacity: 1 },
+                { 
+                    scale: 2,
+                    opacity: 0.8,
+                    duration: 0.2,
+                    ease: "power2.out"
+                }
+            )
+            .to(explosion, {
+                scale: 3,
+                opacity: 0,
+                duration: 0.4,
+                ease: "power2.in",
+                onComplete: () => {
+                    if (explosion.parentNode) {
+                        explosion.parentNode.removeChild(explosion);
+                    }
+                }
+            });
+            
+            // Create debris particles
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => createDebrisParticle(targetElement), i * 50);
+            }
+            
             // Create smoke effect
             setTimeout(() => {
                 createSmokeEffect(targetElement);
-            }, 300);
-            
-            // Clean up explosion
-            setTimeout(() => {
-                if (explosion.parentNode) {
-                    explosion.parentNode.removeChild(explosion);
-                }
-            }, 600);
+            }, 200);
         }
 
-        // Create smoke effect
-        function createSmokeEffect(targetElement) {
-            const smoke = document.createElement('div');
-            smoke.className = 'smoke';
+        // Create muzzle flash effect with GSAP
+        function createMuzzleFlash(shipElement) {
+            const flash = document.createElement('div');
+            flash.style.position = 'absolute';
+            flash.style.width = '30px';
+            flash.style.height = '8px';
+            flash.style.background = 'linear-gradient(90deg, #ffff00, #ff6600, #ff0000)';
+            flash.style.borderRadius = '50px';
+            flash.style.zIndex = '15';
+            
+            const shipRect = shipElement.getBoundingClientRect();
+            const arenaRect = document.getElementById('battleArena').getBoundingClientRect();
+            
+            // Position flash at cannon side
+            const isFleetA = shipElement.classList.contains('fleet-a');
+            flash.style.left = `${shipRect.left - arenaRect.left + (isFleetA ? shipRect.width : -30)}px`;
+            flash.style.top = `${shipRect.top - arenaRect.top + shipRect.height/2 - 4}px`;
+            
+            document.getElementById('combatEffects').appendChild(flash);
+            
+            // GSAP muzzle flash animation
+            gsap.fromTo(flash,
+                { scaleX: 0, opacity: 1 },
+                {
+                    scaleX: 1,
+                    opacity: 0,
+                    duration: 0.3,
+                    ease: "power2.out",
+                    onComplete: () => {
+                        if (flash.parentNode) {
+                            flash.parentNode.removeChild(flash);
+                        }
+                    }
+                }
+            );
+        }
+
+        // Create debris particle effect with GSAP
+        function createDebrisParticle(targetElement) {
+            const debris = document.createElement('div');
+            debris.style.position = 'absolute';
+            debris.style.width = '4px';
+            debris.style.height = '4px';
+            debris.style.backgroundColor = '#8B4513';
+            debris.style.borderRadius = '50%';
+            debris.style.zIndex = '10';
             
             const targetRect = targetElement.getBoundingClientRect();
             const arenaRect = document.getElementById('battleArena').getBoundingClientRect();
             
-            smoke.style.left = `${targetRect.left - arenaRect.left + targetRect.width/2 - 10}px`;
-            smoke.style.top = `${targetRect.top - arenaRect.top + targetRect.height/2 - 10}px`;
+            debris.style.left = `${targetRect.left - arenaRect.left + targetRect.width/2}px`;
+            debris.style.top = `${targetRect.top - arenaRect.top + targetRect.height/2}px`;
+            
+            document.getElementById('combatEffects').appendChild(debris);
+            
+            // Random trajectory
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 30 + Math.random() * 40;
+            const endX = Math.cos(angle) * distance;
+            const endY = Math.sin(angle) * distance;
+            
+            // GSAP debris animation
+            gsap.to(debris, {
+                x: endX,
+                y: endY,
+                rotation: 360,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.out",
+                onComplete: () => {
+                    if (debris.parentNode) {
+                        debris.parentNode.removeChild(debris);
+                    }
+                }
+            });
+        }
+
+        // Create water splash effect with GSAP
+        function createWaterSplash(shipElement) {
+            const splash = document.createElement('div');
+            splash.style.position = 'absolute';
+            splash.style.width = '20px';
+            splash.style.height = '20px';
+            splash.style.background = 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(135,206,250,0.6) 50%, transparent 100%)';
+            splash.style.borderRadius = '50%';
+            splash.style.zIndex = '5';
+            
+            const shipRect = shipElement.getBoundingClientRect();
+            const arenaRect = document.getElementById('battleArena').getBoundingClientRect();
+            
+            splash.style.left = `${shipRect.left - arenaRect.left + Math.random() * shipRect.width}px`;
+            splash.style.top = `${shipRect.top - arenaRect.top + shipRect.height + 10}px`;
+            
+            document.getElementById('combatEffects').appendChild(splash);
+            
+            // GSAP splash animation
+            const tl = gsap.timeline();
+            
+            tl.fromTo(splash,
+                { scale: 0, y: 0 },
+                { 
+                    scale: 1.5,
+                    y: -15,
+                    duration: 0.3,
+                    ease: "power2.out"
+                }
+            )
+            .to(splash, {
+                scale: 0.5,
+                y: 0,
+                opacity: 0,
+                duration: 0.4,
+                ease: "power2.in",
+                onComplete: () => {
+                    if (splash.parentNode) {
+                        splash.parentNode.removeChild(splash);
+                    }
+                }
+            });
+        }
+
+        // Create sinking bubbles effect with GSAP
+        function createSinkingBubbles(shipElement) {
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    const bubble = document.createElement('div');
+                    bubble.style.position = 'absolute';
+                    bubble.style.width = `${4 + Math.random() * 8}px`;
+                    bubble.style.height = bubble.style.width;
+                    bubble.style.backgroundColor = 'rgba(135, 206, 250, 0.7)';
+                    bubble.style.borderRadius = '50%';
+                    bubble.style.zIndex = '8';
+                    
+                    const shipRect = shipElement.getBoundingClientRect();
+                    const arenaRect = document.getElementById('battleArena').getBoundingClientRect();
+                    
+                    bubble.style.left = `${shipRect.left - arenaRect.left + Math.random() * shipRect.width}px`;
+                    bubble.style.top = `${shipRect.top - arenaRect.top + shipRect.height}px`;
+                    
+                    document.getElementById('combatEffects').appendChild(bubble);
+                    
+                    // GSAP bubble animation
+                    gsap.to(bubble, {
+                        y: -60 - Math.random() * 40,
+                        x: (Math.random() - 0.5) * 20,
+                        scale: 0,
+                        opacity: 0,
+                        duration: 1.5 + Math.random(),
+                        ease: "power1.out",
+                        onComplete: () => {
+                            if (bubble.parentNode) {
+                                bubble.parentNode.removeChild(bubble);
+                            }
+                        }
+                    });
+                }, i * 100);
+            }
+        }
+
+        // Create smoke effect with GSAP
+        function createSmokeEffect(targetElement) {
+            const smoke = document.createElement('div');
+            smoke.style.position = 'absolute';
+            smoke.style.width = '30px';
+            smoke.style.height = '30px';
+            smoke.style.background = 'radial-gradient(circle, rgba(64,64,64,0.8) 0%, rgba(128,128,128,0.4) 50%, transparent 100%)';
+            smoke.style.borderRadius = '50%';
+            smoke.style.zIndex = '12';
+            
+            const targetRect = targetElement.getBoundingClientRect();
+            const arenaRect = document.getElementById('battleArena').getBoundingClientRect();
+            
+            smoke.style.left = `${targetRect.left - arenaRect.left + targetRect.width/2 - 15}px`;
+            smoke.style.top = `${targetRect.top - arenaRect.top + targetRect.height/2 - 15}px`;
             
             document.getElementById('combatEffects').appendChild(smoke);
             
-            setTimeout(() => {
-                if (smoke.parentNode) {
-                    smoke.parentNode.removeChild(smoke);
+            // GSAP smoke animation
+            const tl = gsap.timeline();
+            
+            tl.fromTo(smoke,
+                { scale: 0.5, opacity: 0.8 },
+                {
+                    scale: 2,
+                    y: -40,
+                    opacity: 0,
+                    duration: 1.5,
+                    ease: "power1.out",
+                    onComplete: () => {
+                        if (smoke.parentNode) {
+                            smoke.parentNode.removeChild(smoke);
+                        }
+                    }
                 }
-            }, 2000);
+            );
         }
-
-        // Update phase display with animation
+            
+            smoke.style.left = `${targetRect.left - arenaRect.left + targetRect.width/2 - 10}px`;
+        // Update phase display with GSAP animation
         function updatePhaseDisplay(phase) {
             const phaseDisplay = document.getElementById('phaseDisplay');
             if (phaseDisplay) {
-                phaseDisplay.textContent = `Phase: ${phase}`;
-            }
-            
-            // Create phase transition effect
-            const phaseTransition = document.createElement('div');
-            phaseTransition.className = 'phase-transition';
-            phaseTransition.textContent = phase;
-            
-            const combatEffects = document.getElementById('combatEffects');
-            if (combatEffects) {
-                combatEffects.appendChild(phaseTransition);
-                
-                setTimeout(() => {
-                    if (phaseTransition.parentNode) {
-                        phaseTransition.parentNode.removeChild(phaseTransition);
+                // GSAP phase transition animation
+                gsap.to(phaseDisplay, {
+                    scale: 1.2,
+                    duration: 0.2,
+                    ease: "power2.out",
+                    onComplete: () => {
+                        phaseDisplay.textContent = `Phase: ${phase}`;
+                        gsap.to(phaseDisplay, {
+                            scale: 1,
+                            duration: 0.3,
+                            ease: "bounce.out"
+                        });
                     }
-                }, 2000);
+                });
             }
         }
 
-        // Update range display with animation
+        // Update range display with GSAP animation
         function updateRangeDisplay(range) {
             const rangeDisplay = document.getElementById('rangeDisplay');
             if (rangeDisplay) {
-                rangeDisplay.textContent = `Range: ${range}`;
-            }
-            
-            const rangeChange = document.createElement('div');
-            rangeChange.className = 'range-change';
-            rangeChange.textContent = `Range: ${range}`;
-            
-            const combatEffects = document.getElementById('combatEffects');
-            if (combatEffects) {
-                combatEffects.appendChild(rangeChange);
-                
-                setTimeout(() => {
-                    if (rangeChange.parentNode) {
-                        rangeChange.parentNode.removeChild(rangeChange);
+                // GSAP range change animation
+                gsap.to(rangeDisplay, {
+                    scale: 1.1,
+                    color: "#ff6b00",
+                    duration: 0.2,
+                    ease: "power2.out",
+                    onComplete: () => {
+                        rangeDisplay.textContent = `Range: ${range}`;
+                        gsap.to(rangeDisplay, {
+                            scale: 1,
+                            color: "#ffffff",
+                            duration: 0.3,
+                            ease: "power2.out"
+                        });
                     }
-                }, 2000);
+                });
             }
         }
 
-        // Show victory animation
+        // Show victory animation with GSAP
         function showVictoryAnimation(winner) {
             const victoryEffect = document.createElement('div');
-            victoryEffect.className = 'victory-effect';
+            victoryEffect.style.position = 'absolute';
+            victoryEffect.style.left = '50%';
+            victoryEffect.style.top = '50%';
+            victoryEffect.style.transform = 'translate(-50%, -50%)';
+            victoryEffect.style.textAlign = 'center';
+            victoryEffect.style.color = '#FFD700';
+            victoryEffect.style.fontWeight = 'bold';
+            victoryEffect.style.fontSize = '32px';
+            victoryEffect.style.textShadow = '2px 2px 4px rgba(0,0,0,0.5)';
+            victoryEffect.style.zIndex = '100';
             victoryEffect.innerHTML = `
                 <div>🏆 VICTORY! 🏆</div>
                 <div style="font-size: 18px; margin-top: 10px;">${winner} Wins!</div>
             `;
             
-            const combatEffects = document.getElementById('combatEffects');
-            if (combatEffects) {
-                combatEffects.appendChild(victoryEffect);
-                
-                setTimeout(() => {
+            document.getElementById('combatEffects').appendChild(victoryEffect);
+            
+            // GSAP victory animation sequence
+            const tl = gsap.timeline();
+            
+            tl.fromTo(victoryEffect,
+                { scale: 0, rotation: -180, opacity: 0 },
+                { 
+                    scale: 1,
+                    rotation: 0,
+                    opacity: 1,
+                    duration: 0.8,
+                    ease: "back.out(1.7)"
+                }
+            )
+            .to(victoryEffect, {
+                scale: 1.1,
+                duration: 0.5,
+                ease: "power2.inOut",
+                yoyo: true,
+                repeat: 3
+            })
+            .to(victoryEffect, {
+                scale: 0,
+                opacity: 0,
+                duration: 0.5,
+                ease: "power2.in",
+                onComplete: () => {
                     if (victoryEffect.parentNode) {
                         victoryEffect.parentNode.removeChild(victoryEffect);
                     }
-                }, 5000);
-            }
+                }
+            }, "+=2");
         }
 
         // Main naval battle simulation with delays and animations
@@ -1833,8 +2356,215 @@
             URL.revokeObjectURL(url);
         }
 
-        // Event listeners
+        // Moderator Control Functions
+        function applyExternalModifiers() {
+            // Get values from inputs
+            window.externalModifiers.fleetA = {
+                maneuver: parseInt(document.getElementById('modFleetAManeuver').value) || 0,
+                gunnery: parseInt(document.getElementById('modFleetAGunnery').value) || 0,
+                boarding: parseInt(document.getElementById('modFleetABoarding').value) || 0,
+                damage: parseInt(document.getElementById('modFleetADamage').value) || 0,
+                reason: document.getElementById('modFleetAReason').value || ''
+            };
+            
+            window.externalModifiers.fleetB = {
+                maneuver: parseInt(document.getElementById('modFleetBManeuver').value) || 0,
+                gunnery: parseInt(document.getElementById('modFleetBGunnery').value) || 0,
+                boarding: parseInt(document.getElementById('modFleetBBoarding').value) || 0,
+                damage: parseInt(document.getElementById('modFleetBDamage').value) || 0,
+                reason: document.getElementById('modFleetBReason').value || ''
+            };
+            
+            updateModifierStatus();
+            showMessage('External modifiers applied successfully!', 'success');
+        }
+        
+        function clearExternalModifiers() {
+            // Reset all modifier inputs
+            document.getElementById('modFleetAManeuver').value = 0;
+            document.getElementById('modFleetAGunnery').value = 0;
+            document.getElementById('modFleetABoarding').value = 0;
+            document.getElementById('modFleetADamage').value = 0;
+            document.getElementById('modFleetAReason').value = '';
+            
+            document.getElementById('modFleetBManeuver').value = 0;
+            document.getElementById('modFleetBGunnery').value = 0;
+            document.getElementById('modFleetBBoarding').value = 0;
+            document.getElementById('modFleetBDamage').value = 0;
+            document.getElementById('modFleetBReason').value = '';
+            
+            // Reset external modifiers
+            window.externalModifiers = {
+                fleetA: { maneuver: 0, gunnery: 0, boarding: 0, damage: 0, reason: '' },
+                fleetB: { maneuver: 0, gunnery: 0, boarding: 0, damage: 0, reason: '' }
+            };
+            
+            updateModifierStatus();
+            showMessage('All external modifiers cleared!', 'info');
+        }
+        
+        function generateRandomEvent() {
+            const events = [
+                { 
+                    name: 'Favorable Winds', 
+                    fleetA: { maneuver: 2, gunnery: 1 }, 
+                    fleetB: { maneuver: -1 },
+                    description: 'The wind shifts in favor of Fleet A'
+                },
+                { 
+                    name: 'Sudden Storm', 
+                    fleetA: { maneuver: -2, gunnery: -1 }, 
+                    fleetB: { maneuver: -2, gunnery: -1 },
+                    description: 'A sudden storm affects both fleets equally'
+                },
+                { 
+                    name: 'Divine Intervention', 
+                    fleetA: { gunnery: 3, boarding: 2 }, 
+                    fleetB: {},
+                    description: 'The gods smile upon Fleet A'
+                },
+                { 
+                    name: 'Cursed Waters', 
+                    fleetA: { damage: -2 }, 
+                    fleetB: { damage: -2 },
+                    description: 'These waters are cursed - damage reports worsen'
+                },
+                { 
+                    name: 'Superior Tactics', 
+                    fleetA: {}, 
+                    fleetB: { maneuver: 2, boarding: 1 },
+                    description: 'Fleet B employs superior tactical maneuvers'
+                },
+                { 
+                    name: 'Fog of War', 
+                    fleetA: { gunnery: -2 }, 
+                    fleetB: { gunnery: -2 },
+                    description: 'Dense fog reduces gunnery accuracy for both fleets'
+                }
+            ];
+            
+            const randomEvent = events[Math.floor(Math.random() * events.length)];
+            
+            // Apply the random event modifiers
+            Object.keys(randomEvent.fleetA).forEach(key => {
+                if (key !== 'name' && key !== 'description') {
+                    const input = document.getElementById(`modFleetA${key.charAt(0).toUpperCase() + key.slice(1)}`);
+                    if (input) input.value = randomEvent.fleetA[key];
+                }
+            });
+            
+            Object.keys(randomEvent.fleetB).forEach(key => {
+                if (key !== 'name' && key !== 'description') {
+                    const input = document.getElementById(`modFleetB${key.charAt(0).toUpperCase() + key.slice(1)}`);
+                    if (input) input.value = randomEvent.fleetB[key];
+                }
+            });
+            
+            // Set reason
+            document.getElementById('modFleetAReason').value = randomEvent.name;
+            document.getElementById('modFleetBReason').value = randomEvent.name;
+            
+            // Apply the modifiers
+            applyExternalModifiers();
+            
+            showMessage(`Random Event: ${randomEvent.name} - ${randomEvent.description}`, 'warning');
+        }
+        
+        function updateModifierStatus() {
+            const statusDiv = document.getElementById('modifierStatus');
+            const fleetAMods = window.externalModifiers.fleetA;
+            const fleetBMods = window.externalModifiers.fleetB;
+            
+            const hasFleetAMods = Object.values(fleetAMods).some(val => val !== 0 && val !== '');
+            const hasFleetBMods = Object.values(fleetBMods).some(val => val !== 0 && val !== '');
+            
+            if (!hasFleetAMods && !hasFleetBMods) {
+                statusDiv.innerHTML = 'No external modifiers currently applied';
+                statusDiv.className = 'mt-4 text-sm text-gray-600';
+            } else {
+                let status = '<div class="text-sm"><strong>Active Modifiers:</strong></div>';
+                
+                if (hasFleetAMods) {
+                    status += '<div class="text-purple-700 font-medium">Fleet A: ';
+                    const mods = [];
+                    if (fleetAMods.maneuver !== 0) mods.push(`Maneuver ${fleetAMods.maneuver > 0 ? '+' : ''}${fleetAMods.maneuver}`);
+                    if (fleetAMods.gunnery !== 0) mods.push(`Gunnery ${fleetAMods.gunnery > 0 ? '+' : ''}${fleetAMods.gunnery}`);
+                    if (fleetAMods.boarding !== 0) mods.push(`Boarding ${fleetAMods.boarding > 0 ? '+' : ''}${fleetAMods.boarding}`);
+                    if (fleetAMods.damage !== 0) mods.push(`Damage ${fleetAMods.damage > 0 ? '+' : ''}${fleetAMods.damage}`);
+                    status += mods.join(', ');
+                    if (fleetAMods.reason) status += ` (${fleetAMods.reason})`;
+                    status += '</div>';
+                }
+                
+                if (hasFleetBMods) {
+                    status += '<div class="text-red-700 font-medium">Fleet B: ';
+                    const mods = [];
+                    if (fleetBMods.maneuver !== 0) mods.push(`Maneuver ${fleetBMods.maneuver > 0 ? '+' : ''}${fleetBMods.maneuver}`);
+                    if (fleetBMods.gunnery !== 0) mods.push(`Gunnery ${fleetBMods.gunnery > 0 ? '+' : ''}${fleetBMods.gunnery}`);
+                    if (fleetBMods.boarding !== 0) mods.push(`Boarding ${fleetBMods.boarding > 0 ? '+' : ''}${fleetBMods.boarding}`);
+                    if (fleetBMods.damage !== 0) mods.push(`Damage ${fleetBMods.damage > 0 ? '+' : ''}${fleetBMods.damage}`);
+                    status += mods.join(', ');
+                    if (fleetBMods.reason) status += ` (${fleetBMods.reason})`;
+                    status += '</div>';
+                }
+                
+                statusDiv.innerHTML = status;
+                statusDiv.className = 'mt-4 text-sm';
+            }
+        }
+        
+        function showMessage(message, type = 'info') {
+            // Create a temporary message element
+            const messageEl = document.createElement('div');
+            messageEl.className = `fixed top-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg transition-all duration-300 ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'warning' ? 'bg-yellow-500 text-black' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            messageEl.textContent = message;
+            
+            document.body.appendChild(messageEl);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                messageEl.style.opacity = '0';
+                setTimeout(() => {
+                    if (messageEl.parentNode) {
+                        messageEl.parentNode.removeChild(messageEl);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // GSAP Event listeners and initialization
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize GSAP animations and plugins
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Animate page elements on load
+            gsap.fromTo('.glassmorphism', 
+                { opacity: 0, y: 50 },
+                { 
+                    opacity: 1, 
+                    y: 0, 
+                    duration: 0.8,
+                    stagger: 0.2,
+                    ease: "power2.out"
+                }
+            );
+            
+            // Animate title
+            gsap.fromTo('.gradient-text', 
+                { scale: 0.8, opacity: 0 },
+                { 
+                    scale: 1, 
+                    opacity: 1, 
+                    duration: 1,
+                    ease: "back.out(1.7)"
+                }
+            );
+            
             // Fleet A controls
             document.getElementById('addShipA').addEventListener('click', () => {
                 const enhancement = document.getElementById('enhancementA').value;
@@ -1855,6 +2585,29 @@
             document.getElementById('simulateNavalBattle').addEventListener('click', simulateNavalBattle);
             document.getElementById('newNavalBattle').addEventListener('click', newNavalBattle);
             document.getElementById('generateNavalReport').addEventListener('click', generateNavalReport);
+            
+            // Moderator controls
+            document.getElementById('applyModifiers').addEventListener('click', applyExternalModifiers);
+            document.getElementById('clearModifiers').addEventListener('click', clearExternalModifiers);
+            document.getElementById('randomEvent').addEventListener('click', generateRandomEvent);
+            
+            // GSAP ScrollTrigger for scroll-based animations
+            gsap.utils.toArray('.fade-in').forEach(element => {
+                gsap.fromTo(element,
+                    { opacity: 0, y: 30 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: element,
+                            start: "top 85%",
+                            toggleActions: "play none none reverse"
+                        }
+                    }
+                );
+            });
         });
 
         // Navigation setup
@@ -1862,27 +2615,62 @@
             .then(response => response.text())
             .then(data => {
                 document.getElementById('nav-placeholder').innerHTML = data;
+                
+                // Set up mobile menu functionality after nav is loaded
                 const mobileMenuButton = document.getElementById('mobile-menu-button');
                 const mobileMenu = document.getElementById('mobile-menu');
                 if (mobileMenuButton && mobileMenu) {
                     mobileMenuButton.addEventListener('click', () => {
-                        mobileMenu.classList.toggle('hidden');
+                        if (mobileMenu.classList.contains('hidden')) {
+                            mobileMenu.classList.remove('hidden');
+                            gsap.fromTo(mobileMenu, 
+                                { opacity: 0, y: -20 },
+                                { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }
+                            );
+                        } else {
+                            gsap.to(mobileMenu, {
+                                opacity: 0,
+                                y: -20,
+                                duration: 0.3,
+                                ease: "power2.in",
+                                onComplete: () => mobileMenu.classList.add('hidden')
+                            });
+                        }
                     });
                 }
+                
+                // Animate navigation after loading
+                gsap.fromTo('nav', 
+                    { opacity: 0, y: -50 },
+                    { 
+                        opacity: 1, 
+                        y: 0,
+                        duration: 0.8,
+                        ease: "power2.out"
+                    }
+                );
+            })
+            .catch(error => {
+                console.error('Error loading navigation:', error);
+                // Fallback - create a simple nav if fetch fails
+                document.getElementById('nav-placeholder').innerHTML = `
+                    <nav class="bg-white shadow-lg">
+                        <div class="container mx-auto px-4">
+                            <div class="flex justify-between items-center py-4">
+                                <a href="index.html" class="text-xl font-bold text-blue-600">Map Game Mechanics</a>
+                                <div class="hidden md:flex space-x-6">
+                                    <a href="index.html" class="text-gray-700 hover:text-blue-600">Home</a>
+                                    <a href="map.html" class="text-gray-700 hover:text-blue-600">Map</a>
+                                    <a href="warfare.html" class="text-gray-700 hover:text-blue-600">Warfare</a>
+                                    <a href="battle-simulator.html" class="text-gray-700 hover:text-blue-600">Battle Sim</a>
+                                    <a href="navy-battle-simulator.html" class="text-blue-600 font-semibold">Navy Sim</a>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+                `;
             });
 
-        // Fade-in animation
-        const faders = document.querySelectorAll('.fade-in');
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        });
-        faders.forEach(fader => {
-            observer.observe(fader);
-        });
     </script>
 </body>
 </html>

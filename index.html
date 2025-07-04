@@ -6,6 +6,10 @@
     <title>Map Game Mechanics</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 </head>
 <body class="bg-gray-100">
     <div class="particles" id="particles"></div>
@@ -83,70 +87,187 @@
 
     <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
     <script>
-        // Particle effects
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particleCount = 50;
+        // Initialize GSAP
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // GSAP Animations on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hero section animation
+            const tl = gsap.timeline();
             
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 8 + 's';
-                particle.style.animationDuration = (Math.random() * 3 + 5) + 's';
-                particlesContainer.appendChild(particle);
-            }
-        }
-        
-        // Initialize particles
-        createParticles();
-        
-        // Navigation loader
-        fetch('nav.html')
-            .then(res => res.text())
-            .then(text => {
-                document.getElementById('nav-placeholder').innerHTML = text;
-                const mobileMenuButton = document.getElementById('mobile-menu-button');
-                const mobileMenu = document.getElementById('mobile-menu');
-                mobileMenuButton.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
-                });
-            });
-
-        // Typed.js effect
-        new Typed('#typed-subtitle', {
-            strings: ['Your ultimate resource for the mechanics, lore, and strategies of our map game.', 'Build your empire. Forge alliances. Conquer the world.', 'Welcome to the realm of strategic mastery!'],
-            typeSpeed: 50,
-            backSpeed: 30,
-            loop: true,
-            loopCount: Infinity,
-            showCursor: true,
-            cursorChar: '|'
-        });
-
-        // Intersection Observer for fade-in animations
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
+            tl.fromTo('.hero-title', 
+                { opacity: 0, y: -50, scale: 0.8 },
+                { 
+                    opacity: 1, 
+                    y: 0, 
+                    scale: 1,
+                    duration: 1.2,
+                    ease: "back.out(1.7)"
                 }
+            )
+            .fromTo('.glassmorphism', 
+                { opacity: 0, scale: 0.9, y: 30 },
+                { 
+                    opacity: 1, 
+                    scale: 1, 
+                    y: 0,
+                    duration: 0.8,
+                    ease: "power2.out"
+                }, "-=0.8")
+            .fromTo('.btn-gradient', 
+                { opacity: 0, scale: 0.8 },
+                { 
+                    opacity: 1, 
+                    scale: 1,
+                    duration: 0.6,
+                    ease: "back.out(1.7)"
+                }, "-=0.4");
+            
+            // Animate cards with ScrollTrigger
+            gsap.utils.toArray('.card').forEach((card, index) => {
+                gsap.fromTo(card, 
+                    { opacity: 0, y: 50, rotation: 2 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        rotation: 0,
+                        duration: 0.8,
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top 85%",
+                            toggleActions: "play none none reverse"
+                        }
+                    }
+                );
             });
-        }, { threshold: 0.1 });
+            
+            // Animate individual rule items
+            gsap.utils.toArray('.enhanced-list li').forEach((item, index) => {
+                gsap.fromTo(item, 
+                    { opacity: 0, x: -30 },
+                    {
+                        opacity: 1,
+                        x: 0,
+                        duration: 0.6,
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: item,
+                            start: "top 90%",
+                            toggleActions: "play none none reverse"
+                        },
+                        delay: index * 0.1
+                    }
+                );
+            });
+            
+            // Animate game feature cards
+            gsap.utils.toArray('.enhanced-list .p-4').forEach((feature, index) => {
+                gsap.fromTo(feature, 
+                    { opacity: 0, scale: 0.9, y: 20 },
+                    {
+                        opacity: 1,
+                        scale: 1,
+                        y: 0,
+                        duration: 0.6,
+                        ease: "back.out(1.7)",
+                        scrollTrigger: {
+                            trigger: feature,
+                            start: "top 85%",
+                            toggleActions: "play none none reverse"
+                        },
+                        delay: index * 0.1
+                    }
+                );
+            });
+            
+            // Particles animation with GSAP
+            function createParticles() {
+                const particlesContainer = document.getElementById('particles');
+                const particleCount = 50;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = '100%';
+                    particlesContainer.appendChild(particle);
+                    
+                    // GSAP particle animation
+                    gsap.to(particle, {
+                        y: -window.innerHeight - 100,
+                        x: (Math.random() - 0.5) * 200,
+                        rotation: 360,
+                        opacity: 0,
+                        duration: Math.random() * 3 + 5,
+                        ease: "none",
+                        repeat: -1,
+                        delay: Math.random() * 8
+                    });
+                }
+            }
+            
+            // Initialize particles
+            createParticles();
+            
+            // Navigation loader with GSAP
+            fetch('nav.html')
+                .then(res => res.text())
+                .then(text => {
+                    document.getElementById('nav-placeholder').innerHTML = text;
+                    
+                    // Animate navigation
+                    gsap.fromTo('nav', 
+                        { opacity: 0, y: -50 },
+                        { 
+                            opacity: 1, 
+                            y: 0,
+                            duration: 0.8,
+                            ease: "power2.out"
+                        }
+                    );
+                    
+                    const mobileMenuButton = document.getElementById('mobile-menu-button');
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    mobileMenuButton.addEventListener('click', () => {
+                        if (mobileMenu.classList.contains('hidden')) {
+                            mobileMenu.classList.remove('hidden');
+                            gsap.fromTo(mobileMenu, 
+                                { opacity: 0, y: -20 },
+                                { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }
+                            );
+                        } else {
+                            gsap.to(mobileMenu, {
+                                opacity: 0,
+                                y: -20,
+                                duration: 0.3,
+                                ease: "power2.in",
+                                onComplete: () => mobileMenu.classList.add('hidden')
+                            });
+                        }
+                    });
+                });
 
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
-        
-        // Add dynamic text color cycling
-        setInterval(() => {
-            const gradientTexts = document.querySelectorAll('.gradient-text');
-            gradientTexts.forEach(el => {
-                el.style.backgroundImage = `linear-gradient(45deg, 
-                    hsl(${Math.random() * 360}, 70%, 50%), 
-                    hsl(${Math.random() * 360}, 70%, 50%))`;
+            // Typed.js effect
+            new Typed('#typed-subtitle', {
+                strings: ['Your ultimate resource for the mechanics, lore, and strategies of our map game.', 'Build your empire. Forge alliances. Conquer the world.', 'Welcome to the realm of strategic mastery!'],
+                typeSpeed: 50,
+                backSpeed: 30,
+                loop: true,
+                loopCount: Infinity,
+                showCursor: true,
+                cursorChar: '|'
             });
-        }, 3000);
+            
+            // GSAP text color cycling
+            gsap.to('.gradient-text', {
+                backgroundPosition: '200% 0%',
+                duration: 3,
+                ease: "none",
+                repeat: -1,
+                yoyo: true
+            });
+        });
     </script>
 </body>
 </html>
