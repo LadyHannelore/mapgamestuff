@@ -16,6 +16,8 @@
     <!-- GSAP Animation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Battle simulator logic -->
+    <script src="battle.js"></script>
     
     <style>
         /* Professional CSS following BEM methodology */
@@ -1384,6 +1386,68 @@
                 gap: 2rem;
             }
         }
+        
+        /* Enhanced Battle Message Styling */
+        .battle-message {
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        
+        .battle-message:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Battle Separator Styles */
+        .battle-separator {
+            text-align: center;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .separator-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, #764ba2, #667eea, transparent);
+            border-radius: 2px;
+        }
+        
+        .separator-dots {
+            color: #667eea;
+            font-size: 1.2em;
+            font-weight: bold;
+            letter-spacing: 8px;
+        }
+        
+        .separator-swords {
+            color: #ffd700;
+            font-size: 1.4em;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .round-separator .separator-line {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #10b981, #059669, #10b981, transparent);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        .phase-separator .separator-dots {
+            color: #94a3b8;
+            opacity: 0.8;
+        }
+        
+        .battle-separator .separator-swords {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            to { text-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -1699,24 +1763,29 @@
                 </button>
             </div>
         </div>
+        
+        <!-- Battlefield Container -->
+        <div id="battlefield" class="border rounded-lg p-2 sm:p-3 lg:p-4 bg-white mb-4 min-h-[200px]">
+            <!-- Animated battlefield appears here -->
+        </div>
+
+        <!-- Battle Result Area -->
         <div id="battleResult" class="text-center text-base sm:text-lg lg:text-xl font-medium mb-3 sm:mb-4 p-2 sm:p-3 lg:p-4 bg-gray-100 rounded min-h-[80px] sm:min-h-[100px] max-h-[300px] sm:max-h-[400px] lg:max-h-[500px] overflow-y-auto text-xs sm:text-sm lg:text-base">
             <p class="text-gray-500">Set up your armies and click "Simulate Battle" to begin...</p>
         </div>
 
         <!-- Battle Report Generation -->
         <div class="text-center mb-3 sm:mb-4 lg:mb-6">
-            <button id="generateReport" class="px-3 sm:px-4 lg:px-6 py-2 lg:py-3 bg-green-500 text-white rounded-lg font-bold shadow-lg hover:bg-green-600 transition-colors hidden text-xs sm:text-sm lg:text-base w-full sm:w-auto">
+            <button id="generateReport" type="button" class="px-3 sm:px-4 lg:px-6 py-2 lg:py-3 bg-green-500 text-white rounded-lg font-bold shadow-lg hover:bg-green-600 transition-colors hidden text-xs sm:text-sm lg:text-base w-full sm:w-auto">
                 📊 Generate Battle Report Image 📊
             </button>
-        </div>        <!-- Hidden canvas for image generation -->
-        <canvas id="battleCanvas" width="1400" height="1400" style="display: none;"></canvas>
+        </div>       
 
         <audio id="bgMusic" src="background-music.mp3" loop preload="auto"></audio>
         <button id="toggleMusic" class="fixed top-2 sm:top-4 right-2 sm:right-4 bg-gray-800 text-white p-2 lg:p-3 rounded-full shadow-lg w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 flex items-center justify-center text-xs sm:text-sm lg:text-base z-50 hover:bg-gray-700 transition-colors">
             <i class="fas fa-volume-up"></i>
         </button>
-    </div>    <script src="battle.js"></script>
-    <script>
+    </div>    <script>
     'use strict';
     
     // =============================================================================
@@ -1815,7 +1884,8 @@
         setupArmyControllers();
         setupBattleTypeHandlers();
         setupGeneralImageHandlers();
-        setupBattleSimulation();
+        // Defer battle setup until DOM is ready
+        document.addEventListener('DOMContentLoaded', setupBattleSimulation);
         setupMusicControls();
         setupSampleArmies();
     }
@@ -2037,7 +2107,8 @@
     function setupBattleSimulation() {        // Setup generate battle report button
         const generateReportBtn = document.getElementById('generateReport');
         if (generateReportBtn) {
-            generateReportBtn.addEventListener('click', function() {
+            generateReportBtn.addEventListener('click', function(event) {
+                event.preventDefault();
                 console.log('Generate report button clicked');
                 console.log('window.generateBattleReport available:', typeof window.generateBattleReport === 'function');
                 console.log('window.battleData available:', !!window.battleData);

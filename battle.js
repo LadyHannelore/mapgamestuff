@@ -393,6 +393,174 @@ function destructionDice(units, handler) {
 }
 
 // =============================================================================
+// BATTLE DISPLAY FUNCTIONS
+// =============================================================================
+
+/**
+ * Update the battle display with messages and formatting
+ * @param {string} message - The message to display
+ * @param {boolean} isHeader - Whether this is a header message that should be formatted differently
+ * @param {string} messageType - Optional message type for specific styling (damage, rally, victory, etc.)
+ */
+function updateBattleDisplay(message, isHeader = false, messageType = null) {
+    const battleResult = document.getElementById('battleResult');
+    if (!battleResult) {
+        console.warn('Battle result element not found');
+        return;
+    }
+
+    // Create a new div for the message
+    const messageDiv = document.createElement('div');
+    
+    // Determine message type if not explicitly provided
+    if (!messageType) {
+        messageType = categorizeMessage(message);
+    }
+    
+    if (isHeader) {
+        // Different header styles based on content
+        let headerClass = 'battle-header';
+        if (message.includes('Round')) {
+            headerClass += ' round-header';
+        } else if (message.includes('Battle Over') || message.includes('Winner')) {
+            headerClass += ' battle-end-header';
+        } else if (message.includes('Rally')) {
+            headerClass += ' phase-header rally';
+        } else if (message.includes('combat')) {
+            headerClass += ' phase-header pitch';
+        }
+        
+        messageDiv.className = headerClass;
+        messageDiv.innerHTML = `<div class="battle-title">${formatMessage(message, messageType)}</div>`;
+    } else {
+        // Apply specific styling based on message type
+        const baseClass = 'battle-message';
+        let specificClass = '';
+        
+        switch (messageType) {
+            case 'damage':
+                specificClass = 'battle-result win';
+                break;
+            case 'stats':
+                specificClass = 'army-calculation';
+                break;
+            case 'rally':
+                specificClass = 'unit-status rallied';
+                break;
+            case 'routed':
+                specificClass = 'unit-status routed';
+                break;
+            case 'destruction':
+                specificClass = 'unit-status destroyed';
+                break;
+            case 'general':
+                specificClass = 'general-bonus';
+                break;
+            case 'phase':
+                specificClass = 'phase-comparison';
+                break;
+            default:
+                specificClass = 'content-section';
+        }
+        
+        messageDiv.className = `${baseClass} ${specificClass} mb-2 p-3 rounded-lg`;
+        messageDiv.innerHTML = formatMessage(message, messageType);
+    }
+
+    // Append the message to the battle result
+    battleResult.appendChild(messageDiv);
+    
+    // Auto-scroll to bottom to show new messages
+    battleResult.scrollTop = battleResult.scrollHeight;
+}
+
+/**
+ * Categorize message type based on content
+ * @param {string} message - The message to categorize
+ * @returns {string} The message category
+ */
+function categorizeMessage(message) {
+    if (message.includes('💥') || message.includes('damage')) return 'damage';
+    if (message.includes('Attack:') || message.includes('Defense:')) return 'stats';
+    if (message.includes('rally') || message.includes('Rally')) return 'rally';
+    if (message.includes('routed')) return 'routed';
+    if (message.includes('destroy') || message.includes('sacrifices')) return 'destruction';
+    if (message.includes('General') || message.includes('trait')) return 'general';
+    if (message.includes('Phase') || message.includes('advance')) return 'phase';
+    return 'normal';
+}
+
+/**
+ * Format message with icons and enhanced styling
+ * @param {string} message - The message to format
+ * @param {string} messageType - The message type
+ * @returns {string} The formatted message
+ */
+function formatMessage(message, messageType) {
+    let formattedMessage = message;
+    
+    // Add appropriate icons and formatting based on message type
+    switch (messageType) {
+        case 'damage':
+            if (message.includes('Army A')) {
+                formattedMessage = `<span class="army-a">🔥 ${message}</span>`;
+            } else if (message.includes('Army B')) {
+                formattedMessage = `<span class="army-b">🔥 ${message}</span>`;
+            }
+            break;
+            
+        case 'stats':
+            if (message.includes('Army A')) {
+                formattedMessage = `<span class="army-a">⚔️ ${message}</span>`;
+            } else if (message.includes('Army B')) {
+                formattedMessage = `<span class="army-b">⚔️ ${message}</span>`;
+            }
+            break;
+            
+        case 'rally':
+            formattedMessage = `<span class="unit">🛡️ ${message}</span>`;
+            break;
+            
+        case 'routed':
+            formattedMessage = `<span class="status">🏃 ${message}</span>`;
+            break;
+            
+        case 'destruction':
+            formattedMessage = `<span class="status">💀 ${message}</span>`;
+            break;
+            
+        case 'general':
+            formattedMessage = `<span class="general-name">👑 ${message}</span>`;
+            break;
+            
+        case 'phase':
+            if (message.includes('combat')) {
+                formattedMessage = `⚔️ ${message}`;
+            } else {
+                formattedMessage = `📋 ${message}`;
+            }
+            break;
+            
+        default:
+            // Clean up existing emojis if they're already there
+            if (!message.includes('⚔️') && !message.includes('💥') && !message.includes('🛡️')) {
+                formattedMessage = `📝 ${message}`;
+            }
+    }
+    
+    // Highlight army names consistently
+    formattedMessage = formattedMessage.replace(/Army A/g, '<span class="army-a font-bold">Army A</span>');
+    formattedMessage = formattedMessage.replace(/Army B/g, '<span class="army-b font-bold">Army B</span>');
+    
+    return formattedMessage;
+}
+
+// Make updateBattleDisplay available globally
+window.updateBattleDisplay = updateBattleDisplay;
+window.clearBattleDisplay = clearBattleDisplay;
+window.addBattleSeparator = addBattleSeparator;
+
+// =============================================================================
 // BATTLE SIMULATION LOGIC
 // =============================================================================
 
@@ -451,9 +619,19 @@ class BattleSimulator {
         while (this.armyA.length > 0 && this.armyB.length > 0) {
             this.currentRound++;
             
+            // Maximum round limit
+            if (this.currentRound > 13) {
+                updateBattleDisplay(`🔔 Maximum rounds reached (13). Ending battle.`, true);
+                break;
+            }
+            // Add round separator for visual clarity
+            if (this.currentRound > 1) {
+                addBattleSeparator('round');
+            }
+            
             // Animate round start
             animateBattleRound(this.currentRound);
-            updateBattleDisplay(`Round ${this.currentRound}`, true);
+            updateBattleDisplay(`🎯 Round ${this.currentRound}`, true);
             await delay(600); // Wait for round animation
 
             // Log the round start
@@ -474,6 +652,9 @@ class BattleSimulator {
 
             // Update battlefield after each round
             renderBattlefield(this.armyA, this.armyB);
+            // Display current armies at end of round
+            updateBattleDisplay(`Army A: ${this.armyA.map(u => u.type).join(', ')}`, false);
+            updateBattleDisplay(`Army B: ${this.armyB.map(u => u.type).join(', ')}`, false);
 
             // Wait for a moment before next round
             await delay(1500);
@@ -483,9 +664,11 @@ class BattleSimulator {
         this.finalResult = this.armyA.length > 0 ? 'A' : 'B';
         const winnerName = `Army ${this.finalResult}`;
         
-        // Animate victory first, then display text
+        // Add final battle separator and victory message
+        addBattleSeparator('battle');
         animateVictory(winnerName);
-        updateBattleDisplay(`Battle Over! Winner: ${winnerName}`, true);
+        updateBattleDisplay(`🏆 Victory! ${winnerName} Emerges Triumphant!`, true);
+        updateBattleDisplay(`Survivors: Army A (${this.armyA.length}), Army B (${this.armyB.length})`, false, 'stats');
         this.logBattle();
         
         // Store final result in battle data and return it
@@ -502,10 +685,13 @@ class BattleSimulator {
     }
 
     async mainPhase() {
+        // Add phase separator
+        addBattleSeparator('phase');
+        
         // Animate formations advancing for battle
         animateBattlefieldFormation('A', 'advance');
         animateBattlefieldFormation('B', 'advance');
-        updateBattleDisplay('⚔️ Armies advance into combat!', true);
+        updateBattleDisplay('⚔️ Combat Phase: Armies Engage!', true, 'phase');
         await delay(800);
 
         // Calculate attack and defense totals
@@ -514,9 +700,9 @@ class BattleSimulator {
         const attackB = this.armyB.reduce((sum, unit) => sum + getUnitStats(unit).skirmish, 0);
         const defenseB = this.armyA.reduce((sum, unit) => sum + getUnitStats(unit).defense, 0);
 
-        // Display attack/defense values
-        updateBattleDisplay(`Army A - Attack: ${attackA}, Defense: ${defenseA}`, false);
-        updateBattleDisplay(`Army B - Attack: ${attackB}, Defense: ${defenseB}`, false);
+        // Display attack/defense values with enhanced formatting
+        updateBattleDisplay(`Army A - Attack: ${attackA}, Defense: ${defenseA}`, false, 'stats');
+        updateBattleDisplay(`Army B - Attack: ${attackB}, Defense: ${defenseB}`, false, 'stats');
 
         // Animate attacking units on battlefield
         this.armyA.forEach((unit, index) => {
@@ -540,10 +726,10 @@ class BattleSimulator {
         const damageToA = Math.max(0, attackB - defenseA);
         
         if (damageToB > 0) {
-            updateBattleDisplay(`💥 Army A deals ${damageToB} damage to Army B!`, true);
+            updateBattleDisplay(`Army A deals ${damageToB} damage to Army B!`, true, 'damage');
         }
         if (damageToA > 0) {
-            updateBattleDisplay(`💥 Army B deals ${damageToA} damage to Army A!`, true);
+            updateBattleDisplay(`Army B deals ${damageToA} damage to Army A!`, true, 'damage');
         }
         
         this.applyDamage(this.armyB, damageToB, 'B');
@@ -607,7 +793,8 @@ class BattleSimulator {
     }
 
     async rallyPhase() {
-        updateBattleDisplay('Rally Phase', true);
+        addBattleSeparator('phase');
+        updateBattleDisplay('🛡️ Rally Phase: Regrouping Forces', true, 'rally');
         await this.handleRally('A');
         await this.handleRally('B');
     }
@@ -621,7 +808,7 @@ class BattleSimulator {
             return;
         }
 
-        updateBattleDisplay(`Army ${armyId} attempts to rally ${routedUnits.length} routed unit(s).`, true);
+        updateBattleDisplay(`Army ${armyId} attempts to rally ${routedUnits.length} routed unit(s).`, false, 'rally');
 
         for (let i = 0; i < routedUnits.length; i++) {
             const unit = routedUnits[i];
@@ -1203,7 +1390,13 @@ window.simulateBattle = async function(armyA, armyB, generalA, generalB, battleT
     }
     
     try {
-        // Clear battle display
+        // Clear battle display with enhanced styling
+        clearBattleDisplay();
+        
+        // Add battle start banner
+        addBattleSeparator('battle');
+        updateBattleDisplay(`🏰 Battle Commencing: ${generalA?.name || 'Army A'} vs ${generalB?.name || 'Army B'}`, true);
+        
         const battleResultDiv = document.getElementById('battleResult');
         if (battleResultDiv) {
             battleResultDiv.innerHTML = '';
@@ -1234,9 +1427,6 @@ window.simulateBattle = async function(armyA, armyB, generalA, generalB, battleT
         throw error;
     }
 };
-
-// Export the BattleSimulator class for direct use
-window.BattleSimulator = BattleSimulator;
 
 // Enhanced generateBattleReport function to create an image-based report
 window.generateBattleReport = function() {
@@ -1345,12 +1535,14 @@ window.generateBattleReport = function() {
     
     // Export canvas as image
     const image = canvas.toDataURL('image/png');
+    // Trigger download of the battle report as image
     const link = document.createElement('a');
     link.href = image;
-    link.download = `battle-report-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.png`;
+    link.download = 'battle_report.png';
+    document.body.appendChild(link);
     link.click();
-
-    console.log('Battle report image generated and downloaded successfully');
+    document.body.removeChild(link);
+    return image;
 };
 
 console.log('Battle.js loaded successfully with window.simulateBattle and window.generateBattleReport functions');
@@ -1824,3 +2016,49 @@ function initializeBattleContainers() {
 document.addEventListener('DOMContentLoaded', function() {
     initializeBattleContainers();
 });
+
+// Make sure the updateBattleDisplay function is available globally
+// (function is defined earlier in the file)
+
+// Mark battle.js as fully loaded
+window.battleJsLoaded = true;
+console.log('✅ Battle.js fully loaded with all functions including updateBattleDisplay');
+
+/**
+ * Clear the battle display for a new battle
+ */
+function clearBattleDisplay() {
+    const battleResult = document.getElementById('battleResult');
+    if (battleResult) {
+        battleResult.innerHTML = '<div class="battle-content"></div>';
+    }
+}
+
+/**
+ * Add a visual separator between battle phases or rounds
+ * @param {string} type - Type of separator (round, phase, battle)
+ */
+function addBattleSeparator(type = 'phase') {
+    const battleResult = document.getElementById('battleResult');
+    if (!battleResult) return;
+    
+    const separator = document.createElement('div');
+    separator.className = `battle-separator ${type}-separator`;
+    
+    let content = '';
+    switch (type) {
+        case 'round':
+            content = '<div class="separator-line"></div>';
+            break;
+        case 'phase':
+            content = '<div class="separator-dots">• • •</div>';
+            break;
+        case 'battle':
+            content = '<div class="separator-swords">⚔️ ⚔️ ⚔️</div>';
+            break;
+    }
+    
+    separator.innerHTML = content;
+    battleResult.appendChild(separator);
+    battleResult.scrollTop = battleResult.scrollHeight;
+}
