@@ -356,6 +356,28 @@ ul {
     left: 0;
 }
 
+/* Logo styling */
+.nav-link img {
+    filter: brightness(1.1) contrast(1.1);
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover img {
+    filter: brightness(1.3) contrast(1.2);
+    transform: scale(1.05);
+}
+
+/* Hero logo styling */
+.hero-logo {
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    transition: all 0.3s ease;
+}
+
+.hero-logo:hover {
+    transform: scale(1.02);
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
+}
+
 /* Enhanced list items */
 .enhanced-list li {
     padding: 1rem;
