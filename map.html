@@ -20,43 +20,181 @@
             <p class="text-xl gradient-text">Conquer New Territories and Expand Your Empire</p>
         </div>
 
-        <!-- The Map Section -->
-        <div id="the-map" class="card fade-in card-infrastructure mb-8">
-            <h2 class="section-title">🌍 The Map</h2>
-            <p class="mb-6 text-lg">Every 14 days on Monday, a new map will be posted. The map will show territories, cities, and when large enough, nation names for all players. Always use the latest posted map for any expansions or building actions. You must own the territory on the map to interact with it — no exceptions.</p>
-            <div class="text-center">
-                <a href="https://discord.com/channels/1297986070331523183/1366934439594164335" target="_blank" rel="noopener noreferrer" class="btn-accent">
-                    🔗 View the Latest Map on Discord
-                </a>
+        <!-- Starting Out Section -->
+        <div id="starting-out" class="card fade-in card-infrastructure mb-8">
+            <h2 class="section-title">� Starting Out</h2>
+            <p class="mb-6 text-lg">You will spawn with <strong>20 tiles</strong> and <strong>3 cities</strong>. Snaking is technically allowed now but highly encouraged to follow natural borders. All tiles must be within <strong>4 tiles</strong> of a city - you cannot spawn with a tile further than 4 away from your nearest city.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                    <h3 class="font-bold text-blue-700 mb-2">🏞️ Land Spawning Rules</h3>
+                    <ul class="text-blue-600 space-y-1">
+                        <li>• Follow natural borders when possible</li>
+                        <li>• Maximum 4 tiles from any city</li>
+                        <li>• 20 tiles total</li>
+                        <li>• 3 cities (mark your capital)</li>
+                    </ul>
+                </div>
+                <div class="p-4 bg-green-50 border-l-4 border-green-500 rounded">
+                    <h3 class="font-bold text-green-700 mb-2">🌊 Cross-Water Spawning</h3>
+                    <ul class="text-green-600 space-y-1">
+                        <li>• Must be within 2 sea tiles of a city</li>
+                        <li>• Excessive coast-hopping may be rejected</li>
+                        <li>• All water expansions originate from cities</li>
+                        <li>• No island hopping without city bases</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+                <p class="text-yellow-700"><strong>⚠️ Important:</strong> DO NOT SPAWN YET - this explains the process for when the spawn lottery occurs shortly.</p>
             </div>
         </div>
 
-        <!-- Expansions Section -->
-        <div id="expansions" class="card fade-in mb-8">
-            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Expansions</h2>
-            <p class="mb-4">Expansions are how you grow your territory peacefully — no wars needed. You can only expand into unoccupied land — not another player's tiles. Expansions may be posted until 4 days before the map update, so any expansions after Wednesday on a cycle change week (every other week) will be denied.</p>
-            <ul class="list-disc list-inside mb-4 space-y-2">
-                <li>Overland expansions must be contiguous (directly touching your current land).</li>
-                <li>Cross-water expansions originate from a coastal city to any other coastal tile connected by sea tiles.</li>
-                <li>No "snaking" expansions allowed. Snaking is when your expansion is way longer than it is wide, usually to grab something fast. Ugly expansions will be denied. Exceptions may be made for geographically sensical expansions, but get them approved first.</li>
-            </ul>
+        <!-- Spawning Process Section -->
+        <div id="spawning" class="card fade-in card-diplomacy mb-8">
+            <h2 class="section-title">📋 Spawning Process</h2>
+            <p class="mb-6 text-lg">To spawn, you must submit a request in the designated spawn request channel. Your submission must include all the following information:</p>
+            
+            <div class="space-y-4">
+                <div class="p-4 bg-white border rounded-lg shadow-sm">
+                    <h3 class="font-bold text-purple-700 mb-2">📝 Required Information</h3>
+                    <ul class="space-y-2">
+                        <li><strong>Name:</strong> Something that will work for Discord @mentions and unlikely to change</li>
+                        <li><strong>Country Name:</strong> The name of your RP nation</li>
+                        <li><strong>Capital:</strong> Name of your designated capital city (real or RP name)</li>
+                        <li><strong>Government:</strong> Choose type and modifiers from the government system</li>
+                        <li><strong>Religion:</strong> Animist, Christian, Dharmic, Islamic, Pagan, Primeval Monotheist, or Shangdi</li>
+                        <li><strong>Color:</strong> Preferably hex code, must not conflict with neighbors</li>
+                        <li><strong>Map:</strong> Modified world map with black X's for tiles and white circles for cities</li>
+                    </ul>
+                </div>
+                
+                <div class="text-center">
+                    <h4 class="font-bold text-lg mb-2">📍 Example Spawn Request</h4>
+                    <img src="images/example spawn.png" alt="Example spawn showing proper tile marking with black X's and white circles for cities" class="w-full max-w-2xl mx-auto rounded-lg shadow-md">
+                    <p class="text-sm text-gray-600 mt-2">Example showing how to mark your spawn request: black X's for claimed tiles, white circles for cities</p>
+                </div>
+                
+                <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                    <p class="text-blue-700"><strong>📥 Download Blank Map:</strong> Use <a href="images/HegemonyRebornBlankMapV1.png" target="_blank" class="underline hover:text-blue-900">this blank world map</a> as your base for creating spawn requests.</p>
+                </div>
+            </div>
+        </div>
 
-            <h3 class="text-2xl font-semibold mb-2">How to Expand (Overland)</h3>
-            <ol class="list-decimal list-inside mb-4 space-y-2">
-                <li><strong>Calculate the cost:</strong> Cost per tile is 20 silver by default, increasing by +5 for every 25 total tiles you have. (e.g., your 26th tile costs 25 silver, your 101st costs 40 silver).</li>
-                <li><strong>Edit the map:</strong> Show your claimed tiles using Black X's. Indicate your nation to prevent confusion.</li>
-                <li><strong>Submit your expansion:</strong> Post your modified map, silver cost, and number of tiles taken in the appropriate geographic channel.</li>
-            </ol>
+        <!-- Terrain and Expansion Costs Section -->
+        <div id="terrain" class="card fade-in card-economy mb-8">
+            <h2 class="section-title">🏔️ Terrain & Expansion Costs</h2>
+            <p class="mb-6 text-lg">Terrain affects expansion prices, warfare capabilities, and unique abilities. Expansions into empty land cost <strong>Food</strong>, while expansions into other players' lands cost <strong>Metal</strong>.</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="p-4 bg-green-50 border border-green-200 rounded text-center">
+                    <h4 class="font-bold text-green-700">Plains</h4>
+                    <p class="text-2xl font-bold text-green-600">2</p>
+                    <p class="text-sm text-green-500">Resources</p>
+                </div>
+                <div class="p-4 bg-yellow-50 border border-yellow-200 rounded text-center">
+                    <h4 class="font-bold text-yellow-700">Highlands</h4>
+                    <p class="text-2xl font-bold text-yellow-600">4</p>
+                    <p class="text-sm text-yellow-500">Resources</p>
+                </div>
+                <div class="p-4 bg-blue-50 border border-blue-200 rounded text-center">
+                    <h4 class="font-bold text-blue-700">Tundra</h4>
+                    <p class="text-2xl font-bold text-blue-600">4</p>
+                    <p class="text-sm text-blue-500">Resources</p>
+                </div>
+                <div class="p-4 bg-green-100 border border-green-300 rounded text-center">
+                    <h4 class="font-bold text-green-800">Forest</h4>
+                    <p class="text-2xl font-bold text-green-700">6</p>
+                    <p class="text-sm text-green-600">Resources</p>
+                </div>
+                <div class="p-4 bg-teal-50 border border-teal-200 rounded text-center">
+                    <h4 class="font-bold text-teal-700">Wetlands</h4>
+                    <p class="text-2xl font-bold text-teal-600">6</p>
+                    <p class="text-sm text-teal-500">Resources</p>
+                </div>
+                <div class="p-4 bg-yellow-100 border border-yellow-300 rounded text-center">
+                    <h4 class="font-bold text-yellow-800">Desert</h4>
+                    <p class="text-2xl font-bold text-yellow-700">8</p>
+                    <p class="text-sm text-yellow-600">Resources</p>
+                </div>
+                <div class="p-4 bg-green-200 border border-green-400 rounded text-center">
+                    <h4 class="font-bold text-green-900">Jungle</h4>
+                    <p class="text-2xl font-bold text-green-800">8</p>
+                    <p class="text-sm text-green-700">Resources</p>
+                </div>
+                <div class="p-4 bg-gray-50 border border-gray-200 rounded text-center">
+                    <h4 class="font-bold text-gray-700">Mountain</h4>
+                    <p class="text-2xl font-bold text-gray-600">10</p>
+                    <p class="text-sm text-gray-500">Resources</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="text-center">
+                    <h4 class="font-bold text-lg mb-2">🗺️ Terrain Map</h4>
+                    <img src="images/terrainn.png" alt="Terrain Map showing different terrain types across the world" class="w-full rounded-lg shadow-md">
+                    <p class="text-sm text-gray-600 mt-2">Reference map showing terrain types for expansion planning</p>
+                </div>
+                <div class="text-center">
+                    <h4 class="font-bold text-lg mb-2">💎 Resource Map</h4>
+                    <img src="images/resource map.png" alt="Resource Map showing resource distribution across regions" class="w-full rounded-lg shadow-md">
+                    <p class="text-sm text-gray-600 mt-2">Regional resource distribution guide</p>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-purple-50 border-l-4 border-purple-500 rounded">
+                <p class="text-purple-700"><strong>Note:</strong> Terrain does not affect spawning costs, only subsequent expansions.</p>
+            </div>
+        </div>
+
+        <!-- Expansion Rules Section -->
+        <div id="expansion-rules" class="card fade-in mb-8">
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">📈 Expansion Rules</h2>
+            <p class="mb-6">You may only expand up to <strong>4 tiles away from a city</strong>. This ensures that all your territory remains connected to your urban centers and prevents excessive territorial sprawl.</p>
+            
+            <div class="space-y-6">
+                <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                    <h3 class="font-bold text-blue-700 mb-2">🏞️ Overland Expansion</h3>
+                    <ul class="text-blue-600 space-y-1">
+                        <li>• Must be contiguous (touching your current territory)</li>
+                        <li>• Costs Food based on terrain type</li>
+                        <li>• Maximum 4 tiles from nearest city</li>
+                        <li>• Follow natural borders when possible</li>
+                    </ul>
+                </div>
+                
+                <div class="p-4 bg-green-50 border-l-4 border-green-500 rounded">
+                    <h3 class="font-bold text-green-700 mb-2">🌊 Overseas Expansion</h3>
+                    <ul class="text-green-600 space-y-1">
+                        <li>• Must originate from a coastal city</li>
+                        <li>• Target must be within 2 sea tiles</li>
+                        <li>• Costs Fuel for the maritime logistics</li>
+                        <li>• No island hopping without city bases</li>
+                    </ul>
+                </div>
+                
+                <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded">
+                    <h3 class="font-bold text-red-700 mb-2">⚔️ Hostile Expansion</h3>
+                    <ul class="text-red-600 space-y-1">
+                        <li>• Into other players' territory</li>
+                        <li>• Costs Metal instead of Food</li>
+                        <li>• Does not require war declaration</li>
+                        <li>• May provoke diplomatic consequences</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
             <h3 class="text-2xl font-semibold mb-2">How to Expand (Cross-Water)</h3>
             <ol class="list-decimal list-inside mb-4 space-y-2">
-                <li><strong>Calculate the cost:</strong> Cost per water tile crossed is 50 silver, increasing by +10 for every 5 total tiles crossed. (e.g., your 6th tile costs 60, for a total of 310 silver). Single tile water crossings are free (beyond the 20 silver for the land tile) and do NOT require a coastal city.</li>
+                <li><strong>Calculate the cost:</strong> Overseas expansion costs Fuel based on distance and complexity. Consult the current fuel costs for cross-water expansion.</li>
                 <li><strong>Edit the map:</strong> Draw a Black Arrow from your coastal city to your destination tile, and mark the tile with a Black X.</li>
-                <li><strong>Submit your expansion:</strong> Post your modified map, silver cost, and water tiles traversed in the appropriate geographic channel.</li>
+                <li><strong>Submit your expansion:</strong> Post your modified map, fuel cost, and water tiles traversed in the appropriate geographic channel.</li>
             </ol>
 
             <h3 class="text-2xl font-semibold mb-2">Land Swapping</h3>
-            <p>You may swap up to 3 tiles every cycle (2 weeks) with another player through land cession treaties. Swapped tiles must be adjacent to the receiving nation, or you can swap over water up to 3 water tiles away. In the latter case, the receiving nation must pay the full cross-water expansion cost.</p>
+            <p>You may swap up to 3 tiles every cycle (2 weeks) with another player through land cession treaties. Swapped tiles must be adjacent to the receiving nation, or you can swap over water up to 3 water tiles away. In the latter case, the receiving nation must pay the full cross-water expansion cost in Fuel.</p>
         </div>
     </div>
 

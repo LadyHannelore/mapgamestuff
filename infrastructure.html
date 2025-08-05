@@ -97,27 +97,114 @@
     <div id="nav-placeholder"></div>
 
     <div class="container mx-auto px-4 py-8">
-        <div class="text-center mb-8 hero-gradient p-8 rounded-2xl shadow-2xl">
-            <h1 class="text-6xl font-bold text-white drop-shadow-lg">🏗️ Infrastructure 🏗️</h1>
-            <p class="text-xl text-white mt-4 opacity-90">Build, Trade, and Expand Your Empire</p>
+        <div class="text-center mb-8 glassmorphism p-8 rounded-lg floating pulse-glow">
+            <h1 class="hero-title">🏗️ Resources & Infrastructure</h1>
+            <p class="text-xl gradient-text">The Foundation of Your Empire</p>
         </div>
 
-        <div class="card fade-in mb-8 bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
-            <div class="section-header">
-                <h2 class="text-4xl font-bold mb-2">⚡ Resources ⚡</h2>
-                <p class="text-lg opacity-90">The Foundation of Your Nation's Power</p>
+        <!-- Resources Overview Section -->
+        <div id="resources-overview" class="card fade-in card-economy mb-8">
+            <h2 class="section-title">📦 Resource System</h2>
+            <p class="mb-6 text-lg leading-relaxed">Resources are essential this iteration. They form the entire economy and are used to perform most map actions. There are six primary resources, each with specific uses and strategic importance.</p>
+            
+            <div class="text-center mb-8">
+                <h4 class="font-bold text-lg mb-2">💎 Resource Distribution Example</h4>
+                <img src="images/resources example.png" alt="Example showing regional resource distribution" class="w-full max-w-3xl mx-auto rounded-lg shadow-md">
+                <p class="text-sm text-gray-600 mt-2">Example of how resources are distributed across different regions</p>
             </div>
-            <div class="p-6">
-                <p class="mb-4 text-lg text-gray-700">Resources are powerful tool which are integral to your nation's success. They are required to build cities, can be used to build armies, and navies, and each have their own abilities</p>
-                <p class="mb-6 font-semibold text-xl text-gray-800">There are six resources in the game:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="resource-card p-6 bg-white rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="icon-bg bg-gradient-to-r from-yellow-400 to-yellow-600">
+                            <span class="text-white text-xl">💰</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-yellow-600">Bullion</h3>
+                    </div>
+                    <ul class="text-gray-700 space-y-2">
+                        <li>• Trading costs</li>
+                        <li>• Mercenary hire & upkeep</li>
+                        <li>• Cosmetic map labels</li>
+                        <li>• Government changes</li>
+                    </ul>
+                </div>
                 
-                <div class="space-y-6">
-                    <div class="bg-gradient-to-r from-green-100 to-green-50 p-6 rounded-xl resource-card food-card shadow-lg">
-                        <div class="flex items-center mb-4">
-                            <div class="icon-bg">
-                                <span class="text-2xl">🌾</span>
-                            </div>
-                            <h3 class="text-2xl font-bold text-green-700">Food</h3>
+                <div class="resource-card food-card p-6 bg-white rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="icon-bg bg-gradient-to-r from-green-400 to-green-600">
+                            <span class="text-white text-xl">🌾</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-green-600">Food</h3>
+                    </div>
+                    <ul class="text-gray-700 space-y-2">
+                        <li>• Overland expansion</li>
+                        <li>• National brigade upkeep</li>
+                        <li>• Population sustenance</li>
+                        <li>• Terrain-based costs</li>
+                    </ul>
+                </div>
+                
+                <div class="resource-card fuel-card p-6 bg-white rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="icon-bg bg-gradient-to-r from-orange-400 to-orange-600">
+                            <span class="text-white text-xl">⛽</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-orange-600">Fuel</h3>
+                    </div>
+                    <ul class="text-gray-700 space-y-2">
+                        <li>• Overseas expansion</li>
+                        <li>• City upgrades</li>
+                        <li>• Warfare actions</li>
+                        <li>• Naval unit upkeep</li>
+                    </ul>
+                </div>
+                
+                <div class="resource-card gems-card p-6 bg-white rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="icon-bg bg-gradient-to-r from-purple-400 to-purple-600">
+                            <span class="text-white text-xl">💎</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-purple-600">Luxuries</h3>
+                    </div>
+                    <ul class="text-gray-700 space-y-2">
+                        <li>• Binding treaties</li>
+                        <li>• High-tier city upgrades</li>
+                        <li>• General hire & upkeep</li>
+                        <li>• Diplomatic agreements</li>
+                    </ul>
+                </div>
+                
+                <div class="resource-card stone-card p-6 bg-white rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="icon-bg bg-gradient-to-r from-gray-400 to-gray-600">
+                            <span class="text-white text-xl">🧱</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-600">Material</h3>
+                    </div>
+                    <ul class="text-gray-700 space-y-2">
+                        <li>• City construction</li>
+                        <li>• City upgrades</li>
+                        <li>• Naval unit construction</li>
+                        <li>• Naval enhancements</li>
+                    </ul>
+                </div>
+                
+                <div class="resource-card metal-card p-6 bg-white rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="icon-bg bg-gradient-to-r from-slate-400 to-slate-600">
+                            <span class="text-white text-xl">⚔️</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-600">Metal</h3>
+                    </div>
+                    <ul class="text-gray-700 space-y-2">
+                        <li>• Brigade construction</li>
+                        <li>• Brigade enhancements</li>
+                        <li>• Hostile expansion</li>
+                        <li>• Trade protection</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
                         </div>
                         <ul class="list-disc list-inside space-y-2 text-green-800">
                             <li><strong>Growth</strong> | 2 food - expand 1 tile</li>
@@ -146,7 +233,7 @@
                             <h3 class="text-2xl font-bold text-purple-700">Gems</h3>
                         </div>
                         <ul class="list-disc list-inside space-y-2 text-purple-800">
-                            <li><strong>Sell</strong> | 3 gems- Gain 45 silver</li>
+                            <li><strong>Sell</strong> | 3 Luxuries - Gain substantial Bullion</li>
                             <li><strong>New Training</strong> | 3 gems - Reroll general Trait</li>
                         </ul>
                     </div>
@@ -172,7 +259,7 @@
                             <h3 class="text-2xl font-bold text-stone-700">Stone</h3>
                         </div>
                         <ul class="list-disc list-inside space-y-2 text-stone-800">
-                            <li><strong>Settle</strong> | 1 Stone - You may bid 1 stone as 15 silver in contested expansions</li>
+                            <li><strong>Settle</strong> | 1 Material - You may bid 1 Material as equivalent Bullion in contested expansions</li>
                             <li><strong>Construct</strong> | 1-3 Stone - You may create Trenches (1 Stone), Towers (2 Stone) or Forts (3 Stone)</li>
                         </ul>
                     </div>
@@ -185,7 +272,7 @@
                             <h3 class="text-2xl font-bold text-amber-700">Timber</h3>
                         </div>
                         <ul class="list-disc list-inside space-y-2 text-amber-800">
-                            <li><strong>Printing Press</strong> | 1 Timber - You may spend 1 Timber to post silver submissions over your cap. You may do this multiple times per map cycle. Post the usage like this: Post 11/10, spending 1 Timber</li>
+                            <li><strong>Printing Press</strong> | 1 Material - You may spend 1 Material to post resource submissions over your cap. You may do this multiple times per map cycle. Post the usage like this: Post 11/10, spending 1 Material</li>
                             <li><strong>Emergency Repairs</strong> | 2 Timber - Instantly Repair a surrendered ship without docking</li>
                         </ul>
                     </div>
@@ -196,10 +283,10 @@
                         <div class="icon-bg">
                             <span class="text-2xl">💰</span>
                         </div>
-                        <h3 class="text-2xl font-bold text-blue-700">How to Purchase Resources:</h3>
+                        <h3 class="text-2xl font-bold text-blue-700">Resource Generation & Management:</h3>
                     </div>
                     <ul class="list-disc list-inside space-y-2 text-blue-800">
-                        <li><strong>Cost:</strong> 5 silver per resource unit</li>
+                        <li><strong>Generation:</strong> Resources are generated from terrain and infrastructure</li>
                         <li><strong>Maximum:</strong> 12 resources spawned per Map Cycle</li>
                         <li><strong>Submission:</strong> You may purchase a maximum of two resources from any individual resource tile each cycle</li>
                     </ul>
@@ -225,7 +312,7 @@
                 <div class="bg-orange-50 p-4 rounded-lg">
                     <h3 class="text-lg font-bold text-orange-700 mb-2">Middlemen:</h3>
                     <ul class="list-disc list-inside space-y-1">
-                        <li>If trading through another player's land, both trading nations must pay 5 silver per middleman player. (10 total silver to the middleman)</li>
+                        <li>If trading through another player's land, both trading nations must pay Bullion per middleman player according to current rates.</li>
                         <li>Middlemen may seize the goods instead of taxing — this grants all players along the route a Trade War Justification against them.</li>
                     </ul>
                 </div>
@@ -233,7 +320,7 @@
                 <div class="bg-blue-50 p-4 rounded-lg">
                     <h3 class="text-lg font-bold text-blue-700 mb-2">Sea Trading:</h3>
                     <ul class="list-disc list-inside space-y-1">
-                        <li>Each player must pay 2 silver per sea tile between coastal cities to trade by sea. (4 total silver)</li>
+                        <li>Each player must pay Bullion per sea tile between coastal cities to trade by sea according to current rates.</li>
                         <li>Sea trades that do not leave one sea tile do not have a fee, much like sea expansions.</li>
                         <li>Pirates may attack and seize sea trades, see Section 6: Boats</li>
                     </ul>
@@ -255,7 +342,7 @@
 
                 <div class="bg-red-50 p-4 rounded-lg">
                     <h3 class="text-lg font-bold text-red-700 mb-2">Important:</h3>
-                    <p>Gifts are not allowed. All trades must involve fair exchanges — no one-sided deals. Each resource must be paid for with at least 5 silver or another resource.</p>
+                    <p>Gifts are not allowed. All trades must involve fair exchanges — no one-sided deals. Each resource must be paid for with equivalent value in other resources or Bullion.</p>
                 </div>
             </div>
         </div>
@@ -263,7 +350,7 @@
         <div class="card fade-in mb-8">
             <h2 class="text-3xl font-bold mb-4 border-b pb-2">Cities</h2>
             <p class="mb-4">Cities are the backbone of your nation's infrastructure. They unlock trade, allow expansion across seas, provide military garrisons, and are required for subculture creation.</p>
-            <p class="mb-6">Cities come in three tiers, starting at Tier 1 and upgrading as you gather more resources and silver.</p>
+            <p class="mb-6">Cities come in three tiers, starting at Tier 1 and upgrading as you gather more resources and strategic materials.</p>
             
             <div class="space-y-4">
                 <div class="bg-green-50 p-4 rounded-lg">
@@ -273,12 +360,12 @@
 
                 <div class="bg-blue-50 p-4 rounded-lg">
                     <h3 class="text-lg font-bold text-blue-700 mb-2">T2 Cost:</h3>
-                    <p>4 Food, 2 Fuel, 2 Metal, 100 Silver (or 3 Gems), 4 Stone/Timber | +3 brigade capacity, +1 ship capacity</p>
+                    <p>4 Food, 2 Fuel, 2 Metal, 3 Luxuries, 4 Material | +3 brigade capacity, +1 ship capacity</p>
                 </div>
 
                 <div class="bg-purple-50 p-4 rounded-lg">
                     <h3 class="text-lg font-bold text-purple-700 mb-2">T3 Cost:</h3>
-                    <p>5 Food, 4 Fuel, 4 Metal, 300 Silver (or 9 Gems), 5 Stone/Timber | +5 brigade capacity, +2 ship capacity</p>
+                    <p>5 Food, 4 Fuel, 4 Metal, 5 Luxuries, 5 Material | +5 brigade capacity, +2 ship capacity</p>
                 </div>
             </div>
 

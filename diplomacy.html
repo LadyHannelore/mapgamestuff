@@ -16,12 +16,141 @@
 
     <div class="container mx-auto px-4 py-8">
         <div class="text-center mb-8 glassmorphism p-8 rounded-lg floating pulse-glow">
-            <h1 class="hero-title">🤝 Diplomacy</h1>
-            <p class="text-xl gradient-text">Forge Alliances, Shape Destinies</p>
+            <h1 class="hero-title">🏛️ Government & Diplomacy</h1>
+            <p class="text-xl gradient-text">Shape Your Nation's Political Identity</p>
         </div>
 
-        <div class="card fade-in mb-8">
-            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Introduction</h2>
+        <!-- Government System Section -->
+        <div id="government-system" class="card fade-in card-diplomacy mb-8">
+            <h2 class="section-title">🏛️ Government System</h2>
+            <p class="mb-6 text-lg leading-relaxed">Government modifiers are small bonuses that assist with your style of play and help describe your RP to others in simple terms. While it's not required for your RP to follow your mechanical choices, we highly encourage it for immersion and worldbuilding.</p>
+            
+            <!-- Government Types -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="p-6 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-700 mb-3">🗳️ Democracy</h3>
+                    <ul class="text-blue-600 space-y-2">
+                        <li>• <strong>1</strong> Government modifier</li>
+                        <li>• Can swap every week for <strong>no cost</strong></li>
+                        <li>• Maximum flexibility</li>
+                        <li>• Responsive to change</li>
+                    </ul>
+                </div>
+                
+                <div class="p-6 bg-purple-50 border-l-4 border-purple-500 rounded-lg">
+                    <h3 class="text-xl font-bold text-purple-700 mb-3">👥 Oligarchy</h3>
+                    <ul class="text-purple-600 space-y-2">
+                        <li>• <strong>2</strong> Government modifiers</li>
+                        <li>• Standard change costs</li>
+                        <li>• Balanced approach</li>
+                        <li>• Moderate complexity</li>
+                    </ul>
+                </div>
+                
+                <div class="p-6 bg-red-50 border-l-4 border-red-500 rounded-lg">
+                    <h3 class="text-xl font-bold text-red-700 mb-3">👑 Autocracy</h3>
+                    <ul class="text-red-600 space-y-2">
+                        <li>• <strong>3</strong> Government modifiers</li>
+                        <li>• <strong>Double cost</strong> to change</li>
+                        <li>• Maximum stability</li>
+                        <li>• Highest complexity</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Government Modifiers -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-bold mb-4 text-center">📋 Government Modifiers</h3>
+                <p class="text-center mb-6 text-gray-600">Pick a number equal to your Government Type allowance</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+                        <h4 class="font-bold text-blue-700 mb-2">👑 Aristocratic</h4>
+                        <p class="text-blue-600 text-sm">Your first 3 Generals are free and have no upkeep.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+                        <h4 class="font-bold text-gray-700 mb-2">📋 Bureaucratic</h4>
+                        <p class="text-gray-600 text-sm">T2 and T4 cities provide +2 Worldbuilding submission cap, rather than +1.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200">
+                        <h4 class="font-bold text-green-700 mb-2">🤝 Confederal</h4>
+                        <p class="text-green-600 text-sm">Vassal limit +2. Vassals/overlord gain +3 Bullion per week. Mutually exclusive with Federal and Unitary.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-lg border border-indigo-200">
+                        <h4 class="font-bold text-indigo-700 mb-2">🎭 Diplomatic</h4>
+                        <p class="text-indigo-600 text-sm">Your first Diplomat is free.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-lg border border-cyan-200">
+                        <h4 class="font-bold text-cyan-700 mb-2">🏛️ Federal</h4>
+                        <p class="text-cyan-600 text-sm">For every region you have a city in, gain 1 Bullion. Mutually exclusive with Unitary and Confederal.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+                        <h4 class="font-bold text-orange-700 mb-2">💰 Kleptocratic</h4>
+                        <p class="text-orange-600 text-sm">When in debt, you gain +2 of the negative resource(s) on upkeep.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-lg border border-emerald-200">
+                        <h4 class="font-bold text-emerald-700 mb-2">🏪 Mercantile</h4>
+                        <p class="text-emerald-600 text-sm">No initial 1 Bullion trading fee. Trade range is doubled.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200">
+                        <h4 class="font-bold text-yellow-700 mb-2">💎 Plutocratic</h4>
+                        <p class="text-yellow-600 text-sm">May purchase mercenary ships/upgrades and generals. Worldbuilding for Bullion receives +1 resource.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-red-50 to-red-100 rounded-lg border border-red-200">
+                        <h4 class="font-bold text-red-700 mb-2">⚔️ Stratocratic</h4>
+                        <p class="text-red-600 text-sm">Enhance two land brigades free weekly. First 10 national brigades have free upkeep, rather than 5.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-violet-50 to-violet-100 rounded-lg border border-violet-200">
+                        <h4 class="font-bold text-violet-700 mb-2">🔬 Technocratic</h4>
+                        <p class="text-violet-600 text-sm">May exchange 3 of the same resource for 1 of any resource. Request in /trade/ chat.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-stone-50 to-stone-100 rounded-lg border border-stone-200">
+                        <h4 class="font-bold text-stone-700 mb-2">🌍 Tellurocratic</h4>
+                        <p class="text-stone-600 text-sm">Land expansions cost 2 less food or metal (minimum of 2).</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg border border-amber-200">
+                        <h4 class="font-bold text-amber-700 mb-2">⛪ Theocratic</h4>
+                        <p class="text-amber-600 text-sm">Access to Holy War casus belli. Changing to this allows free religion change.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+                        <h4 class="font-bold text-blue-700 mb-2">🌊 Thalassocratic</h4>
+                        <p class="text-blue-600 text-sm">First three ships have no Fuel upkeep. Ships have +1 movement.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-rose-50 to-rose-100 rounded-lg border border-rose-200">
+                        <h4 class="font-bold text-rose-700 mb-2">🏰 Unitary</h4>
+                        <p class="text-rose-600 text-sm">Capital tile produces +2 resource per tier, or Bullion if blank. Mutually exclusive with Federal and Confederal.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Changing Governments -->
+            <div class="p-6 bg-gradient-to-r from-orange-50 to-red-50 border-l-4 border-orange-500 rounded-lg">
+                <h3 class="text-xl font-bold text-orange-700 mb-3">🔄 Changing Governments</h3>
+                <ul class="text-orange-600 space-y-2">
+                    <li>• <strong>Cooldown:</strong> 1 month between changes</li>
+                    <li>• <strong>Cost:</strong> 1 Bullion per 6 city weight</li>
+                    <li>• <strong>RP Requirement:</strong> Write explanation post (counts as Worldbuilding Submission)</li>
+                    <li>• <strong>Bankruptcy:</strong> Government may change automatically if nation goes bankrupt</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Diplomacy Section -->
+        <div id="diplomacy" class="card fade-in mb-8">
+            <h2 class="section-title">🤝 Diplomatic Relations</h2>
             <p class="mb-4">Diplomacy is how nations interact — whether it be forging friendships, making alliances, starting rivalries, or crafting betrayals.</p>
             <p class="mb-4">This is done through the regional threads. If you wish to engage in diplomacy with more than one nation then it will become an event. If you wish to explore the background of a diplomatic mission you may do it in a long-form roleplay post, and it will be graded. Normal short-form diplomacy will not be graded.</p>
             <p class="mb-4">Negotiations must be posted, through roleplaying your deals. A simple "we ally" isn't enough. Make it immersive: a treaty signing, a diplomatic envoy, an exchange of gifts, etc.</p>
