@@ -4,33 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diplomacy - Map Game Mechanics</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    
     <!-- GSAP Animation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 </head>
-<body class="bg-gray-100">
+<body>
     <div id="nav-placeholder"></div>
-
-    <div class="container mx-auto px-4 py-8">
-        <div class="text-center mb-8 glassmorphism p-8 rounded-lg floating pulse-glow">
+    <div class="container">
+        <div class="glassmorphism p-8 rounded-lg mb-8">
             <h1 class="hero-title">🤝 Diplomacy</h1>
             <p class="text-xl gradient-text">Master the Art of International Relations</p>
         </div>
-
         <!-- Diplomacy Section -->
-        <div id="diplomacy" class="card fade-in mb-8">
+        <div id="diplomacy" class="card mb-8">
             <h2 class="section-title">🤝 Diplomatic Relations</h2>
             <p class="mb-4">Diplomacy is how nations interact — whether it be forging friendships, making alliances, starting rivalries, or crafting betrayals.</p>
             <p class="mb-4">This is done through the regional threads. If you wish to engage in diplomacy with more than one nation then it will become an event. If you wish to explore the background of a diplomatic mission you may do it in a long-form roleplay post, and it will be graded. Normal short-form diplomacy will not be graded.</p>
             <p class="mb-4">Negotiations must be posted, through roleplaying your deals. A simple "we ally" isn't enough. Make it immersive: a treaty signing, a diplomatic envoy, an exchange of gifts, etc.</p>
-            <p class="font-semibold text-red-600">Therefore there should be no out of character deals. No "meta" alliances made behind the curtain.</p>
+            <p class="font-semibold" style="color:#e57373;">Therefore there should be no out of character deals. No "meta" alliances made behind the curtain.</p>
         </div>
-
-        <div class="card fade-in mb-8">
-            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Treaties</h2>
+        <div class="card mb-8">
+            <h2 class="section-title border-b pb-2">Treaties</h2>
             <p class="mb-4">A treaty is a formal agreement between two or more nations.</p>
             <p class="mb-4">Signing a treaty requires a clear list of the signatories, and this list cannot be changed at any time between posting for approval and the treaty's abolition. Each category allows you to have signed a maximum of 3 treaties, with your first in that category costing nothing, your second costing resources, and your third costing more resources.</p>
             <p class="mb-4">If you want to include more people into your treaty, you must abolish the current one and resubmit it as a new treaty. The above costs will apply if applicable. Everyone who wants to be a signatory must have been involved with its creation in RP or diplomacy.</p>
@@ -38,21 +33,18 @@
             <p class="mb-4">Breaking a treaty gives the other signatories a diplomatic insult justification.</p>
             <p class="mb-4">Unions cannot sign treaties as one unit and must be separate signatories on treaties.</p>
             <p class="mb-6">A treaty naturally comes to an end when all of the clauses have been fulfilled.</p>
-
             <div class="space-y-4">
-                <div class="bg-purple-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-purple-700 mb-2">💍 Unions</h3>
+                <div class="card">
+                    <h3 class="text-lg font-bold section-title mb-2">💍 Unions</h3>
                     <p>See Section 3: Roleplay</p>
                 </div>
-
-                <div class="bg-green-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-green-700 mb-2">🗺️ Border Agreements</h3>
+                <div class="card">
+                    <h3 class="text-lg font-bold section-title mb-2">🗺️ Border Agreements</h3>
                     <p class="mb-2">Border agreements are how nations regulate their expansion</p>
                     <p>While border agreements divide unclaimed land, this strictly binds signatories and a third party is completely within their right to claim that land and ignore the border agreement altogether</p>
                 </div>
-
-                <div class="bg-blue-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-blue-700 mb-2">📜 Land Cessions</h3>
+                <div class="card">
+                    <h3 class="text-lg font-bold section-title mb-2">📜 Land Cessions</h3>
                     <ul class="list-disc list-inside space-y-1">
                         <li>Land cession cover the trading of land between two countries</li>
                         <li>You may not conduct land trades with a nation you are usually unable to trade with</li>
@@ -62,9 +54,8 @@
                         <li>You may only trade 3 tiles per cycle</li>
                     </ul>
                 </div>
-
-                <div class="bg-yellow-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-yellow-700 mb-2">🤝 Peace Treaties</h3>
+                <div class="card">
+                    <h3 class="text-lg font-bold section-title mb-2">🤝 Peace Treaties</h3>
                     <ul class="list-disc list-inside space-y-1">
                         <li>Peace treaties must follow the justification victory or defeat terms.</li>
                         <li>When calculating peace treaties, cities cost a number of additional tiles equal to their tier.</li>
@@ -72,35 +63,30 @@
                         <li>You may not take a player's last city unless the peace treaty would result in a full annexation. You are allowed to envelop the city tile.</li>
                     </ul>
                 </div>
-
-                <div class="bg-orange-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-orange-700 mb-2">💱 Trade Agreements</h3>
+                <div class="card">
+                    <h3 class="text-lg font-bold section-title mb-2">💱 Trade Agreements</h3>
                     <p>This is a broad category that encompasses all forms of trade including resource sharing and economy boosts</p>
                 </div>
-
-                <div class="bg-amber-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-amber-700 mb-2">💰 Tributaries</h3>
+                <div class="card">
+                    <h3 class="text-lg font-bold section-title mb-2">💰 Tributaries</h3>
                     <p>See Section 7: Diplomacy</p>
                 </div>
-
-                <div class="bg-teal-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-teal-700 mb-2">✌️ Non-aggression Pacts</h3>
+                <div class="card">
+                    <h3 class="text-lg font-bold section-title mb-2">✌️ Non-aggression Pacts</h3>
                     <ul class="list-disc list-inside space-y-1">
                         <li>Non-aggression pacts prevent piracy or the declaration of war</li>
                         <li>A party retains their right to hold another signatory accountable if they break the pact in roleplay</li>
                     </ul>
                 </div>
-
-                <div class="bg-indigo-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-indigo-700 mb-2">🚶‍♂️ Military Access</h3>
+                <div class="card">
+                    <h3 class="text-lg font-bold section-title mb-2">🚶‍♂️ Military Access</h3>
                     <ul class="list-disc list-inside space-y-1">
                         <li>Military access allows brigades and armies to enter other peoples borders</li>
                         <li>Military access also lets a nation dock their ships in your harbours</li>
                     </ul>
                 </div>
-
-                <div class="bg-red-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-red-700 mb-2">🛡️ Defensive Pacts</h3>
+                <div class="card">
+                    <h3 class="text-lg font-bold section-title mb-2">🛡️ Defensive Pacts</h3>
                     <ul class="list-disc list-inside space-y-1">
                         <li>Defensive Pacts are bilateral agreements to deter aggression by a third party</li>
                         <li>Defensive Pacts must have a target. You declare a single player as being the person you are signing to defend against, and only if they attack a signatory are you allowed to trigger the pact</li>
@@ -110,32 +96,28 @@
                         <li>If you have defensive pacts with two nations at war you can choose which one to activate</li>
                     </ul>
                 </div>
-
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-gray-700 mb-2">🚫🪖 Demilitarised Zones</h3>
+                <div class="card">
+                    <h3 class="text-lg font-bold section-title mb-2">🚫🪖 Demilitarised Zones</h3>
                     <ul class="list-disc list-inside space-y-1">
                         <li>Once a tile is declared to be a demilitarised zone, signatories are unable to conduct any such military actions or roleplay in that tile without breaking the treaty</li>
                         <li>Trenches, Watchtowers and Forts may not be built here</li>
                     </ul>
                 </div>
-
-                <div class="bg-pink-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-pink-700 mb-2">🎭 Roleplay Treaties</h3>
+                <div class="card">
+                    <h3 class="text-lg font-bold section-title mb-2">🎭 Roleplay Treaties</h3>
                     <ul class="list-disc list-inside space-y-1">
                         <li>These treaties only affect roleplay</li>
                         <li>Roleplay treaties don't have a cap or exponential cost</li>
                         <li>If you roleplay breaking these treaties other signatories still get a diplomatic insult justification</li>
                     </ul>
                 </div>
-
-                <div class="bg-slate-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-slate-700 mb-2">📄 Miscellaneous Treaties</h3>
+                <div class="card">
+                    <h3 class="text-lg font-bold section-title mb-2">📄 Miscellaneous Treaties</h3>
                     <p>This is simply a way to sign a treaty that does not fit the confines of any of the specific types, it isn't a way to circumvent other mechanics</p>
                 </div>
             </div>
         </div>
-
-        <div class="card fade-in mb-8">
+        <div class="card mb-8">
             <h2 class="text-3xl font-bold mb-4 border-b pb-2">Secret Clauses</h2>
             <p class="mb-4">You may either sign secret treaties or secret clauses within public treaties e.g. Molotov-Ribentrop Pact</p>
             <p class="mb-4">If it is the former you must state what type of treaty you are signing and it will count towards that cap</p>
@@ -143,8 +125,7 @@
             <p class="mb-6">Only people invited by the treaty writer can see the channel</p>
             <p class="font-semibold">Secret Clauses by themselves have no cap</p>
         </div>
-
-        <div class="card fade-in mb-8">
+        <div class="card mb-8">
             <h2 class="text-3xl font-bold mb-4 border-b pb-2">How to Make a Treaty</h2>
             <ol class="list-decimal list-inside space-y-2">
                 <li>Roleplay the negotiation in 👥-diplomacy. Have a meeting, an exchange of envoys, or a summit.</li>
@@ -155,8 +136,7 @@
                 <li>Both/all parties must react or post acceptance.</li>
             </ol>
         </div>
-
-        <div class="card fade-in mb-8">
+        <div class="card mb-8">
             <h2 class="text-3xl font-bold mb-4 border-b pb-2">Tributaries</h2>
             <p class="mb-4">As part of a Peace deal, or by manipulation through diplomacy, you may acquire tributaries. These tributaries:</p>
             <ul class="list-disc list-inside space-y-2 mb-6">
@@ -167,7 +147,6 @@
                 <li>Are able to be wholly traded as part of a land trade</li>
                 <li>May be garrisoned by 3 overlord brigades</li>
             </ul>
-
             <p class="mb-4">Acquiring a Tributary is simple, you either win a war where that is a peace treaty option, or they willingly submit to you through a diplomatic treaty. You must be adjacent by land or sea, or have coastal cities within tiles to establish a tributary diplomatically</p>
             <p class="mb-4">You can never have more than 2 tributaries at a time, but your tributaries may have tributaries of their own.</p>
             <p class="mb-4">Tributaries are mechanically independent from your nation, so their status will not affect expansions, trade, or military action. The overlord may committ 3 brigades to them, and may use those brigades in any wars involving the tributary.</p>
@@ -175,14 +154,12 @@
             <p class="mb-4">A Tributary must pay either Bullion, OR 5 resources, to their overlord every map cycle. This is determined by the overlord.</p>
             <p>You may trade a tributary to another player, following the standard land trading rules. The tributary retains all land and the treaty is shifted to the new player. Tributaries may also be taken following a war in place of land.</p>
         </div>
-
-        <div class="card fade-in">
+        <div class="card mb-8">
             <h2 class="text-3xl font-bold mb-4 border-b pb-2">Unions: Shared Banners, Shared Battles</h2>
             <p class="mb-6">Unions are tightly connected nations acting as one. They provide military coordination, shared purpose, and a unique channel.</p>
-            
             <div class="space-y-6">
-                <div class="bg-blue-50 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold text-blue-700 mb-3">Union Formation Rules:</h3>
+                <div class="card">
+                    <h3 class="text-xl font-bold section-title mb-3">Union Formation Rules:</h3>
                     <ul class="list-disc list-inside space-y-1">
                         <li>Max 3 players per Union.</li>
                         <li>Each member must have at least one Tier 2 City.</li>
@@ -195,9 +172,8 @@
                         <li>A resource fee per player</li>
                     </ul>
                 </div>
-
-                <div class="bg-green-50 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold text-green-700 mb-3">Union Perks</h3>
+                <div class="card">
+                    <h3 class="text-xl font-bold section-title mb-3">Union Perks</h3>
                     <div class="space-y-3">
                         <div>
                             <h4 class="font-semibold">Shared Military Support</h4>
@@ -216,9 +192,8 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="bg-purple-50 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold text-purple-700 mb-3">Union Constitution & RP Opportunities</h3>
+                <div class="card">
+                    <h3 class="text-xl font-bold section-title mb-3">Union Constitution & RP Opportunities</h3>
                     <p class="mb-2">Every Union must have a brief written Constitution, including:</p>
                     <ul class="list-disc list-inside space-y-1">
                         <li>Shared goals and structure</li>
@@ -227,9 +202,8 @@
                     </ul>
                     <p class="mt-2">Exceptional Constitutions may unlock unique RP-based rewards or quests at the mod's discretion.</p>
                 </div>
-
-                <div class="bg-red-50 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold text-red-700 mb-3">Prohibited or Restricted</h3>
+                <div class="card">
+                    <h3 class="text-xl font-bold section-title mb-3">Prohibited or Restricted</h3>
                     <ul class="list-disc list-inside space-y-1">
                         <li>No brigade cap bonuses</li>
                         <li>No shared garrisons or installations</li>
@@ -238,9 +212,8 @@
                         <li>No extra RP resource rewards — Union RP counts toward your 10 bi-weekly cap.</li>
                     </ul>
                 </div>
-
-                <div class="bg-orange-50 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold text-orange-700 mb-3">Union Decay</h3>
+                <div class="card">
+                    <h3 class="text-xl font-bold section-title mb-3">Union Decay</h3>
                     <p class="mb-2">A Union will be automatically dissolved if, for three complete map cycles, its members don't do at least one of the following:</p>
                     <ul class="list-disc list-inside space-y-1">
                         <li>Participate in wars (offensive or defensive),</li>
@@ -248,18 +221,16 @@
                         <li>Post Union-related RP or Ranked Submissions.</li>
                     </ul>
                 </div>
-
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold text-gray-700 mb-3">Dissolution & Leaving</h3>
+                <div class="card">
+                    <h3 class="text-xl font-bold section-title mb-3">Dissolution & Leaving</h3>
                     <ul class="list-disc list-inside space-y-1">
                         <li>A Union can be voluntarily dissolved at any time.</li>
                         <li>A player may leave early by paying resources.</li>
                         <li>Leaving or disbanding triggers a 2-cycle cooldown before joining or forming another Union.</li>
                     </ul>
                 </div>
-
-                <div class="bg-yellow-50 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold text-yellow-700 mb-3">How to Form a Union</h3>
+                <div class="card">
+                    <h3 class="text-xl font-bold section-title mb-3">How to Form a Union</h3>
                     <p class="mb-2">RP your Constitution in 🤝-treaties. Must include:</p>
                     <ul class="list-disc list-inside space-y-1 mb-4">
                         <li>All member names</li>
@@ -277,315 +248,79 @@
                         <li>A private Union Channel for RP and coordination</li>
                     </ul>
                 </div>
-
-                <div class="bg-indigo-50 p-4 rounded-lg">
+                <div class="card">
                     <p class="text-lg font-semibold text-indigo-700">Unions are for those who don't just want to win — they want to shape the world together. Play it right, and your Union might become a legend.</p>
                 </div>
             </div>
         </div>
-
         <!-- War Justifications Section -->
-        <div class="card fade-in mb-8">
+        <div class="card mb-8">
             <h2 class="section-title">⚔️ War Justifications</h2>
             <p class="mb-6 text-lg">Every offensive war requires a valid justification. Each has specific requirements, victory/defeat conditions, and peace terms. <span class="font-semibold text-red-600">Important:</span> Losing all of your cities as the Attacker will instantly trigger the defeat conditions.</p>
-            
             <div class="grid gap-6">
-                <!-- Adjacency -->
-                <div class="card-warfare p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-red-700 mb-3">🏴 Adjacency</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> Adjacent nation</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Capture 1/2 cities within 5 land tiles of your territory</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> 10 tiles</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Fail to capture all required cities within 8 action cycles</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> 4 tiles</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> You must be Pagan to use this Justification. You must be adjacent to a nation for a full map cycle before you may use this Justification.</p>
-                        </div>
-                    </div>
+                <!-- All justifications will use the same card styling -->
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">💢 Diplomatic Insult</h3>
+                    <!-- ...existing content... -->
                 </div>
-
-                <!-- Coalition War -->
-                <div class="card-diplomacy p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-blue-700 mb-3">🤝 Coalition War</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> An adjacent player is 3x your size in tiles</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Capture every enemy city</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> 10 tiles for every coalition player</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Fail to capture every city in 20 action cycles, or lose 1/3 coalition city weight</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> Each player loses 3 tiles</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> Any player adjacent to either you or your opponent may join your coalition at the start of the war. This coalition may not exceed the tile size of your opponent at the war start.</p>
-                        </div>
-                    </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">👑 Establish Tributary</h3>
+                    <!-- ...existing content... -->
                 </div>
-
-                <!-- Colonization -->
-                <div class="card-infrastructure p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-green-700 mb-3">🌍 Colonization</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> A player has land within 20 sea tiles in a region you do not have any land</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Capture 3 cities in that region, or all cities in that region</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> 20 tiles within the declared region</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Fail to capture the cities within 16 action cycles</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> Pay resources equivalent to previous costs</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> You may only use this if you fully own the region you count the sea tiles from. Union members count as owned land for this. If the defender has no cities in that region you automatically win after 5 action cycles, unless they build one.</p>
-                        </div>
-                    </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">⛵ Expeditionary War</h3>
+                    <!-- ...existing content... -->
                 </div>
-
-                <!-- Diplomatic Insult -->
-                <div class="card-diplomacy p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-purple-700 mb-3">💢 Diplomatic Insult</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> A player has done something in RP or Diplomacy that you consider offensive to your ruler or people</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Capture a city</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> 2 tiles and resources, and a resolution to the offensive RP or Diplomacy</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Lose a city</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> 2 tiles and resources</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> None</p>
-                        </div>
-                    </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">🗺️ Failed Expansion</h3>
+                    <!-- ...existing content... -->
                 </div>
-
-                <!-- Establish Tributary -->
-                <div class="card-economy p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-yellow-700 mb-3">👑 Establish Tributary</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> Adjacent smaller nation</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Capture 1/2 of their city weight</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> Establish them as a Tributary, and take Bullion or 5 resources</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Fail to capture 1/2 City weight within 8 cycles</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> Pay Bullion and 5 resources</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> May not declare war if you already have 2 tributaries</p>
-                        </div>
-                    </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">✨ Holy Revanchism</h3>
+                    <!-- ...existing content... -->
                 </div>
-
-                <!-- Expeditionary War -->
-                <div class="card-infrastructure p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-cyan-700 mb-3">⛵ Expeditionary War</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> Owned City within 10 sea tiles of the players land</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Capture a city</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> 3 Tiles</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Fail to capture a City within 8 cycles</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> Pay resources</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> You must count the tiles from a T2 or T3 coastal city</p>
-                        </div>
-                    </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">⚡ Holy War</h3>
+                    <!-- ...existing content... -->
                 </div>
-
-                <!-- Failed Expansion -->
-                <div class="card-warfare p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-orange-700 mb-3">🗺️ Failed Expansion</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> You lose an expansion ballot to this player the previous map cycle</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Capture the closest enemy city</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> You get the contested expansions</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Fail to capture the enemy city within 4 cycles</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> Lose 3 tiles</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> This only applies if you bid and lose, NOT if you choose not to bid</p>
-                        </div>
-                    </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">🗽 Independence</h3>
+                    <!-- ...existing content... -->
                 </div>
-
-                <!-- Holy Revanchism -->
-                <div class="card-diplomacy p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-indigo-700 mb-3">✨ Holy Revanchism</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> Your religion at one point in the game has held the territory of the different religion player you are attacking</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Occupy all cities within the territory declared, and 1/2 of all city weight of all defending players</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> All territory declared will be split amongst the attacking Nations as they agree upon it. This must still follow standard expansion rules.</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Fail to occupy all objectives within 20 action cycles</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> All attacking Nations must each pay resources to the defending Nations, split evenly amongst them</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> This is only available to abrahamics. All same religion Nations of both sides may join the war on the affiliated side. If the nation you are at war with converts to your religion within 4 action cycles of the war's declaration, the war ends immediately in a white peace.</p>
-                        </div>
-                    </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">🕊️ Liberation</h3>
+                    <!-- ...existing content... -->
                 </div>
-
-                <!-- Holy War -->
-                <div class="card-diplomacy p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-purple-700 mb-3">⚡ Holy War</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> Adjacent or 3 sea tile distance nation with a different religion</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Occupy 1/2 of all enemy city weight</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> They must convert to your religion, and 6 tiles</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Fail to occupy 1/2 of all city weight within 12 action cycles</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> You must pay resources per tier for every of their occupied cities, with a minimum amount</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> Other nations following your religion may pay your defeat costs. When a Holy War is declared, any nations following the religion of the attacker or defender may instantly transfer them resources with no trade costs. If the nation you are at war with converts to your religion within 4 action cycles of the war's declaration, the war ends immediately in a white peace.</p>
-                        </div>
-                    </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">🎭 Neighboring Shenanigans</h3>
+                    <!-- ...existing content... -->
                 </div>
-
-                <!-- Independence -->
-                <div class="card-warfare p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-red-700 mb-3">🗽 Independence</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> Be a Tributary</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Keep your overlord from capturing 1/4 city weight for 8 cycles, or capture 1/3 City weight from your overlord</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> You are Free, and 4 tiles</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Lose 1/4 city weight</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> Remain a Tributary, and lose 6 tiles or resources</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> None</p>
-                        </div>
-                    </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">🏞️ Regional Conflict</h3>
+                    <!-- ...existing content... -->
                 </div>
-
-                <!-- Liberation -->
-                <div class="card-infrastructure p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-green-700 mb-3">🕊️ Liberation</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> An adjacent player, or a player within 8 sea tiles, has a tributary</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Capture more city weight than the tributary currently possesses, or capture 1/2 City weight</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> Free the Tributary, you get Bullion and 5 resources</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Fail to capture the required cities within 12 action cycles</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> Pay resources</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> None</p>
-                        </div>
-                    </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">🔥 Revanchism</h3>
+                    <!-- ...existing content... -->
                 </div>
-
-                <!-- Neighboring Shenanigans -->
-                <div class="card-economy p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-pink-700 mb-3">🎭 Neighboring Shenanigans</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> An adjacent nation with some particularly ridiculous RP</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Occupy 1/3 of their cities</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> They must stop their declared RP, and you get 4 tiles OR resources</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> You have 1/3 of your cities occupied</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> Pay resources and you must make one public declaration of the superiority of their RP</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> Ask before you use this Justification</p>
-                        </div>
-                    </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">🕊️ Stabilizing Mission</h3>
+                    <!-- ...existing content... -->
                 </div>
-
-                <!-- Regional Conflict -->
-                <div class="card-infrastructure p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-teal-700 mb-3">🏞️ Regional Conflict</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> A nation with territory inside any region with your T2 city</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Occupy all enemy cities in the region, or if they have none, occupy 1 enemy city</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> 20 tiles, all of which must be within the declared region</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Have all of your T2 and T3 cities in the declared region occupied</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> 150 silver, OR 50 silver and 8 resources, OR 5 tiles within the declared region</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> None</p>
-                        </div>
-                    </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">💰 Trade War</h3>
+                    <!-- ...existing content... -->
                 </div>
-
-                <!-- Revanchism -->
-                <div class="card-warfare p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-red-700 mb-3">🔥 Revanchism</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> The target player owns land that you previously owned 8 or less actions cycles ago</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Occupy all enemy cities within your former territory, and one additional City</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> Regain all territory that you have lost to this player within 8 action cycles before the start of this war</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Failed to occupy all required cities within 12 action cycles</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> You pay 80 silver</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> All brigades participating in an offensive revanchism war will get +1 to rally checks</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Stabilizing Mission -->
-                <div class="card-diplomacy p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-blue-700 mb-3">🕊️ Stabilizing Mission</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> A nation within 5 sea tiles or adjacent is doing RP about their Civil War</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Take 2/3 of that nation's city weight</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> They must now RP the new faction instead of their desired faction, and 3 tiles OR 50 silver</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> You lose any cities, or you fail to take an initial city within 3 action cycles</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> 100 silver</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> If the player agrees to your supported faction winning the civil war, the war is ended in a white peace. They will have the remainder of the cycle to wrap the RP and end the civil war.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Trade War -->
-                <div class="card-economy p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-yellow-700 mb-3">💰 Trade War</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> Your trade has been negatively impacted by the actions of another player</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Capture 1/2 of that player's coastal cities, and 1/4 of their total city weight</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> 1/4 of all stockpiled resources and a T1 or T2 coastal city within 5 sea tiles, OR 1/4 of all stockpiled resources and a full strait or canal, OR 100 silver and 1/3 of all stockpiled resources, OR 150 silver, OR 1/2 all stockpiled resources</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Lose 1/2 of your coastal cities, and 1/4 of your total city weight</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> 1/4 of all stockpiled resources and a T1 or T2 coastal city within 5 sea tiles, OR 1/4 of all stockpiled resources and a full strait or canal, OR 100 silver and 1/3 of all stockpiled resources, OR 150 silver, OR 1/2 all stockpiled resources</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> None</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- War on Terror -->
-                <div class="card-warfare p-6 rounded-lg">
-                    <h3 class="text-xl font-bold text-red-700 mb-3">💥 War on Terror</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <p class="mb-2"><strong>Requirements:</strong> An adjacent nation, or a nation within 6 sea tiles, is committing atrocities in RP or has Razed 3 cities within the last 8 action cycles</p>
-                            <p class="mb-2"><strong>Victory Conditions:</strong> Capture 1/3 City weight</p>
-                            <p class="mb-2"><strong>Victory Peace Terms:</strong> That player must stop doing the atrocity RP, they must publicly apologize, and 4 Tiles OR 100 silver</p>
-                        </div>
-                        <div>
-                            <p class="mb-2"><strong>Defeat Conditions:</strong> Fail to capture the required cities within 16 action cycles</p>
-                            <p class="mb-2"><strong>Defeat Peace Terms:</strong> 50 silver</p>
-                            <p class="mb-2"><strong>Special Conditions:</strong> None</p>
-                        </div>
-                    </div>
+                <div class="card p-6 rounded-lg">
+                    <h3 class="text-xl font-bold section-title mb-3">💥 War on Terror</h3>
+                    <!-- ...existing content... -->
                 </div>
             </div>
-
-            <div class="mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
-                <p class="text-red-700 font-semibold">📍 Regional Map Reference: <a href="images/regions.png" target="_blank" class="text-blue-600 hover:text-blue-800 underline">View the Regional Map (images/regions.png)</a> to understand Regional Conflict and Colonization justifications.</p>
+            <div class="mt-6 p-4 card border-l-4" style="border-left-color: var(--text-accent);">
+                <p class="font-semibold">📍 Regional Map Reference: <a href="images/regions.png" target="_blank" class="text-accent underline hover:opacity-80">View the Regional Map (images/regions.png)</a> to understand Regional Conflict and Colonization justifications.</p>
             </div>
         </div>
     </div>
-
     <script>
         fetch('nav.html')
             .then(response => response.text())
