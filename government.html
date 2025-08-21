@@ -23,7 +23,7 @@
         <!-- Government System Section -->
         <div id="government-system" class="card fade-in card-diplomacy mb-8">
             <h2 class="section-title">🏛️ Government Types</h2>
-            <p class="mb-6 text-lg leading-relaxed">Government modifiers are small bonuses that assist with your style of play and help describe your RP to others in simple terms. While it's not required for your RP to follow your mechanical choices, we highly encourage it for immersion and worldbuilding.</p>
+            <p class="mb-6 text-lg leading-relaxed">Government modifiers are small bonuses that assist with your style of play and help describe your RP to others in simple terms, or inform choices you make with your own worldbuilding. It is not technically required for your RP to follow your mechanical choices, but we highly encourage it. You also have a Government type, which affects how easy it is to change government bonuses and how many you have at a time.</p>
             
             <!-- Government Types -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -76,12 +76,12 @@
                     
                     <div class="p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200">
                         <h4 class="font-bold text-green-700 mb-2">🤝 Confederal</h4>
-                        <p class="text-green-600 text-sm">Vassal limit +2. Vassals/overlord gain +3 Bullion per week. Mutually exclusive with Federal and Unitary.</p>
+                        <p class="text-green-600 text-sm">Your vassal limit is increased by 2. Your vassals or overlord gain +2 Bullion per week. Mutually exclusive with Federal and Unitary.</p>
                     </div>
                     
                     <div class="p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-lg border border-indigo-200">
                         <h4 class="font-bold text-indigo-700 mb-2">🎭 Diplomatic</h4>
-                        <p class="text-indigo-600 text-sm">Your first Diplomat is free.</p>
+                        <p class="text-indigo-600 text-sm">Your first 2 Diplomats are free and have no upkeep.</p>
                     </div>
                     
                     <div class="p-4 bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-lg border border-cyan-200">
@@ -91,13 +91,56 @@
                     
                     <div class="p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200">
                         <h4 class="font-bold text-orange-700 mb-2">💰 Kleptocratic</h4>
-                        <p class="text-orange-600 text-sm">When in debt, you gain +2 of the negative resource(s) on upkeep.</p>
+                        <p class="text-orange-600 text-sm">When in debt, you gain +4 of the negative resource(s) on upkeep.</p>
                     </div>
                     
                     <div class="p-4 bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-lg border border-emerald-200">
                         <h4 class="font-bold text-emerald-700 mb-2">🏪 Mercantile</h4>
-                        <p class="text-emerald-600 text-sm">No initial 1 Bullion trading fee. Trade range is doubled.</p>
+                        <p class="text-emerald-600 text-sm">You do not have to pay the first 1 Bullion fee for trading. You may travel 8 tiles instead of 4 per Bullion for Sea trades, and 16 tiles instead of 8 for Land trades.</p>
                     </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg border border-purple-200">
+                        <h4 class="font-bold text-purple-700 mb-2">💎 Plutocratic</h4>
+                        <p class="text-purple-600 text-sm">You may purchase mercenary ships and upgrades, and mercenary generals. Worldbuilding Submissions for Bullion receive +1 resource.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-red-50 to-red-100 rounded-lg border border-red-200">
+                        <h4 class="font-bold text-red-700 mb-2">⚔️ Stratocratic</h4>
+                        <p class="text-red-600 text-sm">You may enhance two land brigades for free every week. Your first 8 national brigades have free upkeep, rather than 5.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-teal-50 to-teal-100 rounded-lg border border-teal-200">
+                        <h4 class="font-bold text-teal-700 mb-2">🔬 Technocracy</h4>
+                        <p class="text-teal-600 text-sm">You may exchange 3 of the same resource for 1 of any resource. Request this in /trade/ chat.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200">
+                        <h4 class="font-bold text-yellow-700 mb-2">🏔️ Tellurocratic</h4>
+                        <p class="text-yellow-600 text-sm">Expansions cost 1 less Food or Metal (minimum of 2). Mutually exclusive with Thalassocratic.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-pink-50 to-pink-100 rounded-lg border border-pink-200">
+                        <h4 class="font-bold text-pink-700 mb-2">⛪ Theocratic</h4>
+                        <p class="text-pink-600 text-sm">You have access to Holy War Justification. Changing to this government modifier also allows a free religion change along with it.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+                        <h4 class="font-bold text-blue-700 mb-2">🌊 Thalassocratic</h4>
+                        <p class="text-blue-600 text-sm">-1 Fuel cost per tile for Water Expansions. Ships have +1 movement. Mutually exclusive with Tellurocratic.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-lg border border-indigo-200">
+                        <h4 class="font-bold text-indigo-700 mb-2">🏛️ Unitary</h4>
+                        <p class="text-indigo-600 text-sm">The tile your capital is on produces +2 resource of its type for every tier it has, or Bullion if it is a blank tile. Mutually exclusive with Federal and Confederal.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-yellow-50 p-6 rounded-lg">
+                <h3 class="text-xl font-bold text-yellow-800 mb-4">🔄 Changing Governments</h3>
+                <p class="text-yellow-700">
+                    You may change your Government at any time, however it has a 1 month cooldown. You must pay 1 bullion for every 3 city weight you have, and write an RP post explaining why the government has changed (which can also be used as a Worldbuilding Submission). Your government may also change if your country goes bankrupt.
+                </p>
                     
                     <div class="p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200">
                         <h4 class="font-bold text-yellow-700 mb-2">💎 Plutocratic</h4>

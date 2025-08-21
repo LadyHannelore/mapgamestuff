@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started - Hegemony Tutorial</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="particles" id="particles"></div>
+    <div id="nav-placeholder"></div>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <div class="bg-white p-8 rounded-lg shadow-md text-center glassmorphism floating pulse-glow mb-8">
+            <div class="flex justify-center mb-6">
+                <img src="images/hegemony-logo.png" alt="Hegemony Logo" class="h-20 w-auto hero-logo">
+            </div>
+            <h1 class="hero-title">Getting Started Guide</h1>
+            <p class="text-xl mb-8 gradient-text">Your Complete Tutorial to Hegemony</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="card fade-in mb-8">
+            <h2 class="section-title">📚 Table of Contents</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <a href="#what-is-hegemony" class="block p-4 rounded-lg card-economy hover:shadow-lg transition-all duration-300">
+                    <strong>🎮 What is Hegemony?</strong>
+                </a>
+                <a href="#spawning" class="block p-4 rounded-lg card-diplomacy hover:shadow-lg transition-all duration-300">
+                    <strong>🌟 Spawning</strong>
+                </a>
+                <a href="#resources" class="block p-4 rounded-lg card-warfare hover:shadow-lg transition-all duration-300">
+                    <strong>📦 Resources</strong>
+                </a>
+                <a href="#cities" class="block p-4 rounded-lg card-economy hover:shadow-lg transition-all duration-300">
+                    <strong>🏙️ Cities</strong>
+                </a>
+                <a href="#map-expansion" class="block p-4 rounded-lg card-diplomacy hover:shadow-lg transition-all duration-300">
+                    <strong>🗺️ Map & Expansion</strong>
+                </a>
+                <a href="#government" class="block p-4 rounded-lg card-warfare hover:shadow-lg transition-all duration-300">
+                    <strong>🏛️ Government</strong>
+                </a>
+                <a href="#warfare" class="block p-4 rounded-lg card-economy hover:shadow-lg transition-all duration-300">
+                    <strong>⚔️ Warfare</strong>
+                </a>
+                <a href="#diplomacy" class="block p-4 rounded-lg card-diplomacy hover:shadow-lg transition-all duration-300">
+                    <strong>🤝 Diplomacy</strong>
+                </a>
+                <a href="#trade" class="block p-4 rounded-lg card-warfare hover:shadow-lg transition-all duration-300">
+                    <strong>💰 Trade</strong>
+                </a>
+                <a href="#religion" class="block p-4 rounded-lg card-economy hover:shadow-lg transition-all duration-300">
+                    <strong>🙏 Religion</strong>
+                </a>
+                <a href="#culture" class="block p-4 rounded-lg card-diplomacy hover:shadow-lg transition-all duration-300">
+                    <strong>🎭 Culture</strong>
+                </a>
+                <a href="#events" class="block p-4 rounded-lg card-warfare hover:shadow-lg transition-all duration-300">
+                    <strong>🎉 Events</strong>
+                </a>
+            </div>
+        </div>
+
+        <!-- What is Hegemony Section -->
+        <div id="what-is-hegemony" class="card fade-in">
+            <h2 class="section-title">🎮 What is Hegemony?</h2>
+            <p class="mb-6 text-lg leading-relaxed">
+                Hegemony is a <strong>Discord-based grand strategy role-playing game</strong> that focuses on strategic resource management and warfare, nation/world building, competitive and cooperative community events, and roleplay. We have a consistent and close-knit community that we encourage others to become a part of.
+            </p>
+            
+            <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">📖 What to Read First</h3>
+                <p class="text-blue-700">
+                    First, we recommend reading the <strong>Resources</strong> and <strong>Cities</strong> tutorials at a minimum to begin spawning in, so you may make an informed decision regarding starting tiles. In addition, look at the most recent <strong>/main map/</strong> to see what territory is available, and familiarize yourself with the <strong>/Player Sheet/</strong>.
+                </p>
+            </div>
+        </div>
+
+        <!-- Spawning Section -->
+        <div id="spawning" class="card fade-in">
+            <h2 class="section-title">🌟 Spawning</h2>
+            <p class="mb-6 text-lg">
+                To spawn, you must submit a request in the <strong>/Player Spawning/</strong> channel. It will be formatted as follows:
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h4 class="font-bold text-green-800">Name:</h4>
+                        <p class="text-green-700">Make this something that will pull up when we try to @ you and is unlikely to change.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-blue-50 rounded-lg">
+                        <h4 class="font-bold text-blue-800">Country Name:</h4>
+                        <p class="text-blue-700">The name of the RP nation you are playing.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-purple-50 rounded-lg">
+                        <h4 class="font-bold text-purple-800">Capital:</h4>
+                        <p class="text-purple-700">The name of one of your starting cities you designate as the capital (can be real or RP name).</p>
+                    </div>
+                    
+                    <div class="p-4 bg-orange-50 rounded-lg">
+                        <h4 class="font-bold text-orange-800">Government:</h4>
+                        <p class="text-orange-700">Choose bonuses that best fit your nation and/or playstyle from the list described later in the tutorial.</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="p-4 bg-indigo-50 rounded-lg">
+                        <h4 class="font-bold text-indigo-800">Religion:</h4>
+                        <p class="text-indigo-700">Choose a religion from the current list of available religions from the list described later in the tutorial.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-pink-50 rounded-lg">
+                        <h4 class="font-bold text-pink-800">Color:</h4>
+                        <p class="text-pink-700">What color your nation will be on the map, preferably a hex code. Neighboring nations that are too similar in color to each other may be required to change.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-yellow-50 rounded-lg">
+                        <h4 class="font-bold text-yellow-800">Map:</h4>
+                        <p class="text-yellow-700">You spawn with <strong>20 tiles and 3 cities</strong>. Modify the most current world map /here/, notate which tiles you want with black X's and use white circles or X's to indicate which tiles your cities are in, and clearly mark somehow which is the capital. Note that all tiles chosen must be within the 4 tile range around a city.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resources Section -->
+        <div id="resources" class="card fade-in">
+            <h2 class="section-title">📦 Resources</h2>
+            <p class="mb-6 text-lg leading-relaxed">
+                Resources are the lifeblood of Hegemony. Gathering and spending resources is how you perform most mechanical actions within the game.
+            </p>
+            
+            <div class="bg-green-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-green-800 mb-4">💰 How to Gain Resources</h3>
+                <p class="text-green-700 mb-4">
+                    Resources are gained at the beginning of each week, with you receiving (by default) <strong>2 of a resource for each tile you own</strong> of the indicated resource type. Then, any upkeep you have will be deducted from your gains. What remains will be added (or subtracted…) to your national stockpile, tracked on the Player Sheet.
+                </p>
+                <p class="text-green-700">
+                    The other primary way to gain resources is through <strong>Worldbuilding Submissions</strong>. You may also gain resources through Trading, Events, and Warfare.
+                </p>
+            </div>
+
+            <h3 class="text-xl font-bold mb-4">🎯 Resource Types and Uses</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <div class="p-4 bg-yellow-50 rounded-lg">
+                    <h4 class="font-bold text-yellow-800 mb-2">💰 Bullion</h4>
+                    <p class="text-yellow-700 text-sm">Used to pay for trading costs, hire and upkeep mercenaries, as well as place cosmetic labels for your nation on the main map.</p>
+                </div>
+                
+                <div class="p-4 bg-green-50 rounded-lg">
+                    <h4 class="font-bold text-green-800 mb-2">🍞 Food</h4>
+                    <p class="text-green-700 text-sm">Used for overland expansion, with the cost dependent on the terrain you are expanding to. It is also the upkeep for national brigades.</p>
+                </div>
+                
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <h4 class="font-bold text-blue-800 mb-2">⛽ Fuel</h4>
+                    <p class="text-blue-700 text-sm">Used to pay for overseas expansion, city upgrades, some Warfare actions, and paying for naval unit upkeep.</p>
+                </div>
+                
+                <div class="p-4 bg-purple-50 rounded-lg">
+                    <h4 class="font-bold text-purple-800 mb-2">💎 Luxuries</h4>
+                    <p class="text-purple-700 text-sm">Used to forge mechanically binding treaties, high tier city upgrades, and hiring and upkeeping Generals and Diplomats.</p>
+                </div>
+                
+                <div class="p-4 bg-orange-50 rounded-lg">
+                    <h4 class="font-bold text-orange-800 mb-2">🧱 Material</h4>
+                    <p class="text-orange-700 text-sm">Used to construct and upgrade cities, as well as build and enhance naval units.</p>
+                </div>
+                
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h4 class="font-bold text-gray-800 mb-2">⚔️ Metal</h4>
+                    <p class="text-gray-700 text-sm">Primarily used to build and enhance national brigades. It can also be used to expand into other player's lands without declaring war, as well as protect trades from thieves.</p>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">📝 Worldbuilding Submissions</h3>
+                <p class="text-blue-700 mb-4">
+                    Each week, you may create <strong>3 (by default)</strong> worldbuilding submissions, which can be posted /here/, alongside indicating 1 resource of your choice. Once approved, the resource will be added to your national stockpile.
+                </p>
+                <p class="text-blue-700 mb-4">
+                    Worldbuilding submissions can be essays about real or alternate history, RP, graphical designs or drawings, maps, audio pieces such as music, speeches, or hymns, each of which must relate to your nation or territory.
+                </p>
+                <p class="text-blue-700">
+                    <strong>Weekly Deadline:</strong> The cutoff for Worldbuilding Submissions every week is Friday night. <strong>DO NOT post them on Saturday or Sunday.</strong>
+                </p>
+            </div>
+
+            <div class="bg-red-50 p-6 rounded-lg">
+                <h3 class="text-xl font-bold text-red-800 mb-4">⚠️ Resource Debt</h3>
+                <p class="text-red-700 mb-4">
+                    Though you generally cannot use resources you do not have stockpiled, you may end up negative on resources at the start of a turn if your upkeep is greater than your resource gain. If this occurs, you will start to accrue penalties based on what resource is and how delinquent you are.
+                </p>
+                <p class="text-red-700">
+                    Going <strong>Bankrupt in more than a single resource</strong> in the same week causes a revolution, giving you a randomized government. This breaks any treaties, truces, etc that were held by the previous government.
+                </p>
+            </div>
+        </div>
+
+        <!-- Cities Section -->
+        <div id="cities" class="card fade-in">
+            <h2 class="section-title">🏙️ Cities</h2>
+            <p class="mb-6 text-lg leading-relaxed">
+                Cities are the nodes that connect your nation together and are used as fortresses to defend nearby lands, and can be upgraded to provide additional bonuses. They are required for expansion, trade, spawning military units, and creating cultures. All cities have a <strong>4 tile range</strong> around them that you are allowed to expand into.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="p-6 bg-green-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-green-800 mb-4">🏘️ Tier 1 City</h3>
+                    <p class="text-green-700 mb-2"><strong>Cost:</strong> 5 Material</p>
+                    <p class="text-green-700 mb-2"><strong>Garrison:</strong> 4 Heavy</p>
+                    <p class="text-green-700 mb-2"><strong>Naval Range:</strong> 2 tiles</p>
+                    <p class="text-green-700 text-sm italic">Tier 1 Cities cannot build ships</p>
+                </div>
+
+                <div class="p-6 bg-blue-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4">🏙️ Tier 2 City</h3>
+                    <p class="text-blue-700 mb-2"><strong>Cost:</strong> 10 Material, 5 Fuel, 5 Luxuries</p>
+                    <p class="text-blue-700 mb-2"><strong>Garrison:</strong> 6 Heavy</p>
+                    <p class="text-blue-700 mb-2"><strong>Naval Range:</strong> 6 Tiles</p>
+                    <p class="text-blue-700 text-sm">+1 resource submission per week (up to 3 times)</p>
+                </div>
+
+                <div class="p-6 bg-purple-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-purple-800 mb-4">🌆 Tier 3 City</h3>
+                    <p class="text-purple-700 mb-2"><strong>Cost:</strong> 15 Material, 10 Fuel, 10 Luxuries</p>
+                    <p class="text-purple-700 mb-2"><strong>Garrison:</strong> 8 Heavy</p>
+                    <p class="text-purple-700 mb-2"><strong>Naval Range:</strong> 12 tiles</p>
+                    <p class="text-purple-700 text-sm">All resource tiles within 4 tiles of this city produce one additional resource of that type. This effect does not stack.</p>
+                </div>
+
+                <div class="p-6 bg-orange-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-orange-800 mb-4">🏛️ Tier 4 City</h3>
+                    <p class="text-orange-700 mb-2"><strong>Cost:</strong> 20 Material, 10 Fuel, 20 Luxuries</p>
+                    <p class="text-orange-700 mb-2"><strong>Garrison:</strong> 10 Heavy</p>
+                    <p class="text-orange-700 mb-2"><strong>Naval Range:</strong> 20 tiles</p>
+                    <p class="text-orange-700 text-sm mb-2">All resource tiles within 4 tiles of this city produce one additional resource of that type. +1 resource submission per week.</p>
+                    <p class="text-orange-700 text-sm font-bold">Only ONE Tier 4 City may be built per nation in the entire game!</p>
+                </div>
+            </div>
+
+            <div class="bg-yellow-50 p-6 rounded-lg">
+                <h3 class="text-xl font-bold text-yellow-800 mb-4">👑 Capital City</h3>
+                <p class="text-yellow-700">
+                    One city in your country is designated as the Capital. It has an additional Heavy Brigade as a Garrison and is referenced in many abilities. You choose your capital upon spawn, and may move it for free once every 2 months as long as you are not at war.
+                </p>
+            </div>
+        </div>
+
+        <!-- Map and Expansion Section -->
+        <div id="map-expansion" class="card fade-in">
+            <h2 class="section-title">🗺️ The Map and Expanding</h2>
+            
+            <div class="mb-6">
+                <h3 class="text-xl font-bold mb-4">📋 How to Submit Expansions</h3>
+                <p class="mb-4">To expand, you must have some resources and submit an expansion request /here/. There are three types of expansions:</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h4 class="font-bold text-green-800 mb-2">🌱 Land Expansions</h4>
+                        <p class="text-green-700 text-sm">Expanding into empty tiles via adjacent land, cost Food. Must be within 4 tiles of a city.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-blue-50 rounded-lg">
+                        <h4 class="font-bold text-blue-800 mb-2">🌊 Water Expansions</h4>
+                        <p class="text-blue-700 text-sm">Any that require crossing water, cost Food and Fuel. Limited by Naval Range.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-red-50 rounded-lg">
+                        <h4 class="font-bold text-red-800 mb-2">⚔️ Hostile Expansions</h4>
+                        <p class="text-red-700 text-sm">Essentially Land expansions into already owned territory, cost Metal.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-orange-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-orange-800 mb-4">🎯 Terrain Costs</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                    <div class="text-orange-700"><strong>Plains:</strong> 3</div>
+                    <div class="text-orange-700"><strong>Forest:</strong> 4</div>
+                    <div class="text-orange-700"><strong>Tundra:</strong> 4</div>
+                    <div class="text-orange-700"><strong>Highlands:</strong> 5</div>
+                    <div class="text-orange-700"><strong>Marsh:</strong> 5</div>
+                    <div class="text-orange-700"><strong>Desert:</strong> 6</div>
+                    <div class="text-orange-700"><strong>Jungle:</strong> 6</div>
+                    <div class="text-orange-700"><strong>Mountain:</strong> 7</div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 p-6 rounded-lg">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">🗺️ Types of Maps</h3>
+                <ul class="text-blue-700 space-y-1">
+                    <li><strong>Country Map:</strong> The main map showing territory. Updated weekly.</li>
+                    <li><strong>War Map:</strong> A map with edits making it easier to use for strategizing.</li>
+                    <li><strong>Resource Map:</strong> Shows the tiles with resources.</li>
+                    <li><strong>Terrain Map:</strong> Shows the terrain type for each tile.</li>
+                    <li><strong>Region Map:</strong> Shows regions for the purposes of certain abilities or War Justifications.</li>
+                    <li><strong>Island Map:</strong> Shows which islands are grouped into single tiles.</li>
+                    <li><strong>Canal/Strait Map:</strong> Shows which tiles are needed for control over canals and straits.</li>
+                    <li><strong>Base Map:</strong> A blank map with all white tiles for referencing.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Government Section -->
+        <div id="government" class="card fade-in">
+            <h2 class="section-title">🏛️ Government</h2>
+            <p class="mb-6 text-lg leading-relaxed">
+                Government modifiers are small bonuses that assist with your style of play and help describe your RP to others in simple terms. You have a Government type, which affects how easy it is to change government bonuses and how many you have at a time.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="p-6 bg-blue-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4">🗳️ Democracy</h3>
+                    <p class="text-blue-700 mb-2">1 Government modifier</p>
+                    <p class="text-blue-700 text-sm">Can swap a single modifier every week for no cost</p>
+                </div>
+
+                <div class="p-6 bg-purple-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-purple-800 mb-4">👥 Oligarchy</h3>
+                    <p class="text-purple-700">2 Government modifiers</p>
+                </div>
+
+                <div class="p-6 bg-red-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-red-800 mb-4">👑 Autocracy</h3>
+                    <p class="text-red-700 mb-2">3 Government modifiers</p>
+                    <p class="text-red-700 text-sm">Double cost to swap out modifiers</p>
+                </div>
+            </div>
+
+            <div class="bg-green-50 p-6 rounded-lg">
+                <h3 class="text-xl font-bold text-green-800 mb-4">📜 Government Modifiers</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="space-y-2">
+                        <div class="text-green-700"><strong>Aristocratic:</strong> Your first 3 Generals are free and have no upkeep.</div>
+                        <div class="text-green-700"><strong>Bureaucratic:</strong> T2 and T4 cities provide +2 Worldbuilding submission cap, rather than +1.</div>
+                        <div class="text-green-700"><strong>Confederal:</strong> Your vassal limit is increased by 2. Your vassals or overlord gain +2 Bullion per week.</div>
+                        <div class="text-green-700"><strong>Diplomatic:</strong> Your first 2 Diplomats are free and have no upkeep.</div>
+                        <div class="text-green-700"><strong>Federal:</strong> For every region you have a city in, gain 1 Bullion.</div>
+                        <div class="text-green-700"><strong>Kleptocratic:</strong> When in debt, you gain +4 of the negative resource(s) on upkeep.</div>
+                        <div class="text-green-700"><strong>Mercantile:</strong> You do not have to pay the first 1 Bullion fee for trading.</div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="text-green-700"><strong>Plutocratic:</strong> You may purchase mercenary ships and upgrades, and mercenary generals.</div>
+                        <div class="text-green-700"><strong>Stratocratic:</strong> You may enhance two land brigades for free every week.</div>
+                        <div class="text-green-700"><strong>Technocracy:</strong> You may exchange 3 of the same resource for 1 of any resource.</div>
+                        <div class="text-green-700"><strong>Tellurocratic:</strong> Expansions cost 1 less Food or Metal (minimum of 2).</div>
+                        <div class="text-green-700"><strong>Theocratic:</strong> You have access to Holy War Justification.</div>
+                        <div class="text-green-700"><strong>Thalassocratic:</strong> -1 Fuel cost per tile for Water Expansions. Ships have +1 movement.</div>
+                        <div class="text-green-700"><strong>Unitary:</strong> The tile your capital is on produces +2 resource of its type for every tier it has.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warfare Section -->
+        <div id="warfare" class="card fade-in">
+            <h2 class="section-title">⚔️ Armies and Warfare</h2>
+            <div class="bg-yellow-50 p-6 rounded-lg">
+                <p class="text-yellow-800 text-lg font-bold">Army stuff, coming soon.</p>
+                <p class="text-yellow-700 mt-2">This section will be updated with detailed warfare mechanics including unit types, combat resolution, siege warfare, and military strategies.</p>
+            </div>
+        </div>
+
+        <!-- Naval Warfare Section -->
+        <div id="naval-warfare" class="card fade-in">
+            <h2 class="section-title">⛵ Naval Warfare</h2>
+            <div class="bg-blue-50 p-6 rounded-lg">
+                <p class="text-blue-800 text-lg font-bold">Navy stuff, coming soon.</p>
+                <p class="text-blue-700 mt-2">This section will be updated with naval combat mechanics, ship types, naval movement, and maritime strategies.</p>
+            </div>
+        </div>
+
+        <!-- Diplomacy Section -->
+        <div id="diplomacy" class="card fade-in">
+            <h2 class="section-title">🤝 Diplomacy</h2>
+            <p class="mb-6 text-lg leading-relaxed">
+                The main way to conduct Diplomacy is through Diplomats. Diplomats can be hired for <strong>4 Luxuries</strong>, and cost <strong>1 Luxury to upkeep every month</strong>. You may move a Diplomat to another player's nation once per week by requesting it in your Private Room.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="p-6 bg-blue-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4">📜 Treaty Signing</h3>
+                    <p class="text-blue-700 text-sm mb-2">The premier form of Diplomatic Action, treaties are formal agreements between two or more nations.</p>
+                    <p class="text-blue-700 text-sm">Examples include: Offensive pacts, Defensive pacts, Military access, Non-aggression pacts, Trade agreements, Border agreements, Demilitarised zones, Vassalization negotiation, White Peace/Conditional Peace</p>
+                </div>
+
+                <div class="p-6 bg-green-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-green-800 mb-4">🗺️ Land Exchange</h3>
+                    <p class="text-green-700 text-sm">Land exchange is done using normal Trade mechanics, however with one or both sides offering up tiles on the map in exchange. You may trade up to 6 tiles on each side in a single land exchange.</p>
+                </div>
+
+                <div class="p-6 bg-purple-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-purple-800 mb-4">👑 Vassal Contracts</h3>
+                    <p class="text-purple-700 text-sm mb-2">Vassals are when one nation submits itself to another, surrendering control of its foreign policy to its Overlord.</p>
+                    <p class="text-purple-700 text-sm">Types: Protectorate, Dominion, March, Tributary</p>
+                </div>
+
+                <div class="p-6 bg-orange-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-orange-800 mb-4">🙏 Religious Conversion</h3>
+                    <p class="text-orange-700 text-sm">Diplomats may focus their efforts on the religious conversion of a country, allowing the host nation to convert to the religion of the Diplomat's home nation for a fee of 1 Bullion per 3 city weight.</p>
+                </div>
+            </div>
+
+            <div class="bg-red-50 p-6 rounded-lg">
+                <h3 class="text-xl font-bold text-red-800 mb-4">⛓️ Detaining Diplomats</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div class="text-red-700"><strong>💼 Expulsion:</strong> Sends the Diplomat back to the host nations capital.</div>
+                    <div class="text-red-700"><strong>⛓️ Arrest:</strong> Imprisons the Diplomat until freed. Gives the Diplomat's nation a War Justification.</div>
+                    <div class="text-red-700"><strong>💀 Execution:</strong> Kills the Diplomat, removing them from the game. Gives the Diplomat's nation a War Justification.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trade Section -->
+        <div id="trade" class="card fade-in">
+            <h2 class="section-title">💰 Trade</h2>
+            <p class="mb-6 text-lg leading-relaxed">
+                Trade between players is performed by both players agreeing to terms, determining a route and fees, and posting a request /here/. Trades are considered processed after 3 days, not including Sunday, representing travel time and giving people opportunities to steal your trade.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="p-6 bg-green-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-green-800 mb-4">🚶 By Land</h3>
+                    <p class="text-green-700 text-sm mb-2">Land routes are performed through middlemen. You pay an initial 1 Bullion fee, and then for every nation that is not your target that you pass through you must pay an additional 1 Bullion middleman fee to the nation.</p>
+                    <p class="text-green-700 text-sm">You can also travel through empty tiles at a rate of 1 Bullion per 8 land tiles.</p>
+                </div>
+
+                <div class="p-6 bg-blue-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4">🚢 By Water</h3>
+                    <p class="text-blue-700 text-sm mb-2">Water routes must be between two coastal cities, and travel through Sea Tiles. You pay an initial 1 Bullion fee to pay for the first 4 tiles, and you pay an additional 1 Bullion for every 4 tiles thereafter.</p>
+                    <p class="text-blue-700 text-sm">You also must pay 1 Bullion when travelling through owned Straits and Canals as a middleman fee to the owner.</p>
+                </div>
+            </div>
+
+            <div class="bg-red-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-red-800 mb-4">🏴‍☠️ Trade Theft</h3>
+                <p class="text-red-700 mb-4">Trading has a significant risk involved from bad actors, which come in two forms; Middleman Theft and Piracy.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="text-red-700"><strong>Middleman Theft:</strong> Middlemen may choose to detain a trade, cancelling it and seizing one player's half of the trade.</div>
+                    <div class="text-red-700"><strong>Piracy:</strong> Occurs when an enemy or black-flagged ship on the same sea tile as one of the trades steals one player's half of the trade.</div>
+                </div>
+            </div>
+
+            <div class="bg-yellow-50 p-6 rounded-lg">
+                <h3 class="text-xl font-bold text-yellow-800 mb-4">🛡️ Trade Protection</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="text-yellow-700"><strong>Land Protection:</strong> A Land trade can be protected by spending Metal equal to the Bullion cost of the trade, preventing any trade theft.</div>
+                    <div class="text-yellow-700"><strong>Water Protection:</strong> A Water trade can be protected by assigning a ship or armada to escort it, which may then fight the pirate off or flee.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Religion Section -->
+        <div id="religion" class="card fade-in">
+            <h2 class="section-title">🙏 Religion</h2>
+            <p class="mb-6 text-lg leading-relaxed">
+                Everyone has a religion, which they can choose upon spawning. Each has a set of abilities. There are several base religions, which then can "schism" based on player count.
+            </p>
+
+            <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">⛪ Schism & Player Count</h3>
+                <p class="text-blue-700 mb-2">Every time this happens the new religions will keep the old bonuses and also get a new bonus. This starts with five people, and doubles every subsequent schism.</p>
+                <p class="text-blue-700">Regardless of size a player always counts as at least one player for a religion. However, for every 20 tiles they own over the initial 20, they count as an additional player for the religion.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <div class="p-4 bg-yellow-50 rounded-lg">
+                    <h4 class="font-bold text-yellow-800 mb-2">🌿 Animist</h4>
+                    <p class="text-yellow-700 text-sm">Every month, choose a terrain type. That terrain type gives +1 resources from resource tiles.</p>
+                </div>
+
+                <div class="p-4 bg-red-50 rounded-lg">
+                    <h4 class="font-bold text-red-800 mb-2">⛪ Catholic</h4>
+                    <p class="text-red-700 text-sm">+1 free diplomat. Converting to this religion is half the cost. Building/Upgrading a city grants +1 resource. T2/3/4 cities give 1 Bullion per week.</p>
+                </div>
+
+                <div class="p-4 bg-purple-50 rounded-lg">
+                    <h4 class="font-bold text-purple-800 mb-2">🕊️ Miaphysite</h4>
+                    <p class="text-purple-700 text-sm">+1 free diplomat. Converting to this religion is half the cost. Cannot be forcibly converted. Hostile expansions into your territory cost double.</p>
+                </div>
+
+                <div class="p-4 bg-green-50 rounded-lg">
+                    <h4 class="font-bold text-green-800 mb-2">🌏 Nestorian</h4>
+                    <p class="text-green-700 text-sm">+1 free diplomat. Converting to this religion is half the cost. Negate 3 middlemen in each trade you participate in.</p>
+                </div>
+
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <h4 class="font-bold text-blue-800 mb-2">☦️ Orthodox</h4>
+                    <p class="text-blue-700 text-sm">+1 free diplomat. Converting to this religion is half the cost. Building/Upgrading a city grants +1 resource. +1 Government Modifier.</p>
+                </div>
+
+                <div class="p-4 bg-indigo-50 rounded-lg">
+                    <h4 class="font-bold text-indigo-800 mb-2">✝️ Protestant</h4>
+                    <p class="text-indigo-700 text-sm">+1 free diplomat. Converting to this religion is half the cost. Building/Upgrading a city grants +1 resource. Worldbuilding submissions give +2 resources.</p>
+                </div>
+
+                <div class="p-4 bg-orange-50 rounded-lg">
+                    <h4 class="font-bold text-orange-800 mb-2">🕉️ Dharmic</h4>
+                    <p class="text-orange-700 text-sm">You do not require a diplomat to make treaties with neighbors. Half cost on treaty creation and upkeep.</p>
+                </div>
+
+                <div class="p-4 bg-teal-50 rounded-lg">
+                    <h4 class="font-bold text-teal-800 mb-2">🕌 Ibadi</h4>
+                    <p class="text-teal-700 text-sm">You do not pay more than 4 resources for expansions, once all other calculations are complete. Your Generals start 2 levels higher.</p>
+                </div>
+
+                <div class="p-4 bg-green-50 rounded-lg">
+                    <h4 class="font-bold text-green-800 mb-2">☪️ Sunni</h4>
+                    <p class="text-green-700 text-sm">You do not pay more than 4 resources for expansions. Your Diplomats have the option to Forcibly Convert other nations. T3/T4 Cities grant +1 Luxury and +1 Food per week.</p>
+                </div>
+
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h4 class="font-bold text-gray-800 mb-2">🔥 Pagan</h4>
+                    <p class="text-gray-700 text-sm">After winning a battle, you get one free resource for every enemy Brigade that died. "Blank" Tiles cost 2 less Food or Metal to expand into (Minimum 2).</p>
+                </div>
+
+                <div class="p-4 bg-pink-50 rounded-lg">
+                    <h4 class="font-bold text-pink-800 mb-2">👁️ Primeval Monotheist</h4>
+                    <p class="text-pink-700 text-sm">+1 government modifier</p>
+                </div>
+
+                <div class="p-4 bg-yellow-50 rounded-lg">
+                    <h4 class="font-bold text-yellow-800 mb-2">🐉 Shangdi</h4>
+                    <p class="text-yellow-700 text-sm">For every 20 tiles you own, you receive +1 resources from your capital's tile for each tier your capital is.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Culture Section -->
+        <div id="culture" class="card fade-in">
+            <h2 class="section-title">🎭 Culture</h2>
+            <p class="mb-6 text-lg leading-relaxed">
+                You can obtain several additional modifiers and bonuses for your nation based on Culture, which may be real or fictitious. The easiest tier to obtain is a Local Culture, which must be pursued alone.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="p-6 bg-green-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-green-800 mb-4">🏘️ Local Culture</h3>
+                    <p class="text-green-700 text-sm mb-2">Local Cultures are the dominant ruling culture of a single nation, and can only be held by a single player. They have 2 bonuses associated with them.</p>
+                    <p class="text-green-700 text-sm">Must build at least to 8 City Weight within the area (5-15 tiles large).</p>
+                </div>
+
+                <div class="p-6 bg-blue-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4">🌍 Regional Culture</h3>
+                    <p class="text-blue-700 text-sm mb-2">Regional Cultures consist of 5-6 Local Cultures worth of territory to form, and can be jointly formed between multiple players.</p>
+                    <p class="text-blue-700 text-sm">Must build at least to 25 City Weight within the territory between everyone who is forming the culture.</p>
+                </div>
+
+                <div class="p-6 bg-purple-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-purple-800 mb-4">🌎 Continental Culture</h3>
+                    <p class="text-purple-700 text-sm mb-2">Continental Cultures consist of 3-4 Regional Cultures worth of territory to form and add an additional bonus.</p>
+                    <p class="text-purple-700 text-sm">They require 50 City Weight within the required territory.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Titles Section -->
+        <div id="titles" class="card fade-in">
+            <h2 class="section-title">👑 Titles</h2>
+            <p class="mb-6 text-lg leading-relaxed">
+                A Title is a bonus that is tied to a single major character in your RP that is conditional to obtain and maintain. A Player may only have 1 Title at a time.
+            </p>
+
+            <div class="bg-yellow-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-yellow-800 mb-4">🎯 How to Obtain a Title</h3>
+                <p class="text-yellow-700 mb-4">To obtain a Title, you must have a T3 city. After this, you can request a Title by providing:</p>
+                <ul class="text-yellow-700 space-y-1 text-sm">
+                    <li>• What the title name is (E.x. "Shogun", "Pope", "Holy Roman Emperor", "The Northern Lion", "Pendragon", "Mandate of Heaven", "The Terrible", "Caliph", etc.)</li>
+                    <li>• A brief summary of what the title is, the nature of which will determine the type of bonus you receive.</li>
+                    <li>• Idea for how you may lose the title. (E.x. Failing to control certain territory, the death of a particular general, going into debt, etc)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Events Section -->
+        <div id="events" class="card fade-in">
+            <h2 class="section-title">🎉 Events</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-6 bg-blue-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4">🏆 Tournaments</h3>
+                    <p class="text-blue-700 text-sm">Every two weeks, we hold two tournaments, rotating between Essay, Debate, Meme, Roleplay, Graphic Design, and Handmade Art. Tournaments are fantastic ways to gain additional resources and a fun way to test your skills.</p>
+                </div>
+
+                <div class="p-6 bg-green-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-green-800 mb-4">🎪 Community Events</h3>
+                    <p class="text-green-700 text-sm">Held at the whims of the Mods and Admins, with highly varied topics, rules, and rewards, though will almost always be less than tournaments.</p>
+                </div>
+
+                <div class="p-6 bg-purple-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-purple-800 mb-4">👥 Player Events</h3>
+                    <p class="text-purple-700 text-sm">Players may submit ideas for events and run them themselves with Mod approval. Both hosts and attendees can get rewards.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Top Button -->
+        <div class="text-center mt-8">
+            <a href="#top" class="btn-gradient">
+                ↑ Back to Top
+            </a>
+        </div>
+    </div>
+
+    <!-- Include GSAP Animation Script -->
+    <script src="gsap-template.js"></script>
+    
+    <!-- Load Navigation -->
+    <script>
+        fetch('nav.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('nav-placeholder').innerHTML = data;
+                
+                // Re-run mobile menu functionality
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const mobileMenu = document.getElementById('mobile-menu');
+                
+                if (mobileMenuButton && mobileMenu) {
+                    mobileMenuButton.addEventListener('click', function() {
+                        mobileMenu.classList.toggle('hidden');
+                    });
+                }
+            });
+    </script>
+</body>
+</html>

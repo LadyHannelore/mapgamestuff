@@ -23,10 +23,22 @@
         <!-- Religion Overview -->
         <div id="religion-overview" class="card fade-in card-diplomacy mb-8">
             <h2 class="section-title">🕊️ Religion System</h2>
-            <p class="mb-6 text-lg leading-relaxed">Religion is a fundamental aspect of your nation's identity and provides unique bonuses and roleplay opportunities. Choose your nation's spiritual path during spawning to shape your civilization's values and capabilities.</p>
+            <p class="mb-6 text-lg leading-relaxed">Everyone has a religion, which they can choose upon spawning. Each has a set of abilities. There are several base religions, which then can "schism" based on player count.</p>
             
-            <div class="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg mb-6">
-                <p class="text-yellow-700"><strong>⚠️ Note:</strong> Abilities for each religion are not currently finalized and will be detailed in future updates.</p>
+            <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">⛪ Schism & Player Count</h3>
+                <p class="text-blue-700 mb-2">Every time this happens the new religions will keep the old bonuses and also get a new bonus. This starts with five people, and doubles every subsequent schism. Certain religions will be 'capstone' religions, like Catholicism. These religions don't break on a Schism but still get a new bonus.</p>
+                <p class="text-blue-700">Regardless of size a player always counts as at least one player for a religion. However, for every 20 tiles they own over the initial 20, they count as an additional player for the religion. For example, a player with 100 tiles is five players for Schism calculation. Co-op players may also count towards a Schism player count, always as one player.</p>
+            </div>
+
+            <div class="bg-green-50 p-6 rounded-lg">
+                <h3 class="text-xl font-bold text-green-800 mb-4">🔄 Conversion</h3>
+                <p class="text-green-700 mb-4">
+                    <strong>Willing Conversion</strong> takes place when a player adopts the Theocratic government modifier, or pays a cost to convert to a visiting diplomat's religion. This cost is 1 Bullion for every 3 City Weight you have, rounded up.
+                </p>
+                <p class="text-green-700">
+                    <strong>Forced Conversion</strong> occurs when you lose a Holy War, or when certain religions convert you forcibly through diplomats. Only the Theocratic government modifier grants Holy War justification.
+                </p>
             </div>
         </div>
 
@@ -36,18 +48,145 @@
                 <h2 class="text-2xl font-bold mb-4 text-green-700 border-b border-green-200 pb-2">🌿 Animist</h2>
                 <p class="text-gray-700 mb-4">A spiritual belief system that attributes souls to animals, plants, inanimate objects, and natural phenomena. Animist societies often have deep connections to nature and the spirit world.</p>
                 <div class="p-4 bg-green-50 rounded-lg">
-                    <p class="text-green-600 font-semibold">Key Themes:</p>
-                    <ul class="text-green-600 mt-2 space-y-1">
-                        <li>• Connection to nature and spirits</li>
-                        <li>• Shamanic traditions</li>
-                        <li>• Environmental harmony</li>
+                    <p class="text-green-600 font-semibold mb-2">Bonus:</p>
+                    <p class="text-green-600">Every month, choose a terrain type. That terrain type gives +1 resources from resource tiles.</p>
+                </div>
+            </div>
+
+            <div class="card fade-in card-diplomacy">
+                <h2 class="text-2xl font-bold mb-4 text-red-700 border-b border-red-200 pb-2">⛪ Catholic</h2>
+                <p class="text-gray-700 mb-4">A monotheistic religion based on the teachings of Jesus Christ. Catholic nations often emphasize virtues like charity, forgiveness, and missionary work.</p>
+                <div class="p-4 bg-red-50 rounded-lg">
+                    <p class="text-red-600 font-semibold mb-2">Bonuses:</p>
+                    <ul class="text-red-600 space-y-1">
+                        <li>• +1 free diplomat. Converting to this religion is half the cost.</li>
+                        <li>• Building/Upgrading a city in the previous week grants plus one resource of your choice, requested in the build post.</li>
+                        <li>• Tier 2/3/4 cities give 1 Bullion per week.</li>
+                        <li>• Every month, select one Holy Order, and receive that bonus:</li>
+                        <li class="ml-4">- Monastic: Once per week, you may use a World building submission slot to write about a specific City and get a 5 material discount on building/upgrading it (instead of the usual reward).</li>
+                        <li class="ml-4">- Clerical: Your Diplomats have the option to Forcibly Convert other nations.</li>
+                        <li class="ml-4">- Crusader: Your brigades have +1 Defense and Rally in battles against other religions.</li>
                     </ul>
                 </div>
             </div>
 
             <div class="card fade-in card-diplomacy">
-                <h2 class="text-2xl font-bold mb-4 text-blue-700 border-b border-blue-200 pb-2">✝️ Christian</h2>
-                <p class="text-gray-700 mb-4">A monotheistic religion based on the teachings of Jesus Christ. Christian nations often emphasize virtues like charity, forgiveness, and missionary work.</p>
+                <h2 class="text-2xl font-bold mb-4 text-purple-700 border-b border-purple-200 pb-2">🕊️ Miaphysite</h2>
+                <p class="text-gray-700 mb-4">An ancient Christian denomination with unique theological perspectives on the nature of Christ.</p>
+                <div class="p-4 bg-purple-50 rounded-lg">
+                    <p class="text-purple-600 font-semibold mb-2">Bonuses:</p>
+                    <ul class="text-purple-600 space-y-1">
+                        <li>• +1 free diplomat. Converting to this religion is half the cost.</li>
+                        <li>• Cannot be forcibly converted. Hostile expansions into your territory cost double.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card fade-in card-diplomacy">
+                <h2 class="text-2xl font-bold mb-4 text-green-700 border-b border-green-200 pb-2">🌏 Nestorian</h2>
+                <p class="text-gray-700 mb-4">An early Christian denomination known for its missionary activities along the Silk Road.</p>
+                <div class="p-4 bg-green-50 rounded-lg">
+                    <p class="text-green-600 font-semibold mb-2">Bonuses:</p>
+                    <ul class="text-green-600 space-y-1">
+                        <li>• +1 free diplomat. Converting to this religion is half the cost.</li>
+                        <li>• Negate 3 middlemen in each trade you participate in.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card fade-in card-diplomacy">
+                <h2 class="text-2xl font-bold mb-4 text-blue-700 border-b border-blue-200 pb-2">☦️ Orthodox</h2>
+                <p class="text-gray-700 mb-4">Eastern Orthodox Christianity with its rich theological traditions and emphasis on mysticism.</p>
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <p class="text-blue-600 font-semibold mb-2">Bonuses:</p>
+                    <ul class="text-blue-600 space-y-1">
+                        <li>• +1 free diplomat. Converting to this religion is half the cost.</li>
+                        <li>• Building/Upgrading a city in the previous week grants plus one resource of your choice, requested in the build post.</li>
+                        <li>• +1 Government Modifier.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card fade-in card-diplomacy">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-700 border-b border-indigo-200 pb-2">✝️ Protestant</h2>
+                <p class="text-gray-700 mb-4">A branch of Christianity that emerged from the Reformation, emphasizing individual faith and scripture.</p>
+                <div class="p-4 bg-indigo-50 rounded-lg">
+                    <p class="text-indigo-600 font-semibold mb-2">Bonuses:</p>
+                    <ul class="text-indigo-600 space-y-1">
+                        <li>• +1 free diplomat. Converting to this religion is half the cost.</li>
+                        <li>• Building/Upgrading a city in the previous week grants plus one resource of your choice, requested in the build post.</li>
+                        <li>• World building submissions give +2 resources.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card fade-in card-diplomacy">
+                <h2 class="text-2xl font-bold mb-4 text-orange-700 border-b border-orange-200 pb-2">🕉️ Dharmic</h2>
+                <p class="text-gray-700 mb-4">Religions originating from the Indian subcontinent, including Hinduism, Buddhism, Jainism, and Sikhism.</p>
+                <div class="p-4 bg-orange-50 rounded-lg">
+                    <p class="text-orange-600 font-semibold mb-2">Bonuses:</p>
+                    <ul class="text-orange-600 space-y-1">
+                        <li>• You do not require a diplomat to make treaties with neighbors.</li>
+                        <li>• Half cost on treaty creation and upkeep.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card fade-in card-diplomacy">
+                <h2 class="text-2xl font-bold mb-4 text-teal-700 border-b border-teal-200 pb-2">🕌 Ibadi</h2>
+                <p class="text-gray-700 mb-4">A branch of Islam known for its moderate approach and emphasis on justice and equality.</p>
+                <div class="p-4 bg-teal-50 rounded-lg">
+                    <p class="text-teal-600 font-semibold mb-2">Bonuses:</p>
+                    <ul class="text-teal-600 space-y-1">
+                        <li>• You do not pay more than 4 resources for expansions, once all other calculations are complete.</li>
+                        <li>• Your Generals start 2 levels higher.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card fade-in card-diplomacy">
+                <h2 class="text-2xl font-bold mb-4 text-green-700 border-b border-green-200 pb-2">☪️ Sunni</h2>
+                <p class="text-gray-700 mb-4">The largest denomination of Islam, emphasizing the Sunnah (traditions) of Prophet Muhammad.</p>
+                <div class="p-4 bg-green-50 rounded-lg">
+                    <p class="text-green-600 font-semibold mb-2">Bonuses:</p>
+                    <ul class="text-green-600 space-y-1">
+                        <li>• You do not pay more than 4 resources for expansions, once all other calculations are complete.</li>
+                        <li>• Your Diplomats have the option to Forcibly Convert other nations.</li>
+                        <li>• T3/T4 Cities grant +1 Luxury and +1 Food per week.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card fade-in card-diplomacy">
+                <h2 class="text-2xl font-bold mb-4 text-gray-700 border-b border-gray-200 pb-2">🔥 Pagan</h2>
+                <p class="text-gray-700 mb-4">Traditional polytheistic or nature-based religions with diverse beliefs and practices.</p>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <p class="text-gray-600 font-semibold mb-2">Bonuses:</p>
+                    <ul class="text-gray-600 space-y-1">
+                        <li>• After winning a battle, you get one free resource for every enemy Brigade that died.</li>
+                        <li>• "Blank" Tiles (ones without resources) cost 2 less Food or Metal to expand into (Minimum 2).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card fade-in card-diplomacy">
+                <h2 class="text-2xl font-bold mb-4 text-pink-700 border-b border-pink-200 pb-2">👁️ Primeval Monotheist</h2>
+                <p class="text-gray-700 mb-4">Ancient monotheistic beliefs predating organized religions.</p>
+                <div class="p-4 bg-pink-50 rounded-lg">
+                    <p class="text-pink-600 font-semibold mb-2">Bonus:</p>
+                    <p class="text-pink-600">+1 government modifier</p>
+                </div>
+            </div>
+
+            <div class="card fade-in card-diplomacy">
+                <h2 class="text-2xl font-bold mb-4 text-yellow-700 border-b border-yellow-200 pb-2">🐉 Shangdi</h2>
+                <p class="text-gray-700 mb-4">Ancient Chinese religious beliefs centered around the worship of Shangdi, the supreme deity.</p>
+                <div class="p-4 bg-yellow-50 rounded-lg">
+                    <p class="text-yellow-600 font-semibold mb-2">Bonus:</p>
+                    <p class="text-yellow-600">For every 20 tiles you own, you receive +1 resources from your capital's tile for each tier your capital is.</p>
+                </div>
+            </div>
+        </div>
                 <div class="p-4 bg-blue-50 rounded-lg">
                     <p class="text-blue-600 font-semibold">Key Themes:</p>
                     <ul class="text-blue-600 mt-2 space-y-1">

@@ -348,33 +348,71 @@
         </div>
 
         <div class="card fade-in mb-8">
-            <h2 class="text-3xl font-bold mb-4 border-b pb-2">Cities</h2>
-            <p class="mb-4">Cities are the backbone of your nation's infrastructure. They unlock trade, allow expansion across seas, provide military garrisons, and are required for subculture creation.</p>
-            <p class="mb-6">Cities come in three tiers, starting at Tier 1 and upgrading as you gather more resources and strategic materials.</p>
+            <h2 class="text-3xl font-bold mb-4 border-b pb-2">🏙️ Cities</h2>
+            <p class="mb-6 text-lg leading-relaxed">Cities are the nodes that connect your nation together and are used as fortresses to defend nearby lands, and can be upgraded to provide additional bonuses. They are required for expansion, trade, spawning military units, and creating cultures. All cities have a <strong>4 tile range</strong> around them that you are allowed to expand into. To expand further, you must build additional cities closer to the edge of your territory. They must be built within your territory.</p>
             
-            <div class="space-y-4">
-                <div class="bg-green-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-green-700 mb-2">T1 Cost:</h3>
-                    <p>3 Food, 3 Stone/Timber | +1 brigade capacity</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="p-6 bg-green-50 rounded-lg city-tier-1">
+                    <h3 class="text-xl font-bold text-white mb-4">🏘️ Tier 1 City</h3>
+                    <div class="bg-white bg-opacity-90 p-4 rounded-lg text-green-800">
+                        <p class="mb-2"><strong>Cost:</strong> 5 Material</p>
+                        <p class="mb-2"><strong>Garrison:</strong> 4 Heavy</p>
+                        <p class="mb-2"><strong>Naval Range:</strong> 2 tiles</p>
+                        <p class="text-sm italic">Tier 1 Cities cannot build ships</p>
+                    </div>
                 </div>
 
-                <div class="bg-blue-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-blue-700 mb-2">T2 Cost:</h3>
-                    <p>4 Food, 2 Fuel, 2 Metal, 3 Luxuries, 4 Material | +3 brigade capacity, +1 ship capacity</p>
+                <div class="p-6 bg-blue-50 rounded-lg city-tier-2">
+                    <h3 class="text-xl font-bold text-white mb-4">🏙️ Tier 2 City</h3>
+                    <div class="bg-white bg-opacity-90 p-4 rounded-lg text-blue-800">
+                        <p class="mb-2"><strong>Cost:</strong> 10 Material, 5 Fuel, 5 Luxuries</p>
+                        <p class="mb-2"><strong>Garrison:</strong> 6 Heavy</p>
+                        <p class="mb-2"><strong>Naval Range:</strong> 6 Tiles</p>
+                        <p class="text-sm">+1 resource submission per week (up to 3 times)</p>
+                    </div>
                 </div>
 
-                <div class="bg-purple-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-bold text-purple-700 mb-2">T3 Cost:</h3>
-                    <p>5 Food, 4 Fuel, 4 Metal, 5 Luxuries, 5 Material | +5 brigade capacity, +2 ship capacity</p>
+                <div class="p-6 bg-purple-50 rounded-lg city-tier-3">
+                    <h3 class="text-xl font-bold text-white mb-4">🌆 Tier 3 City</h3>
+                    <div class="bg-white bg-opacity-90 p-4 rounded-lg text-purple-800">
+                        <p class="mb-2"><strong>Cost:</strong> 15 Material, 10 Fuel, 10 Luxuries</p>
+                        <p class="mb-2"><strong>Garrison:</strong> 8 Heavy</p>
+                        <p class="mb-2"><strong>Naval Range:</strong> 12 tiles</p>
+                        <p class="text-sm">All resource tiles within 4 tiles of this city produce one additional resource of that type. This effect does not stack.</p>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-orange-50 rounded-lg border-2 border-orange-300">
+                    <h3 class="text-xl font-bold text-orange-800 mb-4">🏛️ Tier 4 City</h3>
+                    <div class="bg-white bg-opacity-90 p-4 rounded-lg text-orange-800">
+                        <p class="mb-2"><strong>Cost:</strong> 20 Material, 10 Fuel, 20 Luxuries</p>
+                        <p class="mb-2"><strong>Garrison:</strong> 10 Heavy</p>
+                        <p class="mb-2"><strong>Naval Range:</strong> 20 tiles</p>
+                        <p class="text-sm mb-2">All resource tiles within 4 tiles of this city produce one additional resource of that type. +1 resource submission per week.</p>
+                        <p class="text-sm font-bold text-red-700">Controlling a Tier 4 city gives you a unique bonus tied to control over the city.</p>
+                        <p class="text-sm font-bold text-red-700 mt-2">Only ONE Tier 4 City may be built per nation in the entire game!</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="mt-6 p-4 bg-yellow-50 rounded-lg">
-                <h3 class="text-lg font-bold text-yellow-700 mb-2">Quick Reminders for Infrastructure Management:</h3>
-                <ul class="list-disc list-inside space-y-1">
-                    <li>Plan your resource purchases carefully each cycle. buy what you need, you only have a cap of 12.</li>
-                    <li>Building cities is important both to allow for easier trade, a larger military, and better defense, see Section 5: Warfare to see how city garrisons and brigades work, and Section 6: Boats to see how the navy works</li>
-                </ul>
+            <div class="bg-yellow-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-yellow-800 mb-4">👑 Capital City</h3>
+                <p class="text-yellow-700 mb-4">
+                    One city in your country is designated as the Capital. It has an additional Heavy Brigade as a Garrison and is referenced in many abilities. You choose your capital upon spawn, and may move it for free once every 2 months as long as you are not at war.
+                </p>
+                <p class="text-yellow-700">
+                    You may also choose a new capital if it is lost through Peace Deals, Land Exchanges, or Hostile Expansions.
+                </p>
+            </div>
+
+            <div class="bg-blue-50 p-6 rounded-lg">
+                <h3 class="text-xl font-bold text-blue-800 mb-4">📋 Submitting City Build Requests</h3>
+                <p class="text-blue-700 mb-4">
+                    To submit a request to build a city, please send a picture of the map /here/ notating which city you are upgrading, along with the list of resources you are spending and any relevant discounts or abilities.
+                </p>
+                <p class="text-blue-700">
+                    <strong>Weekly Deadline:</strong> Cities are updated weekly. The cutoff for build requests every week is Friday night. <strong>DO NOT post them on Saturday or Sunday.</strong>
+                </p>
             </div>
         </div>
 
