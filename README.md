@@ -1,23 +1,23 @@
-# 🏰 Mock Battle Simulator for Map Game Warfare System ⚔️
+# 🏰 Hegemony Reborn Map Game Information Hub ⚔️
 
-This project is a comprehensive HTML/CSS/JavaScript application designed to help users create, simulate, and manage mock battles for a custom map game warfare system. It follows the detailed warfare tutorial by John, Princeps Corvinus {Lex}.
+This project is a comprehensive HTML/CSS/JavaScript application designed to provide information and tutorials for a custom map game warfare system. It follows the detailed warfare tutorial by John, Princeps Corvinus {Lex} and provides comprehensive game mechanics information.
 
 ## ✨ Features
 
-### 🛡️ **Army & Unit Management**
+### 🛡️ **Army & Unit Information**
 - **5 Brigade Types**: Cavalry, Heavy Infantry, Light Infantry, Ranged, and Support units
 - **Unit Enhancements**: 15+ different enhancements with unique bonuses and special abilities
 - **Visual Unit Display**: Images and detailed stats for each unit type
-- **Add/Remove Units**: Easy controls to build and modify your armies
-- **Unit Count Tracking**: Visual display of unit quantities
+- **Unit Management Guide**: Instructions for building and modifying armies
+- **Unit Statistics**: Complete information on unit capabilities
 
-### ⚔️ **Battle Simulation System**
-- **Authentic Battle Flow**: Follows the tutorial's 4-stage battle system:
+### ⚔️ **Battle Mechanics Documentation**
+- **Comprehensive Battle Flow**: Details the tutorial's 4-stage battle system:
   - **Skirmish Stage**: Best skirmishers from each side engage
   - **Pitch Stage**: Up to 3 rounds of main combat with 5-second delays between rounds
   - **Rally Stage**: Morale checks for surviving units
   - **Action Report**: Destruction rolls and general fate determination
-- **Realistic Combat**: Proper stat calculations including garrison bonuses
+- **Combat Calculations**: Proper stat calculations including garrison bonuses
 - **Named Battles**: Custom army, general, and location names for immersive storytelling
 
 ### 🎭 **Customization Options**
@@ -206,7 +206,7 @@ MIT License - Feel free to use, modify, and distribute this project.
 ## 🙏 Credits
 
 - **Original Warfare System**: Designed by John, Princeps Corvinus {Lex} (gottfriedlex)
-- **Implementation**: Mock Battle Simulator development team
+- **Implementation**: Hegemony Reborn Map Game development team
 - **Inspiration**: Classic tabletop wargaming and fantasy strategy games
 - **Art Assets**: Various sources (ensure proper licensing for production use)
 
