@@ -548,7 +548,13 @@
                 <!-- Fleet A Ship Controls -->
                 <div class="border-t-2 border-purple-200 pt-4 bg-white rounded-lg p-4">
                     <h4 class="font-semibold mb-3 text-purple-600">Add Ships to Fleet A:</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+                        <select id="shipTypeA" class="border p-2 rounded text-sm">
+                            <option value="Galley">Galley</option>
+                            <option value="Corvette">Corvette</option>
+                            <option value="Frigate">Frigate</option>
+                            <option value="Ship of the Line">Ship of the Line</option>
+                        </select>
                         <select id="enhancementA" class="border p-2 rounded text-sm">
                             <option value="None">No Enhancement</option>
                             <option value="Additional Firepower">Additional Firepower (+2 gunnery)</option>
@@ -580,6 +586,7 @@
                         <table class="w-full">
                             <thead class="bg-purple-50">
                                 <tr>
+                                    <th class="text-left p-2 border-b">Ship Type</th>
                                     <th class="text-left p-2 border-b">Enhancement</th>
                                     <th class="text-left p-2 border-b">Flags</th>
                                     <th class="text-left p-2 border-b">Status</th>
@@ -622,7 +629,13 @@
                 <!-- Fleet B Ship Controls -->
                 <div class="border-t-2 border-red-200 pt-4 bg-white rounded-lg p-4">
                     <h4 class="font-semibold mb-3 text-red-600">Add Ships to Fleet B:</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+                        <select id="shipTypeB" class="border p-2 rounded text-sm">
+                            <option value="Galley">Galley</option>
+                            <option value="Corvette">Corvette</option>
+                            <option value="Frigate">Frigate</option>
+                            <option value="Ship of the Line">Ship of the Line</option>
+                        </select>
                         <select id="enhancementB" class="border p-2 rounded text-sm">
                             <option value="None">No Enhancement</option>
                             <option value="Additional Firepower">Additional Firepower (+2 gunnery)</option>
@@ -654,6 +667,7 @@
                         <table class="w-full">
                             <thead class="bg-red-50">
                                 <tr>
+                                    <th class="text-left p-2 border-b">Ship Type</th>
                                     <th class="text-left p-2 border-b">Enhancement</th>
                                     <th class="text-left p-2 border-b">Flags</th>
                                     <th class="text-left p-2 border-b">Status</th>
@@ -664,6 +678,57 @@
                                 <!-- Ships will be added here -->
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ship Type Reference -->
+        <div class="glassmorphism card fade-in p-6 rounded-lg mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-center text-blue-600">🚢 Ship Type Reference</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-lg border-2 border-blue-200">
+                    <h3 class="text-lg font-bold text-blue-700 mb-2">⛵ Galley</h3>
+                    <div class="text-sm space-y-1">
+                        <p><strong>Cost:</strong> 3 Material, 1 Fuel</p>
+                        <p><strong>Gunnery:</strong> 2</p>
+                        <p><strong>Maneuver:</strong> 4</p>
+                        <p><strong>Damage Report:</strong> 3</p>
+                        <p><strong>Movement:</strong> 3</p>
+                        <p class="text-gray-600 mt-2">Fast and agile but lightly armed</p>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg border-2 border-green-200">
+                    <h3 class="text-lg font-bold text-green-700 mb-2">🚢 Corvette</h3>
+                    <div class="text-sm space-y-1">
+                        <p><strong>Cost:</strong> 5 Material, 2 Fuel</p>
+                        <p><strong>Gunnery:</strong> 4</p>
+                        <p><strong>Maneuver:</strong> 3</p>
+                        <p><strong>Damage Report:</strong> 4</p>
+                        <p><strong>Movement:</strong> 4</p>
+                        <p class="text-gray-600 mt-2">Balanced warship, good speed</p>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg border-2 border-orange-200">
+                    <h3 class="text-lg font-bold text-orange-700 mb-2">⚓ Frigate</h3>
+                    <div class="text-sm space-y-1">
+                        <p><strong>Cost:</strong> 8 Material, 3 Fuel</p>
+                        <p><strong>Gunnery:</strong> 6</p>
+                        <p><strong>Maneuver:</strong> 2</p>
+                        <p><strong>Damage Report:</strong> 5</p>
+                        <p><strong>Movement:</strong> 3</p>
+                        <p class="text-gray-600 mt-2">Heavy firepower, moderate speed</p>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg border-2 border-red-200">
+                    <h3 class="text-lg font-bold text-red-700 mb-2">🚢 Ship of the Line</h3>
+                    <div class="text-sm space-y-1">
+                        <p><strong>Cost:</strong> 12 Material, 5 Fuel</p>
+                        <p><strong>Gunnery:</strong> 8</p>
+                        <p><strong>Maneuver:</strong> 1</p>
+                        <p><strong>Damage Report:</strong> 6</p>
+                        <p><strong>Movement:</strong> 2</p>
+                        <p class="text-gray-600 mt-2">Massive firepower but slow</p>
                     </div>
                 </div>
             </div>
@@ -866,12 +931,24 @@
             battleLog: []
         };
 
+        // Define ship type stats
+        function getShipStats(shipType) {
+            const stats = {
+                'Galley': { gunnery: 2, maneuver: 4, damageReport: 3, movement: 3 },
+                'Corvette': { gunnery: 4, maneuver: 3, damageReport: 4, movement: 4 },
+                'Frigate': { gunnery: 6, maneuver: 2, damageReport: 5, movement: 3 },
+                'Ship of the Line': { gunnery: 8, maneuver: 1, damageReport: 6, movement: 2 }
+            };
+            return stats[shipType] || stats['Galley'];
+        }
+
         // Add ships to fleet
-        function addShipsToFleet(fleet, listElement, enhancement, flag, count) {
-            console.log('Adding ships to fleet:', { fleet, enhancement, flag, count });
+        function addShipsToFleet(fleet, listElement, shipType, enhancement, flag, count) {
+            console.log('Adding ships to fleet:', { fleet, shipType, enhancement, flag, count });
             for (let i = 0; i < count; i++) {
                 const ship = {
                     id: fleet.length + i + 1,
+                    type: shipType || 'Galley',
                     enhancement: enhancement || 'None',
                     flag: flag,
                     status: 'Active',
@@ -881,6 +958,13 @@
                     boardingModifier: 0,
                     damageReportModifier: 0
                 };
+                
+                // Apply ship type base stats
+                const shipStats = getShipStats(shipType);
+                ship.baseGunnery = shipStats.gunnery;
+                ship.baseManeuver = shipStats.maneuver;
+                ship.baseDamageReport = shipStats.damageReport;
+                ship.movementPoints = shipStats.movement;
                 
                 // Apply enhancement effects
                 if (enhancement && SHIP_ENHANCEMENTS[enhancement]) {
@@ -907,6 +991,9 @@
                 row.className = 'border-b hover:bg-gray-50';
                 
                 row.innerHTML = `
+                    <td class="p-2">
+                        <span class="font-medium text-blue-700">${ship.type || 'Galley'}</span>
+                    </td>
                     <td class="p-2">
                         ${ship.enhancement !== 'None' ? `<span class="ship-enhancement">${ship.enhancement}</span>` : 'No Enhancement'}
                     </td>
@@ -2620,30 +2707,32 @@
             // Reattach event listeners to ensure functionality
             addShipAButton.addEventListener('click', () => {
                 console.log('Add Ship A button clicked');
+                const shipType = document.getElementById('shipTypeA').value || 'Galley';
                 const enhancement = document.getElementById('enhancementA').value || 'None';
                 const flag = document.getElementById('flagA').value || 'Royal Navy';
                 const count = parseInt(document.getElementById('shipCountA').value) || 1;
-                console.log('Input values for Fleet A:', { enhancement, flag, count });
+                console.log('Input values for Fleet A:', { shipType, enhancement, flag, count });
                 if (isNaN(count) || count <= 0) {
                     console.error('Invalid ship count for Fleet A:', count);
                     alert('Please enter a valid ship count (1 or more)');
                     return;
                 }
-                addShipsToFleet(window.fleetA, fleetAList, enhancement, flag, count);
+                addShipsToFleet(window.fleetA, fleetAList, shipType, enhancement, flag, count);
             });
 
             addShipBButton.addEventListener('click', () => {
                 console.log('Add Ship B button clicked');
+                const shipType = document.getElementById('shipTypeB').value || 'Galley';
                 const enhancement = document.getElementById('enhancementB').value || 'None';
                 const flag = document.getElementById('flagB').value || 'Pirate Fleet';
                 const count = parseInt(document.getElementById('shipCountB').value) || 1;
-                console.log('Input values for Fleet B:', { enhancement, flag, count });
+                console.log('Input values for Fleet B:', { shipType, enhancement, flag, count });
                 if (isNaN(count) || count <= 0) {
                     console.error('Invalid ship count for Fleet B:', count);
                     alert('Please enter a valid ship count (1 or more)');
                     return;
                 }
-                addShipsToFleet(window.fleetB, fleetBList, enhancement, flag, count);
+                addShipsToFleet(window.fleetB, fleetBList, shipType, enhancement, flag, count);
             });
 
             simulateBattleButton.addEventListener('click', simulateNavalBattle);

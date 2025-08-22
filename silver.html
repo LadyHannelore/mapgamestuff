@@ -97,7 +97,71 @@
                 <p class="text-red-700 mb-4">
                     Though you generally cannot use resources you do not have stockpiled, you may end up negative on resources at the start of a turn if your upkeep is greater than your resource gain. If this occurs, you will start to accrue penalties based on what resource is and how delinquent you are. The effects are cumulative, so every previous penalty also occurs upon the beginning of the week.
                 </p>
-                <p class="text-red-700">
+
+                <div class="space-y-4 mb-4">
+                    <div class="p-3 bg-yellow-100 rounded-lg border border-yellow-300">
+                        <h4 class="font-bold text-yellow-800 mb-2">💰 Bullion Debt</h4>
+                        <p class="text-yellow-700 text-sm mb-2">Unlike other resources, you may actively spend Bullion to go into debt.</p>
+                        <ul class="text-yellow-700 text-sm space-y-1">
+                            <li><strong>-1 to -5:</strong> You lose 1 Bullion (interest)</li>
+                            <li><strong>-6 to -10:</strong> You lose 1 Bullion (interest)</li>
+                            <li><strong>-11 to -20:</strong> You lose 2 Bullion (interest). Your mercenaries refuse to move this week</li>
+                            <li><strong>Bankrupt:</strong> Set your Bullion to 0, and lose 4 of all other resources. Lose all map labels. All mercenaries desert. Cancel all pending trades. Disqualified from any events that required a Bullion buy-in</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-3 bg-green-100 rounded-lg border border-green-300">
+                        <h4 class="font-bold text-green-800 mb-2">🍞 Food Debt</h4>
+                        <ul class="text-green-700 text-sm space-y-1">
+                            <li><strong>-1 to -5:</strong> All cities under siege instantly have their siege or starve out counter reduced by 1 or 2 respectively</li>
+                            <li><strong>-6 to -10:</strong> 1d6 random national brigades desert your military</li>
+                            <li><strong>-11 to -20:</strong> 1d6 additional random national brigades desert your military</li>
+                            <li><strong>Bankrupt:</strong> Set your Food to 0, and lose 4 of all other resources. None of your expansions from this last week apply. All of your national brigades desert</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-3 bg-blue-100 rounded-lg border border-blue-300">
+                        <h4 class="font-bold text-blue-800 mb-2">⛽ Fuel Debt</h4>
+                        <ul class="text-blue-700 text-sm space-y-1">
+                            <li><strong>-1 to -5:</strong> You cannot move any naval units this week</li>
+                            <li><strong>-6 to -10:</strong> Any ships not in a port have a 50/50 chance of being destroyed</li>
+                            <li><strong>-11 to -20:</strong> You cannot move any military units this week</li>
+                            <li><strong>Bankrupt:</strong> Set your Fuel to 0, and lose 4 of all other resources. All of your ships are destroyed. Lose any overseas territory without a city connection</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-3 bg-purple-100 rounded-lg border border-purple-300">
+                        <h4 class="font-bold text-purple-800 mb-2">💎 Luxuries Debt</h4>
+                        <ul class="text-purple-700 text-sm space-y-1">
+                            <li><strong>-1 to -5:</strong> Your Generals and Diplomats have a 50/50 chance of refusing to work this week. Brigades are unaffected</li>
+                            <li><strong>-6 to -10:</strong> Treaties with a luxury upkeep have a 50/50 chance of being broken by your nation</li>
+                            <li><strong>-11 to -20:</strong> Your T3/T4 cities have a 50/50 chance of downgrading to a lower tier</li>
+                            <li><strong>Bankrupt:</strong> Set your Luxuries to 0, and lose 4 of all other resources. All of your Generals and Diplomats desert. All treaties are broken</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-3 bg-orange-100 rounded-lg border border-orange-300">
+                        <h4 class="font-bold text-orange-800 mb-2">🧱 Material Debt</h4>
+                        <ul class="text-orange-700 text-sm space-y-1">
+                            <li><strong>-1 to -5:</strong> Any units that require a Material upkeep do not function this week</li>
+                            <li><strong>-6 to -10:</strong> Your T1 cities have a 1-in-4 chance of being destroyed, along with appropriate territory</li>
+                            <li><strong>-11 to -20:</strong> Your T2/T3/T4 cities have a 1-in-4 chance of downgrading to a lower tier</li>
+                            <li><strong>Bankrupt:</strong> Set your Material to 0, and lose 4 of all other resources. All of your units that require a Material upkeep are destroyed. All of your ships are destroyed</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-3 bg-gray-100 rounded-lg border border-gray-300">
+                        <h4 class="font-bold text-gray-800 mb-2">⚔️ Metal Debt</h4>
+                        <ul class="text-gray-700 text-sm space-y-1">
+                            <li><strong>-1 to -5:</strong> All land brigades have -1 Pitch this week</li>
+                            <li><strong>-6 to -10:</strong> All land brigades have -3 Skirmish and Defense this week</li>
+                            <li><strong>-11 to -20:</strong> All land brigades have an additional -2 Pitch this week</li>
+                            <li><strong>Bankrupt:</strong> Set your Metal to 0, and lose 4 of all other resources. All of your land brigades cannot effectively fight this week, and automatically lose all engagements. All sieges you are currently performing are broken. Any brigades with a metal upkeep are destroyed</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <p class="text-red-700 font-bold">
                     Going <strong>Bankrupt in more than a single resource</strong> in the same week causes a revolution, giving you a randomized government. This breaks any treaties, truces, etc that were held by the previous government.
                 </p>
             </div>

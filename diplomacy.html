@@ -19,12 +19,15 @@
         <!-- Diplomacy Section -->
         <div id="diplomacy" class="card mb-8">
             <h2 class="section-title">🤝 Diplomacy</h2>
-            <p class="mb-4">The main way to conduct Diplomacy is through Diplomats. Diplomats can be hired for <strong>4 Luxuries</strong>, and cost <strong>1 Luxury to upkeep every month</strong>. You may move a Diplomat to another player's nation once per week by requesting it in your Private Room. While in a nation, Diplomats can perform different Diplomatic Missions to accomplish goals. In addition, whenever you send a Diplomat to a nation, a private channel is opened up between the two parties to speak.</p>
+            <p class="mb-4">The main way to conduct Diplomacy is through Diplomats. Diplomats can be hired for <strong>4 Luxuries</strong>, and cost <strong>1 Luxury to upkeep</strong>. You may move a Diplomat to another player's nation once per week by requesting it in your Private Room. While in a nation, Diplomats can perform different Diplomatic Missions to accomplish goals. In addition, whenever you send a Diplomat to a nation, a private channel is opened up between the two parties to speak. You may dismiss Diplomats.</p>
             <p class="mb-4">There are 4 types of Diplomatic Missions; Treaty Signing, Land Exchange, Vassal Contracts, and Religious Conversion. A Diplomat may only perform 1 Diplomatic Mission a week.</p>
         </div>
         <div class="card mb-8">
             <h2 class="section-title border-b pb-2">📜 Treaty Signing</h2>
             <p class="mb-4">The premier form of Diplomatic Action, treaties are formal agreements between two or more nations. Signing a treaty requires a clear list of the signatories, and this list cannot be changed at any time between posting for approval and the treaty's abolition. Treaties always have a cost in Luxuries which varies depending on the complexity, potential effects, and number of signatories.</p>
+            
+            <p class="mb-4">To join an existing treaty you must pay an upfront cost determined on a case-by-case basis along with sending your diplomat to a signatory nation. This is considered a Diplomatic mission.</p>
+            
             <p class="mb-4">Breaking a treaty gives the other signatories a War Justification.</p>
             
             <div class="bg-blue-50 p-6 rounded-lg mb-6">
@@ -81,18 +84,34 @@
 
         <div class="card mb-8">
             <h2 class="section-title border-b pb-2">👑 Vassal Contracts</h2>
-            <p class="mb-4">Vassals are when one nation submits itself to another, surrendering control of its foreign policy to its Overlord. Vassal contracts can be forced through Warfare, or negotiated through Diplomats.</p>
-            <p class="mb-4">By default, you may only have 2 Vassals.</p>
+            <p class="mb-4">Vassal contracts are a special type of treaty when one nation submits itself to another, surrendering control of its foreign policy to its Overlord. Vassal contracts can be forced through Warfare, or negotiated through Diplomats.</p>
             
             <div class="bg-blue-50 p-6 rounded-lg mb-6">
                 <h3 class="text-xl font-bold text-blue-800 mb-4">📋 Vassal Rules</h3>
                 <ul class="text-blue-700 space-y-2 text-sm">
-                    <li>• Becoming a Vassal of a specific type may be a condition of a Treaty.</li>
                     <li>• Vassals are not able to have Vassals of their own, and if an Overlord is vassalized, all of their vassals are instantly made independent.</li>
-                    <li>• All Vassals surrender control of their foreign policy, rendering them unable to sign (non-secret) treaties, declare war, or make Hostile Expansions without permission from their Overlord.</li>
-                    <li>• The Overlord has military access with all Vassals.</li>
-                    <li>• All Vassals may not declare war against their Overlord with the exception of the Independence War Justification, or joining with another nation's Liberation CB.</li>
+                    <li>• All Vassals may not declare war against their Overlord with the exception of the Independence War Justification, or joining with another nation's Liberation CB. Overlords have Military access with all Vassals.</li>
+                    <li>• Vassals may be traded as a part of other Treaties, except for Marches.</li>
                 </ul>
+            </div>
+
+            <div class="bg-orange-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-orange-800 mb-4">💰 Vassal Costs</h3>
+                <p class="text-orange-700 mb-4">There is no cap on vassals, but the costs scale with their number. Every vassal type costs 10 luxuries to establish, with the upkeep per week increasing:</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm text-orange-700">
+                    <div>1st: 1 luxuries</div>
+                    <div>2nd: 2 luxuries</div>
+                    <div>3rd: 4 luxuries</div>
+                    <div>4th: 8 luxuries</div>
+                    <div>5th: 16 luxuries</div>
+                    <div>6th: 32 luxuries</div>
+                </div>
+                <p class="text-orange-700 mt-2 text-sm">For example, having 3 vassals is an upkeep of 7 luxuries per week</p>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-xl font-bold mb-4">🏷️ Vassal Types</h3>
+                <p class="mb-4 text-gray-600">Vassals are not as flexible as Treaties, and come in 4 types:</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
