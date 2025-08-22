@@ -1,30 +1,52 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
 
 :root {
-    --primary-gradient: linear-gradient(135deg, #232526 0%, #414345 100%); /* dark grey gradient */
-    --secondary-gradient: linear-gradient(135deg, #434343 0%, #262626 100%); /* muted dark gradient */
-    --accent-gradient: linear-gradient(135deg, #3a3a3a 0%, #232526 100%); /* subtle accent */
-    --gold-gradient: linear-gradient(135deg, #bfa046 0%, #8c7a3a 100%); /* muted gold */
-    --purple-gradient: linear-gradient(135deg, #444654 0%, #232526 100%); /* dark muted purple */
-    --dark-gradient: linear-gradient(135deg, #181a1b 0%, #232526 100%); /* very dark gradient */
-    --glass-bg: rgba(30, 30, 30, 0.7); /* dark glass */
-    --glass-border: rgba(80, 80, 80, 0.2);
-    --card-bg: #232526;
-    --card-border: #333;
-    --text-main: #e0e0e0;
-    --text-accent: #bfa046;
-    --header-bg: #181a1b;
-    --header-border: #444;
+    --primary-gradient: linear-gradient(135deg, #8B4513 0%, #654321 100%); /* medieval brown */
+    --secondary-gradient: linear-gradient(135deg, #2F4F4F 0%, #1C1C1C 100%); /* dark slate */
+    --accent-gradient: linear-gradient(135deg, #DAA520 0%, #B8860B 100%); /* medieval gold */
+    --gold-gradient: linear-gradient(135deg, #FFD700 0%, #DAA520 100%); /* bright gold */
+    --purple-gradient: linear-gradient(135deg, #4B0082 0%, #301934 100%); /* royal purple */
+    --dark-gradient: linear-gradient(135deg, #2F1B14 0%, #1A0E0A 100%); /* dark medieval brown */
+    --glass-bg: rgba(139, 69, 19, 0.8); /* medieval brown glass */
+    --glass-border: rgba(218, 165, 32, 0.3); /* gold border */
+    --card-bg: linear-gradient(145deg, #8B4513, #654321);
+    --card-border: #DAA520;
+    --text-main: #F5E6D3; /* parchment color */
+    --text-accent: #DAA520; /* gold */
+    --header-bg: linear-gradient(135deg, #2F1B14 0%, #1A0E0A 100%);
+    --header-border: #DAA520;
+    --parchment: #F4F1E8;
+    --dark-wood: #3C2414;
+    --iron: #434B52;
 }
 
+
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Cinzel', serif;
     margin: 0;
     background: var(--dark-gradient);
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(218, 165, 32, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(139, 69, 19, 0.1) 0%, transparent 50%);
     color: var(--text-main);
     min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23DAA520" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: -1;
 }
 
 .container {
@@ -100,17 +122,63 @@ ul {
 
 .glassmorphism {
     background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(6px);
+    border: 2px solid var(--glass-border);
+    backdrop-filter: blur(8px);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.37),
+        inset 0 2px 4px rgba(218, 165, 32, 0.2);
+    position: relative;
+}
+
+.glassmorphism::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(218, 165, 32, 0.1) 50%, 
+        transparent 70%);
+    pointer-events: none;
+    border-radius: inherit;
 }
 
 .card {
     background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    border: 3px solid var(--card-border);
+    border-radius: 8px;
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(218, 165, 32, 0.3);
     padding: 2rem;
     margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 2px,
+        rgba(218, 165, 32, 0.05) 2px,
+        rgba(218, 165, 32, 0.05) 4px
+    );
+    animation: medievalShimmer 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes medievalShimmer {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 .card::before {
@@ -142,29 +210,41 @@ ul {
 
 .btn {
     padding: 0.75rem 1.5rem;
-    border-radius: 9999px;
+    border-radius: 6px;
+    font-family: 'Cinzel', serif;
     font-weight: 600;
-    color: white;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    color: var(--dark-wood);
+    background: var(--accent-gradient);
+    border: 2px solid var(--text-accent);
+    box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transition: all 0.3s ease;
     text-decoration: none;
     display: inline-block;
-    border: none;
     cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .btn-primary {
     display: inline-block;
     padding: 0.75rem 1.5rem;
-    border-radius: 9999px;
-    color: white;
+    border-radius: 6px;
+    color: var(--dark-wood);
+    font-family: 'Cinzel', serif;
     font-weight: 600;
     background: var(--primary-gradient);
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    border: 2px solid var(--text-accent);
+    box-shadow: 
+        0 4px 15px rgba(139, 69, 19, 0.4),
+        inset 0 1px 0 rgba(218, 165, 32, 0.3);
     transition: all 0.3s ease;
     text-decoration: none;
     position: relative;
     overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .btn-primary::before {
@@ -174,7 +254,7 @@ ul {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(218, 165, 32, 0.4), transparent);
     transition: left 0.3s;
 }
 
@@ -184,7 +264,10 @@ ul {
 
 .btn-primary:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
+    background: var(--gold-gradient);
+    box-shadow: 
+        0 8px 25px rgba(218, 165, 32, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .btn-gradient {
@@ -378,63 +461,251 @@ ul {
     filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
 }
 
-/* Enhanced list items */
+/* Medieval Typography */
+.hero-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    text-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 10px rgba(218, 165, 32, 0.5);
+    color: var(--text-accent);
+}
+
+.section-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    color: var(--text-accent);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.medieval-text {
+    font-family: 'MedievalSharp', serif;
+    color: var(--text-accent);
+}
+
+.gothic-text {
+    font-family: 'UnifrakturMaguntia', serif;
+    color: var(--text-accent);
+    font-size: 1.2em;
+}
+
+/* Medieval Enhanced Lists */
 .enhanced-list li {
     padding: 1rem;
     margin: 0.5rem 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-    border-radius: 10px;
-    border-left: 4px solid transparent;
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.3), rgba(101, 67, 33, 0.2));
+    border-radius: 6px;
+    border-left: 4px solid var(--text-accent);
+    border-top: 1px solid rgba(218, 165, 32, 0.3);
     background-clip: padding-box;
     transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .enhanced-list li:hover {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.05));
-    border-left-color: #667eea;
+    background: linear-gradient(135deg, rgba(218, 165, 32, 0.2), rgba(184, 134, 11, 0.1));
+    border-left-color: var(--gold-gradient);
     transform: translateX(10px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
-/* Interactive cards with color themes */
+/* Medieval Interactive cards with color themes */
 .card-warfare {
-    background: linear-gradient(135deg, rgba(220, 38, 127, 0.1), rgba(255, 255, 255, 0.9));
-    border-top: 4px solid #dc267f;
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.3), rgba(101, 67, 33, 0.2));
+    border: 3px solid #8B0000;
+    box-shadow: 
+        0 4px 16px rgba(139, 0, 0, 0.4),
+        inset 0 1px 0 rgba(218, 165, 32, 0.2);
 }
 
 .card-diplomacy {
-    background: linear-gradient(135deg, rgba(67, 56, 202, 0.1), rgba(255, 255, 255, 0.9));
-    border-top: 4px solid #4338ca;
+    background: linear-gradient(135deg, rgba(75, 0, 130, 0.3), rgba(101, 67, 33, 0.2));
+    border: 3px solid #4B0082;
+    box-shadow: 
+        0 4px 16px rgba(75, 0, 130, 0.4),
+        inset 0 1px 0 rgba(218, 165, 32, 0.2);
 }
 
 .card-infrastructure {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(255, 255, 255, 0.9));
-    border-top: 4px solid #10b981;
+    background: linear-gradient(135deg, rgba(34, 139, 34, 0.3), rgba(101, 67, 33, 0.2));
+    border: 3px solid #228B22;
+    box-shadow: 
+        0 4px 16px rgba(34, 139, 34, 0.4),
+        inset 0 1px 0 rgba(218, 165, 32, 0.2);
 }
 
 .card-economy {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(255, 255, 255, 0.9));
-    border-top: 4px solid #f59e0b;
+    background: linear-gradient(135deg, rgba(218, 165, 32, 0.3), rgba(101, 67, 33, 0.2));
+    border: 3px solid var(--text-accent);
+    box-shadow: 
+        0 4px 16px rgba(218, 165, 32, 0.4),
+        inset 0 1px 0 rgba(218, 165, 32, 0.2);
 }
 
-/* Icon animations */
+/* Medieval Decorative Elements */
+.medieval-border {
+    border: 3px solid var(--text-accent);
+    border-radius: 8px;
+    background: linear-gradient(145deg, 
+        rgba(139, 69, 19, 0.8), 
+        rgba(101, 67, 33, 0.6));
+    box-shadow: 
+        0 0 20px rgba(218, 165, 32, 0.3),
+        inset 0 2px 4px rgba(218, 165, 32, 0.2);
+}
+
+.medieval-button {
+    background: var(--accent-gradient);
+    border: 2px solid var(--text-accent);
+    color: var(--dark-wood);
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.medieval-button:hover {
+    background: var(--gold-gradient);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 6px 16px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Heraldic Patterns */
+.heraldic-pattern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 20%, rgba(218, 165, 32, 0.1) 2px, transparent 2px),
+        radial-gradient(circle at 80% 80%, rgba(218, 165, 32, 0.1) 2px, transparent 2px);
+    background-size: 20px 20px;
+    pointer-events: none;
+}
+
+/* Medieval Icon animations */
 .icon-spin {
-    animation: spin 4s linear infinite;
+    animation: medievalSpin 6s linear infinite;
 }
 
-@keyframes spin {
+@keyframes medievalSpin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
 
 .icon-bounce {
-    animation: bounce 2s infinite;
+    animation: medievalBounce 3s infinite;
 }
 
-@keyframes bounce {
-    0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
-    40%, 43% { transform: translateY(-10px); }
-    70% { transform: translateY(-5px); }
-    90% { transform: translateY(-2px); }
+@keyframes medievalBounce {
+    0%, 20%, 53%, 80%, 100% { 
+        transform: translateY(0) scale(1); 
+        filter: drop-shadow(0 2px 4px rgba(218, 165, 32, 0.3));
+    }
+    40%, 43% { 
+        transform: translateY(-10px) scale(1.1); 
+        filter: drop-shadow(0 4px 8px rgba(218, 165, 32, 0.5));
+    }
+    70% { 
+        transform: translateY(-5px) scale(1.05); 
+        filter: drop-shadow(0 3px 6px rgba(218, 165, 32, 0.4));
+    }
+    90% { 
+        transform: translateY(-2px) scale(1.02); 
+        filter: drop-shadow(0 2px 4px rgba(218, 165, 32, 0.3));
+    }
+}
+
+.icon-glow {
+    animation: medievalGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes medievalGlow {
+    from {
+        filter: drop-shadow(0 0 5px rgba(218, 165, 32, 0.5));
+        transform: scale(1);
+    }
+    to {
+        filter: drop-shadow(0 0 15px rgba(218, 165, 32, 0.8));
+        transform: scale(1.05);
+    }
+}
+
+.floating {
+    animation: medievalFloat 4s ease-in-out infinite;
+}
+
+@keyframes medievalFloat {
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg); 
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    }
+    50% { 
+        transform: translateY(-10px) rotate(1deg); 
+        filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+    }
+}
+
+.pulse-glow {
+    animation: medievalPulse 3s ease-in-out infinite;
+}
+
+@keyframes medievalPulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 20px rgba(218, 165, 32, 0.3),
+            inset 0 0 20px rgba(218, 165, 32, 0.1);
+    }
+    50% {
+        box-shadow: 
+            0 0 40px rgba(218, 165, 32, 0.6),
+            inset 0 0 30px rgba(218, 165, 32, 0.2);
+    }
+}
+
+/* Medieval Text Effects */
+.gradient-text {
+    background: var(--gold-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.medieval-shadow {
+    text-shadow: 
+        2px 2px 0px var(--dark-wood),
+        4px 4px 8px rgba(0, 0, 0, 0.6),
+        0 0 10px rgba(218, 165, 32, 0.3);
+}
+
+.illuminated-text {
+    font-family: 'Cinzel Decorative', serif;
+    background: linear-gradient(45deg, 
+        #FFD700, #DAA520, #B8860B, #DAA520, #FFD700);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: illuminatedShine 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(218, 165, 32, 0.5));
+}
+
+@keyframes illuminatedShine {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
 }
 
 /* Particle effects */
@@ -1138,25 +1409,112 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-main) !important;
 }
 
-/* Heading styles with Archivo Black */
+/* Heading styles with Medieval fonts */
 h1, h2, h3, h4, h5, h6,
 .hero-title, .section-title {
-    font-family: 'Archivo Black', sans-serif !important;
+    font-family: 'Cinzel', serif !important;
     color: var(--text-main) !important;
-    font-weight: 900 !important;
-    letter-spacing: 0.5px;
+    font-weight: 700 !important;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
 }
 
 .hero-title {
+    font-family: 'Cinzel Decorative', serif !important;
     color: var(--text-accent) !important;
     font-size: 3rem !important;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    text-shadow: 
+        3px 3px 0px var(--dark-wood),
+        6px 6px 12px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(218, 165, 32, 0.4);
+    font-weight: 900 !important;
 }
 
 .section-title {
+    font-family: 'Cinzel', serif !important;
     color: var(--text-accent) !important;
     font-size: 2rem !important;
     margin-bottom: 1rem;
+    text-shadow: 
+        2px 2px 0px var(--dark-wood),
+        4px 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Medieval City Tier Styling */
+.city-tier-1 {
+    background: linear-gradient(135deg, rgba(34, 139, 34, 0.3), rgba(101, 67, 33, 0.2)) !important;
+    border: 2px solid #228B22 !important;
+    border-radius: 8px;
+}
+
+.city-tier-2 {
+    background: linear-gradient(135deg, rgba(30, 144, 255, 0.3), rgba(101, 67, 33, 0.2)) !important;
+    border: 2px solid #1E90FF !important;
+    border-radius: 8px;
+}
+
+.city-tier-3 {
+    background: linear-gradient(135deg, rgba(148, 0, 211, 0.3), rgba(101, 67, 33, 0.2)) !important;
+    border: 2px solid #9400D3 !important;
+    border-radius: 8px;
+}
+
+.city-tier-4 {
+    background: linear-gradient(135deg, rgba(218, 165, 32, 0.4), rgba(101, 67, 33, 0.3)) !important;
+    border: 3px solid var(--text-accent) !important;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(218, 165, 32, 0.4);
+}
+
+/* Medieval Navigation Enhancements */
+nav {
+    background: var(--header-bg) !important;
+    border-bottom: 3px solid var(--text-accent) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+nav a {
+    font-family: 'Cinzel', serif !important;
+    color: var(--text-main) !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+nav a:hover {
+    color: var(--text-accent) !important;
+    text-shadow: 0 0 8px rgba(218, 165, 32, 0.6);
+}
+
+/* Medieval Table Styling */
+table {
+    border: 2px solid var(--text-accent);
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.2), rgba(101, 67, 33, 0.1));
+}
+
+thead {
+    background: var(--accent-gradient) !important;
+    color: var(--dark-wood) !important;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+}
+
+tbody tr:hover {
+    background: rgba(218, 165, 32, 0.1) !important;
+}
+
+/* Medieval Form Elements */
+input, select, textarea {
+    background: linear-gradient(135deg, var(--parchment), #F0E6D2) !important;
+    border: 2px solid var(--text-accent) !important;
+    color: var(--dark-wood) !important;
+    font-family: 'Cinzel', serif;
+    border-radius: 4px;
+}
+
+input:focus, select:focus, textarea:focus {
+    box-shadow: 0 0 10px rgba(218, 165, 32, 0.5) !important;
+    border-color: var(--gold-gradient) !important;
 }
 
 /* Override any existing heading styles */
